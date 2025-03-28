@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { paymentService } from "../services/PreferenceService";
+import { preferenceService } from "../../services/preferenceService";
 
 export function usePreferenceId(amount, payerEmail) {
   const [preferenceId, setPreferenceId] = useState(null);
@@ -9,7 +9,7 @@ export function usePreferenceId(amount, payerEmail) {
   useEffect(() => {
     async function fetchPreference() {
       try {
-        const response = await paymentService.createPreference(amount, payerEmail);
+        const response = await preferenceService.createPreference(amount, payerEmail);
         setPreferenceId(response.preferenceId);
       } catch (err) {
         setError(err.message);
