@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { usePayments } from "../hooks/usePayments";
+import { usePayments } from "../hooks/payments/usePayment";
 import { useValidatePaymentProps } from "../hooks/payments/useValidateProps";
 import { useScriptLoader } from "../hooks/payments/useScriptLoader";
 import { useInitializeBrick } from "../hooks/payments/useInitializeBrick";
