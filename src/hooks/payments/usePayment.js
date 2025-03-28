@@ -9,6 +9,7 @@ export const usePayments = () => {
     const isBoleto = paymentData.paymentMethodId === "bolbradesco";
     const isPix = paymentData.paymentMethodId === "pix";
 
+    // 📌 Apenas cartão de crédito precisa do token
     if (!isBoleto && !isPix && !paymentData.token) {
       console.error("❌ Erro: Token do cartão ausente! O pagamento não será enviado.");
       return;
