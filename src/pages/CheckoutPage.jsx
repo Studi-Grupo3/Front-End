@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PaymentBrick from "../components/PaymentBrick";
-import { usePreferenceId } from "../hooks/usePreferenceId";
+import { usePreferenceId } from "../hooks/payments/usePreferenceId";
 
 const CheckoutPage = () => {
   const [paymentStatus, setPaymentStatus] = useState(null);

@@ -1,6 +1,6 @@
 import { apiFetch } from "./api";
 
-export const paymentService = {
+export const preferenceService = {
   async createPreference(amount, payerEmail) {
     return apiFetch("/payments/preference", {
       method: "POST",
