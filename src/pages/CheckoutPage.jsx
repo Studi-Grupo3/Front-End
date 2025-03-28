@@ -4,7 +4,7 @@ import { usePreferenceId } from "../hooks/usePreferenceId";
 
 const CheckoutPage = () => {
   const [paymentStatus, setPaymentStatus] = useState(null);
-  const publicKey = "TEST-16b57b12-3740-4b69-be8f-787cb873db07"; 
+  const publicKey = import.meta.env.VITE_PUBLIC_KEY;
   const { preferenceId, loading, error } = usePreferenceId(100, "cliente@teste.com");
 
   return (
