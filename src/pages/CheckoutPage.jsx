@@ -9,7 +9,7 @@ const CheckoutPage = () => {
 
   return (
     <div>
-      <h1>Finalizar Compras</h1>
+      <h1>Finalizar Compra</h1>
       {loading && <p>Carregando preferência de pagamento...</p>}
       {error && <p style={{ color: "red" }}>Erro ao obter preferência: {error}</p>}
       {preferenceId && (
