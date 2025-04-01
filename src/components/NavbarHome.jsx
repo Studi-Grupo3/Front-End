@@ -5,33 +5,33 @@ const NavbarHome = () => {
 
     return (
 
-        <nav className=" bg-red-800 text-white p-4 flex flex-row justify-evenly">
+        <nav className="h-[10vh] bg-[#3970B7] text-white flex items-center justify-evenly flex-row text-[60px]">
 
             <div>
-                <img src={imagem} />
+                <img src={imagem} className="h-80"/>
             </div>
 
-            <div className="flex flex-row justify-evenly">
+            <div className="flex flex-row justify-evenly w-[40%]">
 
-                <div>
+                <span>
                     <h2 className="text-xl font-bold mb-4">Sobre nós</h2>
-                </div>
+                </span>
 
-                <div>
+                <span>
                     <h2 className="text-xl font-bold mb-4">Planos</h2>
-                </div>
+                </span>
 
-                <div>
+                <span>
                     <h2 className="text-xl font-bold mb-4">Professores</h2>
-                </div>
+                </span>
 
-                <div>
+                <span>
                     <h2 className="text-xl font-bold mb-4">Contato</h2>
-                </div>
+                </span>
 
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-row gap-2">
                 <button className="flex items-center justify-center gap-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
                     Entrar
                 </button>
