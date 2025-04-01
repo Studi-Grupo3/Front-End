@@ -14,7 +14,7 @@ const CheckoutPage = () => {
       {error && <p style={{ color: "red" }}>Erro ao obter preferência: {error}</p>}
       {preferenceId && (
         <PaymentBrick
-          publicKey={publicKey}
+          publicKey={publicKey} 
           preferenceId={preferenceId}
           onPaymentSuccess={(response) => setPaymentStatus(`✅ Pagamento aprovado! ID: ${response.id}`)}
           onPaymentError={(error) => setPaymentStatus(`❌ Erro no pagamento: ${error}`)}
