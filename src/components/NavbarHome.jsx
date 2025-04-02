@@ -13,21 +13,21 @@ const NavbarHome = () => {
 
             <div className="flex flex-row justify-evenly w-[40%]">
 
-                <span>
-                    <h2 className="text-xl font-bold mb-4">Sobre nós</h2>
-                </span>
+                <div>
+                    <h2 className=" font-bold mb-4">Sobre nós</h2>
+                </div>
 
-                <span>
-                    <h2 className="text-xl font-bold mb-4">Planos</h2>
-                </span>
+                <div>
+                    <h2 className=" font-bold mb-4">Planos</h2>
+                </div>
 
-                <span>
-                    <h2 className="text-xl font-bold mb-4">Professores</h2>
-                </span>
+                <div>
+                    <h2 className="font-bold mb-4">Professores</h2>
+                </div>
 
-                <span>
-                    <h2 className="text-xl font-bold mb-4">Contato</h2>
-                </span>
+                <div>
+                    <h2 className="font-bold mb-4">Contato</h2>
+                </div>
 
             </div>
 
