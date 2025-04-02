@@ -1,11 +1,11 @@
 import "./App.css";
-import CheckoutPage from "./pages/CheckoutPage"
+import StudentInitial from "./pages/StudentInitialPage"; // Importando o componente principal
 
 function App() {
   return (
-    <>
-      <CheckoutPage/>
-    </>
+    <div className="App">
+      <StudentInitial />
+    </div>
   );
 }
 
