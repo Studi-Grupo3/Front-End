@@ -1,53 +1,97 @@
+import { useState } from 'react';
 import NavbarHome from '../components/NavbarHome';
 import Imagem from '../assets/imagem-fundo.svg'
-
+import { FcGoogle } from "react-icons/fc";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
 const RegisterPage = () => {
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     return (
         <div className="flex flex-col h-screen w-screen">
             <NavbarHome />
-            <main className='h-screen w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center text-[50px]' style={{ backgroundImage: `url(${Imagem})` }}>
+            <main className='h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center' style={{ backgroundImage: `url(${Imagem})` }}>
 
-                <section className='flex flex-col justify-evenly items-center h-[80%] w-[30%] bg-[#3970B7] border-10 border-[#FECB0A] text-white' style={{ borderRadius: "120px" }}>
+                <section className='h-145 w-120 bg-[#3970B7] border-3 border-[#FECB0A] rounded-3xl text-white'>
 
-                    <h1 className='text-8xl  font-bold'>Crie uma conta</h1>
+                    <form className='flex flex-col justify-evenly items-center h-full w-full'>
 
-                    <form className='flex flex-col justify-evenly h-[80%] w-[70%]'>
+                        <h1 className='text-[25px] font-bold'>Crie uma conta</h1>
 
-                        <label className='flex flex-col'>
-                            <span>
-                                Nome Completo:
-                            </span>
-                            <input type="text" className='bg-white' />
+                        <label className='flex flex-col w-80 gap-1'>
+                            <span className='font-bold text-xs'>Nome Completo</span>
+                            <input className='rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 text-black text-xs pl-3' type="text" placeholder='Digite seu nome completo'/>
                         </label>
 
-                        <label className='flex flex-col'>
-                            <span>
-                                E-mail:
-                            </span>
-                            <input type="text" className='bg-white'/>
+                        <label className='flex flex-col w-80 gap-1'>
+                            <span className='font-bold text-xs'>E-mail</span>
+                            <input className='rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 text-black text-xs pl-3' type='email' placeholder='seu@email.com' />
                         </label>
 
-                        <label className='flex flex-col'>
-                            <span>
-                                Senha:
-                            </span>
-                            <input type="text" className='bg-white'/>
+                        <label className='flex flex-col w-80 gap-1'>
+                        <span className='font-bold text-xs'>Senha</span>
+                        <div className="relative">
+                                <input 
+                                    className='w-full rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 px-3 pr-10 text-black text-xs pl-3' 
+                                    type={showPassword ? "text" : "password"} 
+                                    placeholder='Crie uma senha' 
+                                />
+                                <button 
+                                    type="button"
+                                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                                </button>
+                            </div>
                         </label>
 
-                        <label className='flex flex-col'>
-                            <span>
-                                Confirmar Senha:
-                            </span>
-                            <input type="text" className='bg-white'/>
+                        <label className='flex flex-col w-80 gap-3'>
+                            <div className='flex flex-col gap-1'>
+                                <span className='font-bold text-xs'>Confirmar Senha</span>
+                                <div className="relative">
+                                    <input 
+                                        className='w-full rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 px-4 pr-10 text-black text-xs pl-3' 
+                                        type={showConfirmPassword ? "text" : "password"} 
+                                        placeholder='Confirme sua senha' 
+                                    />
+                                    <button 
+                                        type="button"
+                                        className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    >
+                                        {showConfirmPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className='flex gap-2'>
+                                <input type="checkbox" /> 
+                                <span className='font-bold text-xs'>
+                                    I agree the <a className='text-[#FECB0A] hover:underline' href="">Terms of Service</a> and <a className='text-[#FECB0A] hover:underline' href="">Privacy Policy</a>
+                                </span>
+                            </div>
                         </label>
 
-                        <label className='flex flex-row items-center gap-5 h-[10%]'>
-                            <input type="checkbox" className='h-5 w-5'/> 
-                            <span className='text-[30px]'>I agree to the Terms of Service and Privacy Policy </span>
-                        </label>
 
-                        <button className="flex items-center justify-center h-[150px] w-[100%] gap-5 rounded-2xl bg-[#FECB0A] text-black font-semibold cursor-pointer">Cadastrar</button>
+
+                        <button className='rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-80 h-10 text-sm'>Cadastrar</button>
+
+                        <div className="relative flex items-center my-6">
+
+                            <div className="flex-1 border w-75 border-white"></div>
+
+                            <div className="text-[#64748B] text-center w-8 h-6 bg-white mx-2 ">OU</div>
+
+                            <div className="flex-1 border border-white"></div>
+
+                        </div>
+
+                        <button className='flex items-center justify-center gap-2 rounded-lg bg-white text-black font-normal cursor-pointer w-80 h-10 text-sm'><FcGoogle className="text-2xl" />Cadastre-se pelo Google</button>
+
+                        <span className='text-xs'>Já tem uma conta aqui? <a className='text-[#FECB0A] hover:underline' href="">Clique aqui</a></span>
+
 
                     </form>
 
