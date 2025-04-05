@@ -1,11 +1,15 @@
 import "./index.css";
 import CheckoutPage from "./pages/CheckoutPage"
 import RegisterPage from "./pages/RegisterPage";
+import {AppointmentManager} from "./pages/AppointmentManager";
 
 function App() {
   return (
     <>
-      <RegisterPage/>
+    <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-100">
+      <AppointmentManager/>
+    </div>
+      
     </>
   );
 }
