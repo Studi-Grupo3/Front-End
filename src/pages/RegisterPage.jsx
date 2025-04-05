@@ -43,7 +43,7 @@ const RegisterPage = () => {
                                     className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
-                                    {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                                    {showPassword ? <EyeSlashIcon className="hover:cursor-pointer w-5 h-5" /> : <EyeIcon className="hover:cursor-pointer w-5 h-5" />}
                                 </button>
                             </div>
                         </label>
@@ -62,12 +62,12 @@ const RegisterPage = () => {
                                         className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     >
-                                        {showConfirmPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                                        {showConfirmPassword ? <EyeSlashIcon className="hover:cursor-pointer w-5 h-5" /> : <EyeIcon className="hover:cursor-pointer w-5 h-5" />}
                                     </button>
                                 </div>
                             </div>
                             <div className='flex gap-2'>
-                                <input type="checkbox" /> 
+                                <input className='hover:cursor-pointer' type="checkbox" /> 
                                 <span className='font-bold text-xs'>
                                     I agree the <a className='text-[#FECB0A] hover:underline' href="">Terms of Service</a> and <a className='text-[#FECB0A] hover:underline' href="">Privacy Policy</a>
                                 </span>
