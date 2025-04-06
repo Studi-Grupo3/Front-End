@@ -57,7 +57,7 @@ export const AppointmentCard = ({
   const locationDisplay = online ? "Online" : location;
 
   return (
-    <div className={`w-[30%] max-w-xl mx-auto bg-white rounded-lg shadow-sm p-6 border-t-4`} style={{ borderTopColor: statusConfig.rawColor }}>
+    <div className={`w-[100%] max-w-xl mx-auto bg-white rounded-lg shadow-sm p-6 border-t-4`} style={{ borderTopColor: statusConfig.rawColor }}>
       <div className="flex justify-between items-center mb-1">
         <h2 className="text-[var(--azul-custom)] text-xl font-bold">{subject}</h2>
 
@@ -98,7 +98,7 @@ export const AppointmentCard = ({
           <span className="text-sm">{locationDisplay}</span>
         </div>
       </div>
-      
+
       <button
         onClick={onDetailsClick}
         className="w-full border border-gray-300 text-[var(--azul-custom)] rounded-lg py-2 px-4 hover:bg-blue-50 transition text-center"
