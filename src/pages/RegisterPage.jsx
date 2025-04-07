@@ -12,7 +12,7 @@ const RegisterPage = () => {
     return (
         <div className="flex flex-col h-screen w-screen">
             <NavbarHome />
-            <main className='h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center' style={{ backgroundImage: `url(${Imagem})` }}>
+            {/* <main className='h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center' style={{ backgroundImage: `url(${Imagem})` }}>
 
                 <section className='h-145 w-120 bg-[#3970B7] border-3 border-[#FECB0A] rounded-3xl text-white'>
 
@@ -97,7 +97,7 @@ const RegisterPage = () => {
 
                 </section>
 
-            </main>
+            </main> */}
         </div>
     );
 };
