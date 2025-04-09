@@ -1,11 +1,11 @@
 import "./index.css";
 import CheckoutPage from "./pages/CheckoutPage"
-import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
     <>
-      <RegisterPage/>
+      <LoginPage/>
     </>
   );
 }

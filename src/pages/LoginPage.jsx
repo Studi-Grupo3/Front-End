@@ -13,7 +13,7 @@ const LoginPage = () => {
             <NavbarHome />
             <main className='h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center' style={{ backgroundImage: `url(${Imagem})` }}>
 
-                <section className='h-full w-full md:h-120 md:w-120 bg-[#3970B7] py-3 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white'>
+                <section className='h-full w-full md:h-120 md:w-110 bg-[#3970B7] py-3 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white'>
 
                     <form className='flex flex-col justify-evenly items-center h-full w-full md:h-full md:w-full'>
 
