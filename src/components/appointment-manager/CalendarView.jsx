@@ -3,17 +3,15 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../../styles/calendar-css.css';
 
-// Exemplo de aulas
 const aulas = [
   { date: new Date(2025, 5, 9), status: 'confirmada' },
   { date: new Date(2025, 5, 10), status: 'pendente' },
   { date: new Date(2025, 5, 11), status: 'cancelada' },
 ];
 
-export const CalendarView = () => {
+export const CalendarView = ({ setActiveTab }) => {
   const [value, setValue] = useState(new Date());
 
-  // Função para verificar se há aula na data
   const getAulaStatus = (date) => {
     const dia = date.getDate();
     const mes = date.getMonth();
@@ -32,8 +30,7 @@ export const CalendarView = () => {
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-6 px-4 py-8">
-      {/* Calendário */}
-      <div className="w-full md:w-2/3">
+      <div className="w-full md:w-full lg:w-2/3">
         <div className="bg-white shadow-md rounded-xl p-4">
           <Calendar
             onChange={setValue}
@@ -51,17 +48,15 @@ export const CalendarView = () => {
 
               return (
                 <div className="flex justify-center mt-1">
-                  <span
-                    className={`w-2 h-2 rounded-full ${colorMap[status]}`}
-                  ></span>
+                  <span className={`w-2 h-2 rounded-full ${colorMap[status]}`} />
                 </div>
               );
             }}
           />
 
           <div className="mt-4 bg-gray-100 rounded-lg p-3">
-            <h4 className="font-semibold mb-2">Legenda</h4>
-            <div className="flex gap-4 text-sm">
+            <h4 className="font-semibold mb-2 text-base sm:text-lg">Legenda</h4>
+            <div className="flex flex-wrap gap-4 text-xs sm:text-sm md:text-base">
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-full bg-green-500"></span>
                 Aula Confirmada
@@ -79,8 +74,7 @@ export const CalendarView = () => {
         </div>
       </div>
 
-      {/* Próximas aulas */}
-      <div className="w-full md:w-1/3">
+      <div className="w-full md:w-full lg:w-1/3">
         <div className="bg-white shadow-md rounded-xl p-4">
           <h3 className="text-lg font-bold mb-4">Próximas aulas</h3>
 
@@ -91,7 +85,12 @@ export const CalendarView = () => {
               cancelada: 'bg-red-100',
             };
 
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const options = {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            };
             const dataFormatada = aula.date.toLocaleDateString('pt-BR', options);
 
             return (
@@ -103,7 +102,10 @@ export const CalendarView = () => {
             );
           })}
 
-          <button className="mt-2 w-full bg-gray-200 hover:bg-gray-300 transition text-sm rounded px-4 py-2">
+          <button
+            onClick={() => setActiveTab('upcoming')}
+            className="mt-2 w-full bg-gray-200 cursor-pointer hover:bg-gray-300 transition text-sm rounded px-4 py-2"
+          >
             Ver lista completa
           </button>
         </div>

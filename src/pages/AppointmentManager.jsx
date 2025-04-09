@@ -15,14 +15,6 @@ export const AppointmentManager = () => {
     { id: 'calendar', label: 'Calendário' },
   ];
 
-  const handleNewSchedule = () => {
-    console.log('Scheduling new class');
-  };
-
-  const handleFilter = () => {
-    console.log('Opening filters');
-  };
-
   const renderContent = () => {
     switch (activeTab) {
       case 'upcoming':
@@ -30,7 +22,7 @@ export const AppointmentManager = () => {
       case 'past':
         return <PastAppointments />;
       case 'calendar':
-        return <CalendarView />;
+        return <CalendarView setActiveTab={setActiveTab} />;
       default:
         return null;
     }
@@ -49,8 +41,8 @@ export const AppointmentManager = () => {
           />
 
           <div className="flex space-x-3">
-            <FilterButton onClick={handleFilter} />
-            <ScheduleButton onClick={handleNewSchedule} />
+            <FilterButton />
+            <ScheduleButton />
           </div>
         </div>
 

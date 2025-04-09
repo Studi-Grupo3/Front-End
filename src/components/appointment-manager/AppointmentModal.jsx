@@ -30,12 +30,12 @@ export const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     >
       <div
         ref={modalRef}
-        className="bg-white rounded-xl shadow-2xl w-full max-w-xl transform transition-all duration-300 ease-out p-6"
+        className="bg-white rounded-xl shadow-2xl w-[95%] max-w-xl transform transition-all duration-300 ease-out p-6"
       >
         {/* Header */}
         <div className="flex justify-between items-start border-b pb-4">
           <div>
-            <h2 className="text-xl font-bold text-blue-700">{appointment.subject}</h2>
+            <h2 className="text-xl font-bold text-[var(--azul-custom)]">{appointment.subject}</h2>
             <p className="text-gray-700">{appointment.topic}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -62,15 +62,15 @@ export const AppointmentModal = ({ isOpen, onClose, appointment }) => {
         {/* Infos */}
         <div className="mt-6 space-y-3">
           <div className="flex items-center text-gray-600">
-            <Calendar className="w-5 h-5 mr-2 text-blue-700" />
+            <Calendar className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
             <span>{appointment.date}</span>
           </div>
           <div className="flex items-center text-gray-600">
-            <Clock className="w-5 h-5 mr-2 text-blue-700" />
+            <Clock className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
             <span>{appointment.time} • Duração: {appointment.duration}</span>
           </div>
           <div className="flex items-center text-gray-600">
-            <MapPin className="w-5 h-5 mr-2 text-blue-700" />
+            <MapPin className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
             <span>{appointment.online ? "Online" : appointment.location}</span>
           </div>
         </div>
@@ -104,10 +104,10 @@ export const AppointmentModal = ({ isOpen, onClose, appointment }) => {
 
         {/* Botões */}
         <div className="mt-6 flex justify-end gap-2 border-t pt-4">
-          <button className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition">
+          <button className="bg-red-500 text-white px-4 cursor-pointer py-2 rounded-lg font-semibold hover:bg-red-600 transition">
             Cancelar aula
           </button>
-          <button className="bg-orange-400 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-500 transition">
+          <button className="bg-orange-400 text-white cursor-pointer px-4 py-2 rounded-lg font-semibold hover:bg-orange-500 transition">
             Reagendar aula
           </button>
         </div>

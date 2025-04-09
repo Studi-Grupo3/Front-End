@@ -26,18 +26,18 @@ export const AppointmentCard = ({
 
   return (
     <div
-      className="w-[100%] max-w-xl mx-auto bg-white rounded-lg shadow-sm p-6 border-t-4"
+      className="w-full max-w-xl mx-auto bg-white rounded-lg shadow-sm p-4 sm:p-6 border-t-4"
       style={{ borderTopColor: borderColor }}
     >
       <div className="flex justify-between items-center mb-1">
-        <h2 className="text-[var(--azul-custom)] text-xl font-bold">{subject}</h2>
+        <h2 className="text-[var(--azul-custom)] text-lg sm:text-xl font-bold">{subject}</h2>
         <StatusBadge status={status} />
       </div>
 
-      <p className="text-gray-700 font-medium mb-4">{topic}</p>
+      <p className="text-gray-700 text-sm sm:text-base font-medium mb-3 sm:mb-4">{topic}</p>
 
-      <div className="flex items-center mb-4">
-        <div className="w-12 h-12 rounded-full overflow-hidden">
+      <div className="flex items-center mb-3 sm:mb-4">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden">
           <img
             src={professorImageUrl}
             alt={professorName}
@@ -45,37 +45,37 @@ export const AppointmentCard = ({
           />
         </div>
 
-        <div className="ml-3">
-          <p className="text-gray-800 font-medium mb-0">{professorName}</p>
-          <div className="flex items-center text-gray-600 text-sm">
+        <div className="ml-2 sm:ml-3">
+          <p className="text-gray-800 text-sm sm:text-base font-medium mb-0">{professorName}</p>
+          <div className="flex items-center text-gray-600 text-xs sm:text-sm">
             <GraduationCap className="w-3 h-3 mr-1" />
             {professorTitle}
           </div>
         </div>
       </div>
 
-      <div className="space-y-2 mb-4">
+      <div className="space-y-2 mb-3 sm:mb-4">
         <div className="flex items-center text-gray-600">
-          <Calendar className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
-          <span className="text-sm">{date}</span>
+          <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--azul-custom)]" />
+          <span className="text-xs sm:text-sm">{date}</span>
         </div>
 
         <div className="flex items-center text-gray-600">
-          <Clock className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
-          <span className="text-sm">
+          <Clock className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--azul-custom)]" />
+          <span className="text-xs sm:text-sm">
             {time} • Duração: {duration}
           </span>
         </div>
 
         <div className="flex items-center text-gray-600">
-          <MapPin className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
-          <span className="text-sm">{locationDisplay}</span>
+          <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--azul-custom)]" />
+          <span className="text-xs sm:text-sm">{locationDisplay}</span>
         </div>
       </div>
 
       <button
         onClick={onDetailsClick}
-        className="w-full border border-gray-300 text-[var(--azul-custom)] rounded-lg py-2 px-4 hover:bg-blue-50 transition text-center"
+        className="w-full border cursor-pointer border-gray-300 text-[var(--azul-custom)] rounded-lg py-2 px-4 hover:bg-blue-50 transition text-center text-sm sm:text-base"
       >
         <span className="font-medium">Ver Detalhes</span>
       </button>
