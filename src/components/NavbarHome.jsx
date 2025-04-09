@@ -10,7 +10,7 @@ const NavbarHome = () => {
 
         <nav className=" h-[12vh] w-full bg-[#3970B7] border-b-4 border-b-[#FECB0A] text-white px-4 md:px-10 flex items-center justify-between md:justify-center flex-row text-sm">
 
-            <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
+            <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 md:w-70 flex md:justify-center">
                 <img src={Imagem} className="h-20 "/>
             </div>
 
