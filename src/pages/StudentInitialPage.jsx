@@ -1,3 +1,5 @@
+import NavbarPanel from "../components/NavbarPanel";
+
 const CardPanelItem = ({ title, description, buttonLink }) => {
   const styles = {
     "Completar Cadastro": { backgroundColor: "#FFF5F5", color: "#FF6D0C", buttonColor: "#FF7200" },
@@ -26,6 +28,10 @@ const StudentInitial = () => {
 
   return (
     <div>
+        <div className="flex flex-col h-screen">
+            {/* Menu lateral */}
+            <NavbarPanel />
+        </div>
       <div className="title-panel">
         <h1>Painel do Aluno</h1>
       </div>
