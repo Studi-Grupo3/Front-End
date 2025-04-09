@@ -1,5 +1,5 @@
 import "./App.css";
-import StudentInitial from "./pages/StudentInitialPage"; // Importando o componente principal
+import StudentInitial from "./pages/StudentInitialPage";
 
 function App() {
   return (
