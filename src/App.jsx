@@ -1,11 +1,10 @@
 import "./index.css";
-import CheckoutPage from "./pages/CheckoutPage"
-import LoginPage from "./pages/LoginPage";
+import EmailVerificationPage from "./pages/EmailVerificationPage";
 
 function App() {
   return (
     <>
-      <LoginPage/>
+      <EmailVerificationPage/>
     </>
   );
 }
