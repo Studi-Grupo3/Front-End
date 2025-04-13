@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 :root {
   --azul-custom: #3970B7;
 }
@@ -8,4 +9,7 @@
   background-color: #fff;
 }
 
+* {
+  font-family: 'Poppins';
+}
 
