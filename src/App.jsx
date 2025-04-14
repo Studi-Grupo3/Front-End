@@ -1,13 +1,11 @@
-import "./index.css";
-import CheckoutPage from "./pages/CheckoutPage"
-import RegisterPage from "./pages/RegisterPage";
+import Home from "./pages/HomePage";
 
 function App() {
-  return (
-    <>
-      <RegisterPage/>
-    </>
-  );
+    return (
+        <div>
+            <Home />
+        </div>
+    );
 }
 
 export default App;
