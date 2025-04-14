@@ -110,16 +110,18 @@ const Historia = () => {
     );
 };
 
+
+
 const Serviços = () => {
     return (
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-2 px-6 py-10">
-            {/* Bloco de texto */}
-            <div className="max-w-lg text-left">
+        <div className="bg-white h-[58vh] flex items-center justify-between px-20">
+            {/* Texto */}
+            <div className="flex flex-col items-start justify-center max-w-[70vw]">
                 <p className="text-yellow-500 font-bold">Nosso Serviço</p>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#3A6FD8]">
+                <h2 className="text-2xl md:text-4xl font-bold text-[#3A6FD8]">
                     Por que Escolher Nosso Serviço?
                 </h2>
-                <ul className="text-gray-600 font-[Quicksand] leading-relaxed space-y-2 mt-4">
+                <ul className="text-gray-600 leading-relaxed  mt-4 space-y-2">
                     <li><span className="text-yellow-500 font-bold">①</span> <span className="font-bold">Professores qualificados</span> – Seleção cuidadosa e compromisso com a excelência.</li>
                     <li><span className="text-yellow-500 font-bold">②</span> <span className="font-bold">Flexibilidade de horários</span> – Aulas nos melhores dias e horários para você.</li>
                     <li><span className="text-yellow-500 font-bold">③</span> <span className="font-bold">Seguro e transparente</span> – Pagamentos protegidos e suporte sempre disponível.</li>
@@ -131,13 +133,15 @@ const Serviços = () => {
                 </button>
             </div>
 
-            {/* Bloco de imagem */}
-            <div className="flex-1 flex justify-center md:justify-end">
-                <img src={imagemDicas} alt="Imagem Dicas" className="w-full max-w-md" />
+            {/* Imagem */}
+            <div className="hidden md:block">
+                <img src={imagemDicas} alt="Imagem Dicas" className="w-[500px] h-auto" />
             </div>
         </div>
     );
 };
+
+
 
 const Planos = () => {
     const cards = [
@@ -170,10 +174,7 @@ const Planos = () => {
 
             <div className="flex flex-wrap justify-center gap-6 mt-8">
                 {cards.map((card, index) => (
-                    <div
-                        key={index}
-                        className="bg-[#3A6FD8] text-white rounded-2xl shadow-lg p-6 h-90 w-80 relative overflow-hidden transition-transform transform hover:scale-105"
-                    >
+                    <div key={index} className="bg-[#3A6FD8] text-white rounded-2xl shadow-lg p-6 h-90 w-80 relative overflow-hidden transition-transform transform hover:scale-105">
                         <div className="flex justify-center items-center">
                             <img
                                 src={card.image}
@@ -181,10 +182,22 @@ const Planos = () => {
                                 className="w-50 h-35 rounded-lg mb-6"
                             />
                         </div>
-                        <h2 className="text-lg font-bold text-left flexitems-center mt-4">{card.title}</h2>
+                        <h2 className="text-lg font-bold text-left mt-4">{card.title}</h2>
                         <p className="text-sm text-left mt-4">{card.text}</p>
-                        <div className="absolute bottom-0 left-50 w-90 bg-yellow-400 h-10 rounded-l-xl"></div>
-                        <a href="#" className="flex justify-center text-yellow-300 font-bold relative z-10">
+
+                        {/* SVG com a curva no canto inferior direito */}
+                        <svg
+                          className="absolute bottom-0 right-0"
+                          width="100"
+                          height="100"
+                          viewBox="0 0 120 120"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M0 120C0 53.7258 53.7258 0 120 0V120H0Z" fill="#FFD400" />
+                        </svg>
+
+                        <a href="#" className="flex justify-center text-yellow-300 font-bold relative z-10 mt-4">
                             Saiba Mais &gt;
                         </a>
                     </div>
@@ -193,6 +206,7 @@ const Planos = () => {
         </div>
     );
 };
+
 const Espaco = () => {
     return (
 
