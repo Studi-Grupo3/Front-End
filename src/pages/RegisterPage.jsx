@@ -20,17 +20,17 @@ const RegisterPage = () => {
 
                         <h1 className='text-[25px] font-bold'>Crie uma conta</h1>
 
-                        <label className='flex flex-col w-75 md:w-80 gap-1'>
+                        <label className='flex flex-col w-72 md:w-80 gap-1'>
                             <span className='font-bold text-xs'>Nome Completo</span>
                             <input className='rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 text-black text-xs pl-3' type="text" placeholder='Digite seu nome completo' />
                         </label>
 
-                        <label className='flex flex-col w-75 md:w-80 gap-1'>
+                        <label className='flex flex-col w-72 md:w-80 gap-1'>
                             <span className='font-bold text-xs'>E-mail</span>
                             <input className='rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 text-black text-xs pl-3' type='email' placeholder='seu@email.com' />
                         </label>
 
-                        <label className='flex flex-col w-75 md:w-80 gap-1'>
+                        <label className='flex flex-col w-72 md:w-80 gap-1'>
                             <span className='font-bold text-xs'>Senha</span>
                             <div className="relative">
                                 <input
@@ -48,7 +48,7 @@ const RegisterPage = () => {
                             </div>
                         </label>
 
-                        <label className='flex flex-col w-75 md:w-80 gap-3'>
+                        <label className='flex flex-col w-72 md:w-80 gap-3'>
                             <div className='flex flex-col gap-1'>
                                 <span className='font-bold text-xs'>Confirmar Senha</span>
                                 <div className="relative">
@@ -76,7 +76,7 @@ const RegisterPage = () => {
 
 
 
-                        <button className='rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm'>Cadastrar</button>
+                        <button className='rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-72 md:w-80 h-10 text-sm'>Cadastrar</button>
 
                         <div className="relative flex items-center my-6">
 
@@ -88,7 +88,7 @@ const RegisterPage = () => {
 
                         </div>
 
-                        <button className='flex items-center justify-center gap-2 rounded-lg bg-white text-black font-normal cursor-pointer w-75 md:w-80 h-10 text-sm'><FcGoogle className="text-2xl" />Cadastre-se pelo Google</button>
+                        <button className='flex items-center justify-center gap-2 rounded-lg bg-white text-black font-normal cursor-pointer w-72 md:w-80 h-10 text-sm'><FcGoogle className="text-2xl" />Cadastre-se pelo Google</button>
 
                         <span className='text-xs font-bold'>Já tem uma conta aqui? <a className='text-[#FECB0A] hover:underline' href="">Clique aqui</a></span>
 

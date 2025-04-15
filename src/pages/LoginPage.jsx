@@ -19,12 +19,12 @@ const LoginPage = () => {
 
                         <h1 className='text-[25px] font-bold'>Entrar</h1>
 
-                        <label className='flex flex-col w-75 md:w-80 gap-1'>
+                        <label className='flex flex-col w-72 md:w-80 gap-1'>
                             <span className='font-bold text-xs'>E-mail</span>
                             <input className='rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 text-black text-xs pl-3' type='email' placeholder='seu@email.com' />
                         </label>
 
-                        <label className='flex flex-col w-75 md:w-80 gap-1'>
+                        <label className='flex flex-col w-72 md:w-80 gap-1'>
                             <div className='flex justify-between'>
                                 <span className='font-bold text-xs'>Senha</span>
                                 <span className='font-bold text-xs text-[#FECB0A] hover:underline'><a href="">Esqueceu a senha?</a></span>
