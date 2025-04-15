@@ -5,10 +5,6 @@ import {AppointmentManager} from "./pages/AppointmentManager";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
 
 function App() {
-  return (
-    <>
-    </>
-  );
     return (
         <div>
             <Home />
