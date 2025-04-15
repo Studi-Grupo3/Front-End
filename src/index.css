@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
+
+:root {
+  --azul-custom: #3970B7;
+}
+
+.body {
+  background-color: #fff;
+}
+
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
   font-family: 'Poppins';
 }
+
