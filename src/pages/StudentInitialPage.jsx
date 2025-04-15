@@ -21,13 +21,15 @@ const CardPanelItem = ({ title, description, buttonLink }) => {
 
   return (
     <div
-      className={`w-[17vw] h-[30vh] rounded-md shadow-md p-5 border ${styles[title].bg}`}
+      className={`w-full sm:w-[280px] md:w-[300px] lg:w-[320px] h-auto rounded-md shadow-md p-5 ${styles[title]?.bg} flex flex-col justify-between`}
     >
-      <h2 className={`text-[20px] mb-2 font-semibold ${styles[title].text}`}>
-        {title}
-      </h2>
-      <p className="text-sm text-black">{description}</p>
-      <span className={`block mt-6 font-bold ${styles[title].button}`}>
+      <div>
+        <h2 className={`text-[20px] mb-2 font-semibold ${styles[title]?.text}`}>
+          {title}
+        </h2>
+        <p className="text-base text-black">{description}</p>
+      </div>
+      <span className={`mt-4 font-bold ${styles[title]?.button}`}>
         {buttonLink}
       </span>
     </div>
@@ -59,23 +61,24 @@ const StudentInitial = () => {
         <NavbarPanel />
       </div>
 
-      <div className="flex justify-center items-center w-full h-[100px] text-xs mb-12">
-        <h1 className="text-3xl font-semibold text-gray-800">
+      <div className="flex justify-center items-center w-full h-[100px] text-center px-4">
+        <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">
           Painel do Aluno
         </h1>
       </div>
 
-      <div className="flex justify-center bg-white rounded-lg shadow-md p-5 w-[895px] h-[400px]">
-        <div className="space-y-8 w-full">
-          <h1 className="text-[25px] font-bold text-black mb-6">
+      <div className="flex justify-center w-full px-4">
+        <div className="bg-white rounded-lg shadow-md p-5 w-full max-w-6xl">
+          <h1 className="text-xl md:text-2xl font-bold text-black mb-4">
             Bem-vindo(a) ao Painel do Aluno
           </h1>
 
-          <p className="text-[15px] text-black mb-6">
-            Aqui você pode gerenciar suas aulas, verificar agendamentos e realizar pagamentos.
+          <p className="text-sm md:text-base text-black mb-6">
+            Aqui você pode gerenciar suas aulas, verificar agendamentos e
+            realizar pagamentos.
           </p>
 
-          <div className="flex justify-between flex-wrap gap-5 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {items.map((item, index) => (
               <CardPanelItem
                 key={index}
@@ -90,6 +93,5 @@ const StudentInitial = () => {
     </div>
   );
 };
-
 
 export default StudentInitial;
