@@ -1,6 +1,7 @@
 name: Studi/Front-End
 
 on:
+  workflow_dispatch:
   workflow_call:
     secrets:
       SONAR_TOKEN:
