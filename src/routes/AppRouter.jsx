@@ -8,7 +8,7 @@ import { Configuracoes } from "../pages/dashboard-admin/Configuracoes";
 import { Relatorios } from "../pages/dashboard-admin/Relatorios";
 import ProtectedRoute from "./ProtectedRoute";
 
-const AppRouter = () => {
+export const AppRouter = () => {
   return (
     <Router>
       <Routes>
@@ -36,5 +36,3 @@ const AppRouter = () => {
     </Router>
   );
 };
-
-export default AppRouter;
