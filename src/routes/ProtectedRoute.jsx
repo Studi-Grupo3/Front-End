@@ -8,7 +8,7 @@ const ProtectedRoute = () => {
     return <p>Verificando autenticação...</p>; 
   }
 
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  return user ? <Outlet /> : <Navigate to="/entrar" replace />;
 };
 
 export default ProtectedRoute;
