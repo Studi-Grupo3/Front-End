@@ -2,71 +2,156 @@ import { useState } from "react";
 import Imagem from "../assets/logo.svg";
 import { Plus } from "lucide-react";
 import UserAvatar from "./UserAvatar";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import MenuHamburguer from "./MenuHamburguer";
+import {
+  CheckIcon,
+  ExclamationCircleIcon,
+  EnvelopeIcon,
+  UserIcon,
+  DocumentTextIcon,
+  ArrowRightOnRectangleIcon,
+} from "@heroicons/react/24/outline";
 
-const NavbarHome = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const NavbarPanel = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Simulação do status de verificação
+  const emailVerificado = true;
+  const infoPessoaisCompletas = true;
+  const documentosCompletos = true;
+
+  const hasPendencias =
+    !emailVerificado || !infoPessoaisCompletas || !documentosCompletos;
+
+  const handleUserAvatarClick = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   return (
-    <nav className="h-[12vh] w-full bg-[#3970B7] border-b-4 border-b-[#FECB0A] text-white px-4 md:px-10 flex items-center justify-between md:justify-center flex-row text-sm gap-30">
-      <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 md:w-70 flex md:justify-center">
-        <img src={Imagem} className="h-20" />
+    <nav className="h-[12vh] w-full bg-[#3970B7] border-b-4 border-b-[#FECB0A] text-white px-4 md:px-10 flex items-center justify-between text-sm relative">
+      {/* Navegação Mobile */}
+      <div className="md:hidden flex items-center justify-between w-full">
+        <div className="flex-1 flex justify-center pl-10">
+          <img src={Imagem} className="h-20" alt="Logo" />
+        </div>
+        <MenuHamburguer />
       </div>
 
-      {/* Menu para telas grandes */}
-      <div className="hidden md:flex flex-row w-full max-w-md justify-center gap-15">
-        <h2 className="font-semibold cursor-pointer">Início</h2>
-        <h2 className="font-semibold cursor-pointer">Agendamentos</h2>
-        <h2 className="font-semibold cursor-pointer">Calendário</h2>
-        <h2 className="font-semibold cursor-pointer">Contato</h2>
-      </div>
-
-      {/* Ícone de hamburguer para telas pequenas */}
-      <div className="absolute right-4 md:hidden">
-        <button onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? (
-            <XMarkIcon className="h-8 w-8" />
-          ) : (
-            <Bars3Icon className="h-8 w-8" />
-          )}
-        </button>
-      </div>
-
-      {/* Menu dropdown para telas pequenas com animação */}
-      <div
-        className={`absolute top-[12vh] left-0 w-full bg-[#3970B7] text-white flex flex-col items-center gap-6 py-6 md:hidden transition-all duration-300 ease-in-out ${
-          isOpen
-            ? "transform translate-y-0 opacity-100"
-            : "transform translate-y-[-100vh] opacity-0"
-        }`}
-      >
-        <div className="flex items-center gap-3">
-          <UserAvatar name="João Carminatti" hasNotification={true} />
-          <span className="font-semibold">João Carminatti</span>
+      {/* Navegação Desktop */}
+      <div className="hidden md:flex items-center justify-evenly w-full">
+        {/* Logo */}
+        <div className="flex justify-start">
+          <img src={Imagem} className="h-20" alt="Logo" />
         </div>
 
-        <h2 className="font-semibold cursor-pointer">Início</h2>
-        <h2 className="font-semibold cursor-pointer">Agendamentos</h2>
-        <h2 className="font-semibold cursor-pointer">Calendário</h2>
-        <h2 className="font-semibold cursor-pointer">Contato</h2>
+        {/* Links de Navegação */}
+        <div className="flex flex-row gap-8 justify-center">
+          <h2 className="font-semibold cursor-pointer hover:text-yellow-400 transition">
+            Início
+          </h2>
+          <h2 className="font-semibold cursor-pointer hover:text-yellow-400 transition">
+            Agendamentos
+          </h2>
+          <h2 className="font-semibold cursor-pointer hover:text-yellow-400 transition">
+            Calendário
+          </h2>
+          <h2 className="font-semibold cursor-pointer hover:text-yellow-400 transition">
+            Contato
+          </h2>
+        </div>
 
-        {/* Botão "Agendar Nova Aula" agora é um texto clicável com cor #FECB0A */}
-        <button className="text-[#FECB0A] text-sm font-semibold hover:text-yellow-400 transition">
-          Agendar Nova Aula
-        </button>
+        {/* Botão e Avatar */}
+        <div className="flex items-center gap-10">
+          <button className="flex items-center justify-center gap-2 bg-blue-600 text-white px-3 py-2 text-sm rounded-lg hover:bg-blue-700 transition border-[0.5px] border-white">
+            <Plus size={10} />
+            Agendar Aula
+          </button>
+          <UserAvatar
+            name="João Carminatti"
+            hasNotification={true}
+            isComplete={!hasPendencias}
+            onClick={handleUserAvatarClick}
+          />
+        </div>
       </div>
 
-      {/* Botão e ícone de usuário fora do menu para telas grandes */}
-      <div className="flex flex-row items-center gap-10 hidden md:flex">
-        <button className="flex items-center justify-center gap-2 bg-blue-600 text-white px-3 py-2 text-sm rounded-lg hover:bg-blue-700 transition border-[0.5px] border-white">
-          <Plus size={18} />
-          Agendar Nova Aula
-        </button>
+      {/* Dropdown */}
+      {isDropdownOpen && (
+        <div className="absolute top-full right-55 mt-2 w-72 bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-100">
+            <p className="text-sm font-medium text-gray-800">João Carminatti</p>
+            <div className="flex justify-between text-xs text-gray-500">
+              <strong>Status do perfil</strong>
+              <span
+                className={hasPendencias ? "text-red-500" : "text-green-600"}
+              >
+                {hasPendencias ? "Incompleto" : "Completo"}
+              </span>
+            </div>
+          </div>
 
-        <UserAvatar name="João Carminatti" hasNotification={true} />
-      </div>
+          <ul className="divide-y divide-gray-100">
+            {/* Email Verificado */}
+            <li className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2">
+                <EnvelopeIcon className="h-5 w-5 text-blue-500" />
+                <span className="text-sm text-gray-800">Email Verificado</span>
+              </div>
+              {emailVerificado ? (
+                <CheckIcon className="h-5 w-5 text-green-500" />
+              ) : (
+                <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
+              )}
+            </li>
+
+            {/* Informações Pessoais */}
+            <li className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2">
+                <UserIcon className="h-5 w-5 text-blue-500" />
+                <span className="text-sm text-gray-800">
+                  Informações Pessoais
+                </span>
+              </div>
+              {infoPessoaisCompletas ? (
+                <CheckIcon className="h-5 w-5 text-green-500" />
+              ) : (
+                <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
+              )}
+            </li>
+
+            {/* Documentos */}
+            <li className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2">
+                <DocumentTextIcon className="h-5 w-5 text-blue-500" />
+                <span className="text-sm text-gray-800">Documentos</span>
+              </div>
+              {documentosCompletos ? (
+                <CheckIcon className="h-5 w-5 text-green-500" />
+              ) : (
+                <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
+              )}
+            </li>
+
+            {/* Editar Perfil */}
+            <li className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+              <div className="flex items-center gap-2">
+                <UserIcon className="h-5 w-5 text-gray-700" />
+                <span className="text-sm text-gray-800">Editar Perfil</span>
+              </div>
+            </li>
+
+            {/* Sair */}
+            <li className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+              <div className="flex items-center gap-2 text-red-600">
+                <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                <span className="text-sm font-semibold">Sair da Conta</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      )}
     </nav>
   );
 };
 
-export default NavbarHome;
+export default NavbarPanel;

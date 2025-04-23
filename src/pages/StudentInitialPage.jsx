@@ -1,57 +1,79 @@
+import { useState, useEffect } from "react";
 import NavbarPanel from "../components/NavbarPanel";
 
-const CardPanelItem = ({ title, description, buttonLink }) => {
-  const styles = {
-    "Completar Cadastro": {
-      bg: "bg-[#FFF5F5]",
-      text: "text-[#FF6D0C]",
-      button: "text-[#FF7200]",
-    },
-    Agendamentos: {
-      bg: "bg-[#EFF6FF]",
-      text: "text-[#1E40AF]",
-      button: "text-[#2563EB]",
-    },
-    Calendário: {
-      bg: "bg-[#FCFDF0]",
-      text: "text-[#A39316]",
-      button: "text-[#A39316]",
-    },
-  };
-
+const CardPanelItem = ({ title, description, buttonLink, styles }) => {
   return (
     <div
-      className={`w-full sm:w-[280px] md:w-[300px] lg:w-[320px] h-auto rounded-md shadow-md p-5 ${styles[title]?.bg} flex flex-col justify-between`}
+      className={`w-full sm:w-[280px] md:w-[300px] lg:w-[320px] h-auto rounded-md shadow-md p-5 ${styles.bg} flex flex-col justify-between`}
     >
       <div>
-        <h2 className={`text-[20px] mb-2 font-semibold ${styles[title]?.text}`}>
+        <h2 className={`text-[20px] mb-2 font-semibold ${styles.text}`}>
           {title}
         </h2>
         <p className="text-base text-black">{description}</p>
       </div>
-      <span className={`mt-4 font-bold ${styles[title]?.button}`}>
-        {buttonLink}
-      </span>
+      <span className={`mt-4 font-bold ${styles.button}`}>{buttonLink}</span>
     </div>
   );
 };
 
 const StudentInitial = () => {
+  const [isCadastroCompleto, setIsCadastroCompleto] = useState(false);
+
+  // Mock da avaliação do cadastro
+  useEffect(() => {
+    // Simulação de uma chamada ao backend
+    const fetchCadastroStatus = async () => {
+      // Mock: Simula um delay e retorna o status do cadastro
+      const mockResponse = await new Promise((resolve) =>
+        setTimeout(() => resolve({ completo: true }), 5000)
+      );
+      setIsCadastroCompleto(mockResponse.completo);
+    };
+
+    fetchCadastroStatus();
+  }, []);
+
   const items = [
     {
       title: "Completar Cadastro",
-      description: "Seu cadastro ainda está incompleto.",
-      buttonLink: "Completar cadastro →",
+      description: isCadastroCompleto
+        ? "Seu cadastro está completo."
+        : "Seu cadastro ainda está incompleto, finalize-o.",
+      buttonLink: isCadastroCompleto
+        ? "Verificar Cadastro →"
+        : "Completar cadastro →",
+      styles: isCadastroCompleto
+        ? {
+            bg: "bg-[#F5FFF8]",
+            text: "text-[#22C55E]",
+            button: "text-[#22C55E]",
+          }
+        : {
+            bg: "bg-[#FFF5F5]",
+            text: "text-[#FF6D0C]",
+            button: "text-[#FF7200]",
+          },
     },
     {
       title: "Agendamentos",
       description: "Visualize e gerencie suas aulas agendadas.",
       buttonLink: "Ver agendamentos →",
+      styles: {
+        bg: "bg-[#EFF6FF]",
+        text: "text-[#1E40AF]",
+        button: "text-[#2563EB]",
+      },
     },
     {
       title: "Calendário",
       description: "Visualize suas aulas em um calendário mensal.",
       buttonLink: "Ver calendário →",
+      styles: {
+        bg: "bg-[#FCFDF0]",
+        text: "text-[#A39316]",
+        button: "text-[#A39316]",
+      },
     },
   ];
 
@@ -85,6 +107,7 @@ const StudentInitial = () => {
                 title={item.title}
                 description={item.description}
                 buttonLink={item.buttonLink}
+                styles={item.styles}
               />
             ))}
           </div>
