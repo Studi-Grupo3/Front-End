@@ -14,7 +14,7 @@ const NavbarHome = () => {
             {/* Links Centralizados */}
             <div className="hidden md:flex flex-row justify-center items-center w-full space-x-8">
                 <a href="#historia" className="mb-4 font-semibold cursor-pointer hover:text-[#FECB0A]">Sobre nós</a>
-                <a href="#serviços" className="mb-4 font-semibold cursor-pointer hover:text-[#FECB0A]">Serviços</a>
+                <a href="#s erviços" className="mb-4 font-semibold cursor-pointer hover:text-[#FECB0A]">Serviços</a>
                 <a href="#planos" className="mb-4 font-semibold cursor-pointer hover:text-[#FECB0A]">Planos</a>
                 <a href="#professores" className="mb-4 font-semibold cursor-pointer hover:text-[#FECB0A]">Professores</a>
                 <a href="#contato" className="mb-4 font-semibold cursor-pointer hover:text-[#FECB0A]">Contato</a>

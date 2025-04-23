@@ -103,7 +103,7 @@ const Professor = () => {
             </div>
 
             <div className="flex justify-between items-center w-full max-w-7xl px-4">
-                <button onClick={handlePrev}>
+                <button onClick={handlePrev} className="mx-4 md:mx-6">
                     <img src={botaoAnterior} alt="Anterior" />
                 </button>
 
@@ -112,11 +112,11 @@ const Professor = () => {
                         {cards.map((card, index) => (
                             <div
                                 key={index}
-                                className="keen-slider__slide bg-white rounded-2xl shadow-lg border border-gray-200"
+                                className="keen-slider__slide bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col"
                             >
-                                <div className="w-full max-w-sm mx-auto">
+                                <div className="w-full max-w-sm mx-auto flex flex-col h-full">
                                     <img src={card.image} alt={card.name} className="w-full h-48 object-cover rounded-t-2xl" />
-                                    <div className="p-4">
+                                    <div className="p-4 flex-grow">
                                         <h2 className="text-lg font-bold">{card.name}</h2>
                                         <p className="text-gray-500 text-sm flex items-center mt-1">
                                             <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -125,7 +125,7 @@ const Professor = () => {
                                         <p className="text-[#3A6FD8] font-semibold mt-2">{card.subject}</p>
                                         <p className="text-gray-600 text-sm mt-2">{card.description}</p>
                                     </div>
-                                    <div className="p-4 border-t border-gray-200">
+                                    <div className="p-4 border-t border-gray-200 mt-auto">
                                         <button className="w-full py-2 bg-[#3A6FD8] text-white font-bold rounded-lg hover:bg-blue-600 transition">
                                             📅 Agendar aula →
                                         </button>
@@ -136,7 +136,7 @@ const Professor = () => {
                     </div>
                 </div>
 
-                <button onClick={handleNext}>
+                <button onClick={handleNext} className="mx-4 md:mx-6">
                     <img src={botaoProximo} alt="Próximo" />
                 </button>
             </div>
