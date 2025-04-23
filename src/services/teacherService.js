@@ -1,31 +1,9 @@
-import { apiFetch } from "./api";
+import { api } from './provider/api';
 
 export const teacherService = {
-  async createTeacher(teacherData) {
-    return apiFetch("/teachers", {
-      method: "POST",
-      body: JSON.stringify(teacherData),
-    });
-  },
-
-  async getTeacherById(id) {
-    return apiFetch(`/teachers/${id}`);
-  },
-
-  async updateTeacher(id, teacherData) {
-    return apiFetch(`/teachers/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(teacherData),
-    });
-  },
-
-  async deleteTeacher(id) {
-    return apiFetch(`/teachers/${id}`, {
-      method: "DELETE",
-    });
-  },
-
-  async getAllTeachers() {
-    return apiFetch("/teachers");
-  },
+  create:  (data) => api.post('/teachers', data).then(res => res.data),
+  getById: (id)   => api.get(`/teachers/${id}`).then(res => res.data),
+  update:  (id, data) => api.put(`/teachers/${id}`, data).then(res => res.data),
+  remove:  (id)   => api.delete(`/teachers/${id}`).then(res => res.data),
+  list:    ()     => api.get('/teachers').then(res => res.data),
 };
