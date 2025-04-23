@@ -79,11 +79,10 @@ export function NotificationSettings() {
                 })}
             </div>
 
-            <div className="flex justify-end mt-6">
-                <div className="flex justify-end mt-6">
-                    <SaveButton onClick={salvar} label="Salvar Preferências" />
-                </div>
+            <div className="flex justify-center md:justify-end mt-8">
+                <SaveButton onClick={salvar} label="Salvar Alterações" />
             </div>
+
         </div>
     );
 }

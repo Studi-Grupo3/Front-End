@@ -94,12 +94,10 @@ export function SecuritySettings() {
                     </div>
                 </div>
 
-                {/* Botão de salvar */}
-                <div className="flex justify-end mt-6">
-                    <div className="flex justify-end mt-6">
-                        <SaveButton onClick={salvar} label="Salvar Alterações" />
-                    </div>
+                <div className="flex justify-center md:justify-end mt-8">
+                    <SaveButton onClick={salvar} label="Salvar Alterações" />
                 </div>
+
             </div>
         </div>
     );
