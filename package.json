@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.0",
+    "axios": "^1.8.4",
     "chart.js": "^4.4.9",
     "lucide-react": "^0.487.0",
     "prop-types": "^15.8.1",

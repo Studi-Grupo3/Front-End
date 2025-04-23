@@ -1,27 +1,28 @@
 import { useState, useEffect, useCallback } from "react";
-import { apiFetch } from "../services/api";
 
-export const useFetch = (url, options = {}) => {
+export function useApi(requestFn, deps = [], auto = true) {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(auto);
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const response = await apiFetch(url, options);
-      setData(response);
+      const response = await requestFn();
+      setData(response.data);
     } catch (err) {
-      setError(err);
+      const message = err.response?.data?.message || err.message;
+      setError(message);
     } finally {
       setLoading(false);
     }
-  }, [url, JSON.stringify(options)]);
+  }, deps);
 
   useEffect(() => {
-    fetchData();
+    if (auto) fetchData();
   }, [fetchData]);
 
   return { data, loading, error, refetch: fetchData };
-};
+}

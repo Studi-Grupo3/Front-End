@@ -1,40 +1,19 @@
-import { apiFetch } from "./api";
+import { api } from './provider/api';
 
 export const authService = {
-  async loginAsStudent(credentials) {
-    const response = await apiFetch("/students/login", {
-      method: "POST",
-      body: JSON.stringify(credentials),
-    });
-
-    if (response.token) {
-      localStorage.setItem("authToken", response.token);
-    }
-
+  loginStudent: async (credentials) => {
+    const response = await api.post('/students/login', credentials).then(res => res.data);
+    if (response.token) localStorage.setItem('authToken', response.token);
     return response;
   },
-
-  async loginAsTeacher(credentials) {
-    const response = await apiFetch("/teachers/login", {
-      method: "POST",
-      body: JSON.stringify(credentials),
-    });
-
-    if (response.token) {
-      localStorage.setItem("authToken", response.token);
-    }
-
+  loginTeacher: async (credentials) => {
+    const response = await api.post('/teachers/login', credentials).then(res => res.data);
+    if (response.token) localStorage.setItem('authToken', response.token);
     return response;
   },
-
-  async logout() {
-    localStorage.removeItem("authToken");
-    return apiFetch("/logout", {
-      method: "POST",
-    });
+  logout: () => {
+    localStorage.removeItem('authToken');
+    return api.post('/logout').then(res => res.data);
   },
-
-  getToken() {
-    return localStorage.getItem("authToken");
-  },
+  getToken: () => localStorage.getItem('authToken'),
 };
