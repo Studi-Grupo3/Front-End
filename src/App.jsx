@@ -1,16 +1,15 @@
 import "./index.css";
+
 import HomePage from "./pages/HomePage";
-import CheckoutPage from "./pages/CheckoutPage"
-import RegisterPage from "./pages/RegisterPage";
-import {AppointmentManager} from "./pages/AppointmentManager";
-import EmailVerificationPage from "./pages/EmailVerificationPage";
+import { AppRouter } from "./routes/AppRouter";
 
 function App() {
-    return (
-        <div>
-            <HomePage/>
-        </div>
-    );
+  return (
+    <>
+      <HomePage/>
+      <AppRouter />
+    </>
+  );
 }
 
 export default App;
