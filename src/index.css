@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 :root {
   --azul-custom: #3970B7;
 }
@@ -11,5 +10,26 @@
 
 * {
   font-family: "Poppins";
+}
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; 
+}
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh; 
 }
 
