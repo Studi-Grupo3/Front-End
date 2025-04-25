@@ -2,12 +2,14 @@ import "./index.css";
 
 import HomePage from "./pages/HomePage";
 import { AppRouter } from "./routes/AppRouter";
+import { AuthProvider } from "./context/authContext";
 
 function App() {
   return (
     <>
-      <HomePage/>
-      <AppRouter />
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
     </>
   );
 }
