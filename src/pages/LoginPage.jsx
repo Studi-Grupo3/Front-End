@@ -89,8 +89,11 @@ const LoginPage = () => {
             <label className="flex flex-col w-75 md:w-80 gap-1">
               <div className="flex justify-between">
                 <span className="font-bold text-xs">Senha</span>
-                <span className="font-bold text-xs text-[#FECB0A] hover:underline">
-                  <a href="">Esqueceu a senha?</a>
+                <span
+                  className="font-bold text-xs text-[#FECB0A] hover:underline cursor-pointer"
+                  onClick={() => navigate('/redefinir-senha')}
+                >
+                  Esqueceu a senha?
                 </span>
               </div>
               <div className="relative">
