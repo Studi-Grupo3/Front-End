@@ -1,7 +1,11 @@
 // src/components/forgot-password/CodeVerificationStep.jsx
 import { MdOutlineEmail } from "react-icons/md";
+import LoadingButton from "../ui/LoadingButton";
+import { useEmailVerificationContext } from "../../context/EmailVerificationContext";
 
 const CodeVerificationStep = ({ email, code, setCode, handleVerifyCode, handleSendCode, setStep }) => {
+  const { loading } = useEmailVerificationContext();
+
   const handleChangeEmail = () => {
     setStep('email');
   };
@@ -29,21 +33,19 @@ const CodeVerificationStep = ({ email, code, setCode, handleVerifyCode, handleSe
         />
       </label>
 
-      <button 
-        type="submit" 
-        className="rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm mt-6"
-      >
+      <LoadingButton isLoading={loading.verifyCode} type="submit" className="mt-6">
         Verificar e-mail
-      </button>
+      </LoadingButton>
 
       <p className="text-sm text-center mt-4">
         Não recebeu o código?
         <button
           type="button"
           onClick={handleSendCode}
+          disabled={loading.sendCode}
           className="text-[#FECB0A] hover:underline ml-1 cursor-pointer"
         >
-          Reenviar
+          {loading.sendCode ? "Reenviando..." : "Reenviar"}
         </button>
       </p>
 

@@ -6,22 +6,24 @@ import { FcGoogle } from "react-icons/fc";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { authService } from '../services/authService';
 import AlertMessage from '../components/AlertMessage';
+import LoadingButton from '../components/ui/LoadingButton'; // 👈 Importação do LoadingButton
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false); // 👈 Estado de loading
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    setLoading(true);
 
     try {
       const response = await authService.login(credentials);
-
       setSuccess(`Bem-vindo, ${response.username || response.email || 'usuário'}!`);
 
       setTimeout(() => {
@@ -39,6 +41,8 @@ const LoginPage = () => {
     } catch (err) {
       console.error("Erro ao tentar logar:", err);
       setError('Erro ao realizar login. Verifique suas credenciais.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,12 +124,13 @@ const LoginPage = () => {
               </div>
             </label>
 
-            <button
+            <LoadingButton
+              isLoading={loading}
               type="submit"
               className="rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm"
             >
               Entrar
-            </button>
+            </LoadingButton>
 
             <div className="relative flex items-center my-6">
               <div className="flex-1 border w-65 md:w-70 border-white"></div>
@@ -142,7 +147,7 @@ const LoginPage = () => {
 
             <span className="text-xs font-bold">
               Não possui uma conta?{' '}
-              <a className="text-[#FECB0A] hover:underline" href="">
+              <a className="text-[#FECB0A] hover:underline" href="/cadastrar">
                 Cadastre-se
               </a>
             </span>

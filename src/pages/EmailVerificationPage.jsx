@@ -1,4 +1,3 @@
-// src/pages/EmailVerificationPage.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -9,9 +8,12 @@ import CodeVerificationStep from '../components/forgot-password/CodeVerification
 import NewPasswordStep from '../components/forgot-password/NewPasswordStep';
 import Imagem from '../assets/imagem-fundo.svg';
 import { authService } from '../services/authService';
+import { EmailVerificationProvider, useEmailVerificationContext } from '../context/EmailVerificationContext'; // Importa o Provider
 
-const EmailVerificationPage = () => {
+const EmailVerificationPageContent = () => {
   const navigate = useNavigate();
+  const { loading, setLoading } = useEmailVerificationContext();
+
   const [step, setStep] = useState('email');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -22,6 +24,7 @@ const EmailVerificationPage = () => {
 
   const handleSendCode = async (e) => {
     e.preventDefault();
+    setLoading(prev => ({ ...prev, sendCode: true }));
     try {
       await authService.forgotPassword({ email });
       setMessage("Código enviado para seu e-mail! 📩 Verifique sua caixa de entrada e spam.");
@@ -30,11 +33,14 @@ const EmailVerificationPage = () => {
     } catch (error) {
       setMessage(error.message || "Erro ao enviar código ❌");
       setMessageType("error");
+    } finally {
+      setLoading(prev => ({ ...prev, sendCode: false }));
     }
   };
 
   const handleVerifyCode = async (e) => {
     e.preventDefault();
+    setLoading(prev => ({ ...prev, verifyCode: true }));
     try {
       await authService.verifyCode({ email, code });
       setMessage("Código verificado com sucesso ✅ Agora defina sua nova senha.");
@@ -43,18 +49,19 @@ const EmailVerificationPage = () => {
     } catch (error) {
       setMessage(error.message || "Código inválido ❌");
       setMessageType("error");
+    } finally {
+      setLoading(prev => ({ ...prev, verifyCode: false }));
     }
   };
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-
     if (newPassword !== confirmPassword) {
       setMessage("As senhas não coincidem ❌");
       setMessageType("error");
       return;
     }
-
+    setLoading(prev => ({ ...prev, resetPassword: true }));
     try {
       await authService.resetPassword({ email, code, newPassword });
       setMessage("Senha redefinida com sucesso! 🎉 Faça login novamente.");
@@ -62,10 +69,12 @@ const EmailVerificationPage = () => {
       setTimeout(() => {
         setMessage('');
         navigate('/entrar');
-      }, 3000);
+      });
     } catch (error) {
       setMessage(error.message || "Erro ao redefinir senha ❌");
       setMessageType("error");
+    } finally {
+      setLoading(prev => ({ ...prev, resetPassword: false }));
     }
   };
 
@@ -102,7 +111,6 @@ const EmailVerificationPage = () => {
             </button>
           )}
 
-          {/* Formulários */}
           {step === 'email' && (
             <EmailStep email={email} setEmail={setEmail} handleSendCode={handleSendCode} />
           )}
@@ -130,5 +138,11 @@ const EmailVerificationPage = () => {
     </div>
   );
 };
+
+const EmailVerificationPage = () => (
+  <EmailVerificationProvider>
+    <EmailVerificationPageContent />
+  </EmailVerificationProvider>
+);
 
 export default EmailVerificationPage;

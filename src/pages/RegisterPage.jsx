@@ -5,6 +5,7 @@ import Imagem from '../assets/imagem-fundo.svg';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { studentService } from '../services/studentService';
 import AlertMessage from '../components/AlertMessage';
+import LoadingButton from '../components/ui/LoadingButton'; // 👈 Importação do LoadingButton
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,15 +18,18 @@ const RegisterPage = () => {
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false); // 👈 Estado de loading
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
       setError('As senhas não coincidem.');
+      setLoading(false);
       return;
     }
 
@@ -41,6 +45,8 @@ const RegisterPage = () => {
     } catch (err) {
       console.error("Erro ao tentar cadastrar:", err);
       setError('Erro ao realizar cadastro. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -153,12 +159,13 @@ const RegisterPage = () => {
               </div>
             </label>
 
-            <button
+            <LoadingButton
+              isLoading={loading}
               type="submit"
               className="rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm"
             >
               Cadastrar
-            </button>
+            </LoadingButton>
           </form>
         </section>
       </main>
