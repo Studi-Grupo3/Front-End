@@ -12,24 +12,10 @@
   font-family: "Poppins";
 }
 
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden; 
+.custom-swal-popup {
+  border: 2px solid #FECB0A; 
+  border-radius: 8px;
+  padding: 10px;
+  width: 300px; /* menor */
+  box-shadow: 0 0 10px #fecb0a66; 
 }
-
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-#root {
-  width: 100%;
-  min-height: 100vh; 
-}
-
