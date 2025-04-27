@@ -1,6 +1,7 @@
 // src/pages/EmailVerificationPage.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import NavbarHome from '../components/NavbarHome';
 import { PopupMessage } from '../components/PopupMessage';
 import EmailStep from '../components/forgot-password/EmailStep';
@@ -81,15 +82,39 @@ const EmailVerificationPage = () => {
       )}
 
       <main
-        className='h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center'
+        className='relative h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center'
         style={{ backgroundImage: `url(${Imagem})` }}
       >
-        <section className='h-full w-full md:h-120 md:w-110 bg-[#3970B7] py-3 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white'>
+        <section className='relative h-full w-full md:h-120 md:w-110 bg-[#3970B7] py-3 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white flex flex-col items-center'>
+
+          {step !== 'email' && (
+            <button
+              onClick={() => {
+                if (step === 'new-password') {
+                  setStep('code');
+                } else {
+                  setStep('email');
+                }
+              }}
+              className="absolute top-4 left-4 flex items-center gap-2 text-white hover:text-[#FECB0A] cursor-pointer transition-transform hover:scale-110"
+            >
+              <ArrowLeft size={28} />
+            </button>
+          )}
+
+          {/* Formulários */}
           {step === 'email' && (
             <EmailStep email={email} setEmail={setEmail} handleSendCode={handleSendCode} />
           )}
           {step === 'code' && (
-            <CodeVerificationStep email={email} code={code} setCode={setCode} handleVerifyCode={handleVerifyCode} handleSendCode={handleSendCode} />
+            <CodeVerificationStep
+              email={email}
+              code={code}
+              setCode={setCode}
+              handleVerifyCode={handleVerifyCode}
+              handleSendCode={handleSendCode}
+              setStep={setStep}
+            />
           )}
           {step === 'new-password' && (
             <NewPasswordStep
