@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ClassModelSelection from "./components/appointment-class/ClassModelSelection";
+import ChooseProfessor from "./pages/ChooseProfessor";
+import HomePage from "./pages/HomePage";
 
 const queryClient = new QueryClient();
 
@@ -13,6 +15,8 @@ const App = () => (
         <Route path="/" element={<Index />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/class-model" element={<ClassModelSelection />} />
+        <Route path="/choose-professor" element={<ChooseProfessor />} />
+        <Route path="/home" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
   </QueryClientProvider>

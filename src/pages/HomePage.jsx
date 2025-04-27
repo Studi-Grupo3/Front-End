@@ -2,12 +2,12 @@ import NavbarHome from "../components/NavbarHome";
 import Home from "../components/Home";
 import Historia from "../components/Historia";
 import Planos from "../components/Planos";
-import Professor from "../components/Professor";
 import FaleConosco from "../components/FaleConosco";
 import Footer from "../components/Footer";
 import Servicos from "../components/Servicos";
 import SaibaMaisButton from "../components/SaibaMaisButton";
 import AgendarAulaButton from "../components/AgendarAulaButton";
+import ProfessorsSectionHome from "../components/ProfessorsSectionHome";
 
 
 const HomeSection = () => {
@@ -44,9 +44,8 @@ const ServicosSection = () => {
 
 const ProfessorSection = () => {
     return (
-        <div id="professores">
-            <Professor />
-        </div>
+            <ProfessorsSectionHome />
+        
     );
 };
 

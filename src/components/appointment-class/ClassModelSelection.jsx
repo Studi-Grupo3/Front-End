@@ -90,7 +90,7 @@ export default function ClassModelSelection() {
                     {/* continue */}
                     <div className="flex justify-center mt-10">
                         <button
-                            onClick={() => choice && alert(`Você escolheu: ${choice}`)}
+                            onClick={() => navigate("/choose-professor")}
                             disabled={!choice}
                             className="w-72 sm:w-60 bg-blue-600 text-white font-medium py-2 rounded hover:bg-blue-700 disabled:opacity-50"
                         >
