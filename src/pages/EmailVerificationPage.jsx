@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import NavbarHome from '../components/NavbarHome';
-import { PopupMessage } from '../components/PopupMessage';
 import EmailStep from '../components/forgot-password/EmailStep';
 import CodeVerificationStep from '../components/forgot-password/CodeVerificationStep';
 import NewPasswordStep from '../components/forgot-password/NewPasswordStep';
 import Imagem from '../assets/imagem-fundo.svg';
 import { authService } from '../services/authService';
-import { EmailVerificationProvider, useEmailVerificationContext } from '../context/EmailVerificationContext'; // Importa o Provider
+import { EmailVerificationProvider, useEmailVerificationContext } from '../context/EmailVerificationContext';
+import { showAlert } from '../components/ShowAlert';
 
 const EmailVerificationPageContent = () => {
   const navigate = useNavigate();
@@ -19,20 +19,24 @@ const EmailVerificationPageContent = () => {
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('info');
 
   const handleSendCode = async (e) => {
     e.preventDefault();
     setLoading(prev => ({ ...prev, sendCode: true }));
     try {
       await authService.forgotPassword({ email });
-      setMessage("Código enviado para seu e-mail! 📩 Verifique sua caixa de entrada e spam.");
-      setMessageType("success");
+      showAlert({
+        title: 'Código Enviado!',
+        text: "📩 Verifique seu e-mail (inclusive o spam).",
+        icon: 'success'
+      });
       setStep('code');
     } catch (error) {
-      setMessage(error.message || "Erro ao enviar código ❌");
-      setMessageType("error");
+      showAlert({
+        title: 'Erro!',
+        text: error.message || "Erro ao enviar código",
+        icon: 'error'
+      });
     } finally {
       setLoading(prev => ({ ...prev, sendCode: false }));
     }
@@ -43,12 +47,18 @@ const EmailVerificationPageContent = () => {
     setLoading(prev => ({ ...prev, verifyCode: true }));
     try {
       await authService.verifyCode({ email, code });
-      setMessage("Código verificado com sucesso ✅ Agora defina sua nova senha.");
-      setMessageType("success");
+      showAlert({
+        title: 'Sucesso!',
+        text: "Código verificado. Agora defina sua nova senha.",
+        icon: 'success'
+      });
       setStep('new-password');
     } catch (error) {
-      setMessage(error.message || "Código inválido ❌");
-      setMessageType("error");
+      showAlert({
+        title: 'Erro!',
+        text: error.message || "Código inválido",
+        icon: 'error'
+      });
     } finally {
       setLoading(prev => ({ ...prev, verifyCode: false }));
     }
@@ -57,22 +67,30 @@ const EmailVerificationPageContent = () => {
   const handleResetPassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setMessage("As senhas não coincidem ❌");
-      setMessageType("error");
+      showAlert({
+        title: 'Erro!',
+        text: "As senhas não coincidem",
+        icon: 'error'
+      });
       return;
     }
     setLoading(prev => ({ ...prev, resetPassword: true }));
     try {
       await authService.resetPassword({ email, code, newPassword });
-      setMessage("Senha redefinida com sucesso! 🎉 Faça login novamente.");
-      setMessageType("success");
-      setTimeout(() => {
-        setMessage('');
-        navigate('/entrar');
+      showAlert({
+        title: 'Senha Redefinida!',
+        text: "Agora faça login novamente.",
+        icon: 'success'
       });
+      setTimeout(() => {
+        navigate('/entrar');
+      }, 2000);
     } catch (error) {
-      setMessage(error.message || "Erro ao redefinir senha ❌");
-      setMessageType("error");
+      showAlert({
+        title: 'Erro!',
+        text: error.message || "Erro ao redefinir senha",
+        icon: 'error'
+      });
     } finally {
       setLoading(prev => ({ ...prev, resetPassword: false }));
     }
@@ -81,14 +99,6 @@ const EmailVerificationPageContent = () => {
   return (
     <div className="flex flex-col h-screen w-screen">
       <NavbarHome />
-
-      {message && (
-        <PopupMessage
-          message={message}
-          type={messageType}
-          onClose={() => setMessage('')}
-        />
-      )}
 
       <main
         className='relative h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center'

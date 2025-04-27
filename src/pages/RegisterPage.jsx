@@ -4,8 +4,8 @@ import NavbarHome from '../components/NavbarHome';
 import Imagem from '../assets/imagem-fundo.svg';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { studentService } from '../services/studentService';
-import AlertMessage from '../components/AlertMessage';
-import LoadingButton from '../components/ui/LoadingButton'; // 👈 Importação do LoadingButton
+import LoadingButton from '../components/ui/LoadingButton';
+import { showAlert } from '../components/ShowAlert';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,19 +16,19 @@ const RegisterPage = () => {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [loading, setLoading] = useState(false); // 👈 Estado de loading
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
     setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      setError('As senhas não coincidem.');
+      showAlert({
+        title: 'Erro!',
+        text: "As senhas não coincidem",
+        icon: 'error'
+      });
       setLoading(false);
       return;
     }
@@ -37,14 +37,22 @@ const RegisterPage = () => {
       const { name, email, password } = formData;
       const response = await studentService.create({ name, email, password });
 
-      setSuccess(`Conta criada com sucesso! Bem-vindo, ${response.username || response.name || 'usuário'}.`);
+      showAlert({
+        title: 'Conta criada!',
+        text: `Bem-vindo, ${response.username || response.name || 'usuário'}! 🎉`,
+        icon: 'success'
+      });
 
       setTimeout(() => {
         navigate('/entrar');
       }, 2000);
     } catch (err) {
       console.error("Erro ao tentar cadastrar:", err);
-      setError('Erro ao realizar cadastro. Tente novamente.');
+      showAlert({
+        title: 'Erro!',
+        text: "Erro ao realizar cadastro. Tente novamente",
+        icon: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -53,22 +61,6 @@ const RegisterPage = () => {
   return (
     <div className="flex flex-col h-screen w-screen">
       <NavbarHome />
-
-      {error && (
-        <AlertMessage
-          type="error"
-          message={error}
-          onClose={() => setError(null)}
-        />
-      )}
-
-      {success && (
-        <AlertMessage
-          type="success"
-          message={success}
-          onClose={() => setSuccess(null)}
-        />
-      )}
 
       <main
         className="h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center"

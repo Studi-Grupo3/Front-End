@@ -5,26 +5,27 @@ import Imagem from '../assets/imagem-fundo.svg';
 import { FcGoogle } from "react-icons/fc";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { authService } from '../services/authService';
-import AlertMessage from '../components/AlertMessage';
-import LoadingButton from '../components/ui/LoadingButton'; // 👈 Importação do LoadingButton
+import { showAlert } from '../components/ShowAlert';
+import LoadingButton from '../components/ui/LoadingButton';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [loading, setLoading] = useState(false); // 👈 Estado de loading
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
     setLoading(true);
 
     try {
       const response = await authService.login(credentials);
-      setSuccess(`Bem-vindo, ${response.username || response.email || 'usuário'}!`);
+
+      showAlert({
+        title: 'Login realizado!',
+        text: `Bem-vindo, ${response.username || response.email || 'usuário'}!`,
+        icon: 'success',
+      });
 
       setTimeout(() => {
         if (response.role === 'STUDENT') {
@@ -34,13 +35,21 @@ const LoginPage = () => {
         } else if (response.role === 'ADMIN') {
           navigate('/dashboard');
         } else {
-          setError('Role de usuário desconhecida. Contate o suporte.');
+          showAlert({
+            title: 'Erro!',
+            text: 'Role de usuário desconhecida. Contate o suporte.',
+            icon: 'error',
+          });
         }
       }, 2000);
 
     } catch (err) {
       console.error("Erro ao tentar logar:", err);
-      setError('Erro ao realizar login. Verifique suas credenciais.');
+      showAlert({
+        title: 'Erro!',
+        text: 'Erro ao realizar login. Verifique suas credenciais.',
+        icon: 'error',
+      });
     } finally {
       setLoading(false);
     }
@@ -49,22 +58,6 @@ const LoginPage = () => {
   return (
     <div className="flex flex-col h-screen w-screen">
       <NavbarHome />
-
-      {error && (
-        <AlertMessage
-          type="error"
-          message={error}
-          onClose={() => setError(null)}
-        />
-      )}
-
-      {success && (
-        <AlertMessage
-          type="success"
-          message={success}
-          onClose={() => setSuccess(null)}
-        />
-      )}
 
       <main
         className="h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center"
@@ -134,7 +127,7 @@ const LoginPage = () => {
 
             <div className="relative flex items-center my-6">
               <div className="flex-1 border w-65 md:w-70 border-white"></div>
-              <div className="text-[#64748B] text-center w-8 h-6 bg-white mx-2 ">
+              <div className="text-[#64748B] text-center w-8 h-6 bg-white mx-2">
                 OU
               </div>
               <div className="flex-1 border border-white"></div>
