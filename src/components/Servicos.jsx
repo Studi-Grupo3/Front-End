@@ -1,4 +1,4 @@
-import imagemDicas from "../assets/imgDicas.png";
+import imagemDicas from "../assets/imagemDicas.png";
 
 const Serviços = () => {
     return (
