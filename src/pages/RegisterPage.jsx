@@ -66,12 +66,12 @@ const RegisterPage = () => {
         className="h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center"
         style={{ backgroundImage: `url(${Imagem})` }}
       >
-        <section className="h-full w-full md:h-145 md:w-120 bg-[#3970B7] py-4 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white">
+        <section className="w-[90%] max-w-[400px] bg-[#3970B7] py-6 px-4 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white flex flex-col items-center">
           <form
-            className="flex flex-col justify-evenly items-center h-full w-full md:h-full md:w-full"
+            className="flex flex-col items-center h-full w-full md:h-full md:w-full gap-6"
             onSubmit={handleRegister}
           >
-            <h1 className="text-[25px] font-bold">Crie uma conta</h1>
+            <h1 className="text-[25px] font-bold mb-2">Crie uma conta</h1>
 
             <label className="flex flex-col w-75 md:w-80 gap-1">
               <span className="font-bold text-xs">Nome Completo</span>
@@ -123,6 +123,7 @@ const RegisterPage = () => {
                   )}
                 </button>
               </div>
+              <small className="text-xs text-white mt-1">A senha deve ter pelo menos 6 caracteres.</small>
             </label>
 
             <label className="flex flex-col w-75 md:w-80 gap-1">
@@ -154,10 +155,23 @@ const RegisterPage = () => {
             <LoadingButton
               isLoading={loading}
               type="submit"
-              className="rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm"
+              className="rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm mt-2"
             >
               Cadastrar
             </LoadingButton>
+
+            {/* Botão de login */}
+            <p className="text-sm mt-2">
+              Já tem uma conta?{' '}
+              <button
+                type="button"
+                onClick={() => navigate('/entrar')}
+                className="font-bold text-[#FECB0A] hover:underline cursor-pointer"
+              >
+                Clique aqui
+              </button>
+            </p>
+
           </form>
         </section>
       </main>

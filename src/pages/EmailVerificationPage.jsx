@@ -106,20 +106,21 @@ const EmailVerificationPageContent = () => {
       >
         <section className='relative h-full w-full md:h-120 md:w-110 bg-[#3970B7] py-3 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white flex flex-col items-center'>
 
-          {step !== 'email' && (
-            <button
-              onClick={() => {
-                if (step === 'new-password') {
-                  setStep('code');
-                } else {
-                  setStep('email');
-                }
-              }}
-              className="absolute top-4 left-4 flex items-center gap-2 text-white hover:text-[#FECB0A] cursor-pointer transition-transform hover:scale-110"
-            >
-              <ArrowLeft size={28} />
-            </button>
-          )}
+          <button
+            onClick={() => {
+              if (step === 'email') {
+                navigate('/entrar');
+              } else if (step === 'new-password') {
+                setStep('code');
+              } else {
+                setStep('email');
+              }
+            }}
+            className="absolute top-4 left-4 flex items-center gap-2 text-white hover:text-[#FECB0A] cursor-pointer transition-transform hover:scale-110"
+          >
+            <ArrowLeft size={28} />
+          </button>
+
 
           {step === 'email' && (
             <EmailStep email={email} setEmail={setEmail} handleSendCode={handleSendCode} />

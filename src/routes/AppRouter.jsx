@@ -8,7 +8,7 @@ import { Financas } from "../pages/dashboard-admin/Financas";
 import { Pagamentos } from "../pages/dashboard-admin/Pagamentos";
 import { Configuracoes } from "../pages/dashboard-admin/Configuracoes";
 import { Relatorios } from "../pages/dashboard-admin/Relatorios";
-
+import  HomePage  from "../pages/HomePage";
 import { AppointmentManager } from "../pages/AppointmentManager";
 import { CheckoutPage } from "../pages/CheckoutPage";
 import EmailVerificationPage from "../pages/EmailVerificationPage";
@@ -23,7 +23,8 @@ export const AppRouter = () => {
 
         {/* ROTAS PÚBLICAS */}
         <Route path="/entrar" element={<LoginPage />} />
-        <Route path="/cadastro" element={<RegisterPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/cadastrar" element={<RegisterPage />} />
         <Route path="/redefinir-senha" element={<EmailVerificationPage />} />
 
         {/* ROTAS PROTEGIDAS */}

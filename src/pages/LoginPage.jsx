@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavbarHome from '../components/NavbarHome';
 import Imagem from '../assets/imagem-fundo.svg';
-import { FcGoogle } from "react-icons/fc";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { authService } from '../services/authService';
 import { showAlert } from '../components/ShowAlert';
@@ -63,12 +62,12 @@ const LoginPage = () => {
         className="h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center"
         style={{ backgroundImage: `url(${Imagem})` }}
       >
-        <section className="h-full w-full md:h-120 md:w-110 bg-[#3970B7] py-3 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white">
+        <section className="w-[90%] max-w-[400px] bg-[#3970B7] py-6 px-4 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white flex flex-col items-center">
           <form
-            className="flex flex-col justify-evenly items-center h-full w-full md:h-full md:w-full"
+            className="flex flex-col items-center h-full w-full md:h-full md:w-full gap-6"
             onSubmit={handleLogin}
           >
-            <h1 className="text-[25px] font-bold">Entrar</h1>
+            <h1 className="text-[25px] font-bold mb-2">Entrar</h1>
 
             <label className="flex flex-col w-75 md:w-80 gap-1">
               <span className="font-bold text-xs">E-mail</span>
@@ -95,7 +94,7 @@ const LoginPage = () => {
               </div>
               <div className="relative">
                 <input
-                  className="w-full rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 px-3 pr-10 text-black text-xs pl-3"
+                  className="w-full rounded-md bg-white placeholder-[#64748B] placeholder:text-xs h-8 px-3 pr-10 text-black text-xs"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Digite sua senha"
                   value={credentials.password}
@@ -120,25 +119,12 @@ const LoginPage = () => {
             <LoadingButton
               isLoading={loading}
               type="submit"
-              className="rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm"
+              className="rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm mt-2"
             >
               Entrar
             </LoadingButton>
 
-            <div className="relative flex items-center my-6">
-              <div className="flex-1 border w-65 md:w-70 border-white"></div>
-              <div className="text-[#64748B] text-center w-8 h-6 bg-white mx-2">
-                OU
-              </div>
-              <div className="flex-1 border border-white"></div>
-            </div>
-
-            <button className="flex items-center justify-center gap-2 rounded-lg bg-white text-black font-normal cursor-pointer w-75 md:w-80 h-10 text-sm">
-              <FcGoogle className="text-2xl" />
-              Continuar com Google
-            </button>
-
-            <span className="text-xs font-bold">
+            <span className="text-sm font-bold mt-2">
               Não possui uma conta?{' '}
               <a className="text-[#FECB0A] hover:underline" href="/cadastrar">
                 Cadastre-se
