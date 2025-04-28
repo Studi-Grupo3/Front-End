@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Laptop, MapPin } from "lucide-react";
+import NavbarPanel from "../NavbarPanel";
 
 export default function ClassModelSelection() {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function ClassModelSelection() {
 
     return (
         <main className="flex flex-col min-h-screen bg-gray-50">
+            <NavbarPanel />
             <section className="flex-grow flex items-center justify-center p-6">
                 <div className="max-w-4xl w-full bg-white border border-gray-200 rounded-xl p-8 md:p-12 shadow-sm">
                     {/* breadcrumb */}

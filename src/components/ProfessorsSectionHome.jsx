@@ -7,7 +7,7 @@ import professoraJuliana from "../assets/professoraJuliana.png";
 import botaoAnterior from "../assets/botaoAnterior.png";
 import botaoProximo from "../assets/botaoProximo.png";
 
-const Professor = () => {
+const ProfessorsSectionHome = () => {
     const cards = [
         {
             name: "Fábio",
@@ -144,4 +144,4 @@ const Professor = () => {
     );
 };
 
-export default Professor;
+export default ProfessorsSectionHome;

@@ -1,13 +1,12 @@
 import NavbarHome from "../components/NavbarHome";
+import MenuHamburguer from "../components/MenuHamburguer";
 import Home from "../components/Home";
 import Historia from "../components/Historia";
 import Planos from "../components/Planos";
 import FaleConosco from "../components/FaleConosco";
 import Footer from "../components/Footer";
 import Servicos from "../components/Servicos";
-import SaibaMaisButton from "../components/SaibaMaisButton";
-import AgendarAulaButton from "../components/AgendarAulaButton";
-
+import ProfessorsSectionHome from "../components/ProfessorsSectionHome"; 
 
 const HomeSection = () => {
     return (
@@ -69,6 +68,7 @@ export default function HomePage() {
     return (
         <>
             <NavbarHome />
+            <MenuHamburguer/>
 
             <div className="bg-[#3A6FD8] text-white font-quicksand">
                 <HomeSection />
