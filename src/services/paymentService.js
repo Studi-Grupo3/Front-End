@@ -1,20 +1,14 @@
-import { apiFetch } from "./api";
+import { api } from './provider/api';
 
 export const paymentService = {
-  async createPayment(paymentData) {
-    const isBoleto = paymentData.paymentMethodId === "bolbradesco";
-    const isPix = paymentData.paymentMethodId === "pix";
-
-    if (!isBoleto && !isPix && !paymentData.token) {
-      throw new Error("❌ Erro: Token do cartão ausente! O pagamento não será processado.");
+  create: (data) => {
+    const { paymentMethodId, token } = data;
+    const isBoleto = paymentMethodId === 'bolbradesco';
+    const isPix = paymentMethodId === 'pix';
+    if (!isBoleto && !isPix && !token) {
+      throw new Error('❌ Erro: Token do cartão ausente!');
     }
-
-    console.log("📤 Enviando pagamento ao backend...", paymentData);
-
-    return apiFetch("/payments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(paymentData),
-    });
+    console.log('📤 Enviando pagamento ao backend...', data);
+    return api.post('/payments', data).then(res => res.data);
   },
 };

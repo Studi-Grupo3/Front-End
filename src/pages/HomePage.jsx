@@ -7,7 +7,7 @@ import Footer from "../components/Footer";
 import Servicos from "../components/Servicos";
 import SaibaMaisButton from "../components/SaibaMaisButton";
 import AgendarAulaButton from "../components/AgendarAulaButton";
-import ProfessorsSectionHome from "../components/ProfessorsSectionHome";
+
 
 const HomeSection = () => {
     return (
