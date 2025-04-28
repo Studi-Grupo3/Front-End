@@ -14,9 +14,9 @@ const RegisterPage = () => {
             <NavbarHome />
             <main className='h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center' style={{ backgroundImage: `url(${Imagem})` }}>
 
-                <section className='h-full w-full md:h-145 md:w-120 bg-[#3970B7] py-4 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white'>
+                <section className='h-full w-full md:h-140 md:w-120 bg-[#3970B7] py-4 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white'>
 
-                    <form className='flex flex-col justify-evenly items-center h-full w-full md:h-full md:w-full'>
+                    <form className='flex flex-col justify-evenly items-center w-full max-w-screen-xl mx-auto h-full'>
 
                         <h1 className='text-[25px] font-bold'>Crie uma conta</h1>
 
@@ -78,9 +78,9 @@ const RegisterPage = () => {
 
                         <button className='rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-72 md:w-80 h-10 text-sm'>Cadastrar</button>
 
-                        <div className="relative flex items-center my-6">
+                        <div className="h-2 flex items-center my-6">
 
-                            <div className="flex-1 border w-65 md:w-80 border-white"></div>
+                            <div className="flex-1 border w-65 md:w-72 border-white"></div>
 
                             <div className="text-[#64748B] text-center w-8 h-6 bg-white mx-2 ">OU</div>
 
