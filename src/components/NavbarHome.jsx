@@ -1,11 +1,7 @@
 import { useState } from "react";
 import Imagem from "../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
-import {
-  ArrowRightIcon,
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const NavbarHome = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,6 +52,7 @@ const NavbarHome = () => {
         >
           Contato
         </a>
+      </div>
 
       {/* Botões (somente em telas >= 1024px) */}
       <div className="hidden lg:flex gap-4 w-70">
@@ -77,16 +74,6 @@ const NavbarHome = () => {
       <div className="absolute right-4 lg:hidden">
         <button onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <XMarkIcon className="h-8 w-8" /> : <Bars3Icon className="h-8 w-8" />}
-        </button>
-      </div>
-      {/* Menu Hamburguer (para telas menores) */}
-      <div className="absolute right-4 lg:hidden">
-        <button onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? (
-            <XMarkIcon className="h-8 w-8" />
-          ) : (
-            <Bars3Icon className="h-8 w-8" />
-          )}
         </button>
       </div>
 
