@@ -1,54 +1,22 @@
-import { useState, useEffect } from "react";
-import { studentService } from "../services/studentService";
-import { authService } from "../services/authService";
-import { apiFetch } from "../services/api";
+import { useEffect, useState } from 'react';
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const validateToken = async () => {
-      const token = authService.getToken();
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+    const token = sessionStorage.getItem('authToken');
+    const userId = sessionStorage.getItem('userId');
+    const role = sessionStorage.getItem('userRole');
 
-      try {
-        const response = await apiFetch("/auth/validate");
-        setUser(response.user);
-      } catch (err) {
-        authService.logout(); 
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (token && userId && role) {
+      setUser({ token, userId, role });
+    } else {
+      setUser(null);
+    }
 
-    validateToken();
+    setLoading(false);
   }, []);
 
-  const login = async (credentials) => {
-    setLoading(true);
-    try {
-      const userData = await studentService.login(credentials);
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-      return userData;
-    } catch (err) {
-      setError(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    authService.logout();
-    setUser(null);
-  };
-
-  return { user, loading, error, login, logout };
+  return { user, loading };
 };

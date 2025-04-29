@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NavbarHome from '../components/NavbarHome';
-import Imagem from '../assets/imagem-fundo.svg'
-import { FcGoogle } from "react-icons/fc";
+import Imagem from '../assets/imagem-fundo.svg';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import { authService } from '../services/authService';
+import { showAlert } from '../components/ShowAlert';
+import LoadingButton from '../components/ui/LoadingButton';
 
 const LoginPage = () => {
 

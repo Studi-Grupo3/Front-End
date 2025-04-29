@@ -1,45 +1,159 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import NavbarHome from '../components/NavbarHome';
+import EmailStep from '../components/forgot-password/EmailStep';
+import CodeVerificationStep from '../components/forgot-password/CodeVerificationStep';
+import NewPasswordStep from '../components/forgot-password/NewPasswordStep';
 import Imagem from '../assets/imagem-fundo.svg';
-import { MdOutlineEmail } from "react-icons/md";
+import { authService } from '../services/authService';
+import { EmailVerificationProvider, useEmailVerificationContext } from '../context/EmailVerificationContext';
+import { showAlert } from '../components/ShowAlert';
 
-const LoginPage = () => {
+const EmailVerificationPageContent = () => {
+  const navigate = useNavigate();
+  const { loading, setLoading } = useEmailVerificationContext();
+
+  const [step, setStep] = useState('email');
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleSendCode = async (e) => {
+    e.preventDefault();
+    setLoading(prev => ({ ...prev, sendCode: true }));
+    try {
+      await authService.forgotPassword({ email });
+      showAlert({
+        title: 'Código Enviado!',
+        text: "📩 Verifique seu e-mail (inclusive o spam).",
+        icon: 'success'
+      });
+      setStep('code');
+    } catch (error) {
+      showAlert({
+        title: 'Erro!',
+        text: error.message || "Erro ao enviar código",
+        icon: 'error'
+      });
+    } finally {
+      setLoading(prev => ({ ...prev, sendCode: false }));
+    }
+  };
+
+  const handleVerifyCode = async (e) => {
+    e.preventDefault();
+    setLoading(prev => ({ ...prev, verifyCode: true }));
+    try {
+      await authService.verifyCode({ email, code });
+      showAlert({
+        title: 'Sucesso!',
+        text: "Código verificado. Agora defina sua nova senha.",
+        icon: 'success'
+      });
+      setStep('new-password');
+    } catch (error) {
+      showAlert({
+        title: 'Erro!',
+        text: error.message || "Código inválido",
+        icon: 'error'
+      });
+    } finally {
+      setLoading(prev => ({ ...prev, verifyCode: false }));
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      showAlert({
+        title: 'Erro!',
+        text: "As senhas não coincidem",
+        icon: 'error'
+      });
+      return;
+    }
+    setLoading(prev => ({ ...prev, resetPassword: true }));
+    try {
+      await authService.resetPassword({ email, code, newPassword });
+      showAlert({
+        title: 'Senha Redefinida!',
+        text: "Agora faça login novamente.",
+        icon: 'success'
+      });
+      setTimeout(() => {
+        navigate('/entrar');
+      }, 2000);
+    } catch (error) {
+      showAlert({
+        title: 'Erro!',
+        text: error.message || "Erro ao redefinir senha",
+        icon: 'error'
+      });
+    } finally {
+      setLoading(prev => ({ ...prev, resetPassword: false }));
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-screen w-screen">
+      <NavbarHome />
+
+      <main
+        className='relative h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center'
+        style={{ backgroundImage: `url(${Imagem})` }}
+      >
+        <section className='relative h-full w-full md:h-120 md:w-110 bg-[#3970B7] py-3 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white flex flex-col items-center'>
+
+          <button
+            onClick={() => {
+              if (step === 'email') {
+                navigate('/entrar');
+              } else if (step === 'new-password') {
+                setStep('code');
+              } else {
+                setStep('email');
+              }
+            }}
+            className="absolute top-4 left-4 flex items-center gap-2 text-white hover:text-[#FECB0A] cursor-pointer transition-transform hover:scale-110"
+          >
+            <ArrowLeft size={28} />
+          </button>
 
 
-    return (
-        <div className="flex flex-col h-screen w-screen">
-            <NavbarHome />
-            <main className='h-[88vh] w-screen bg-no-repeat bg-cover bg-center flex justify-center items-center' style={{ backgroundImage: `url(${Imagem})` }}>
-
-                <section className='h-full w-full md:h-120 md:w-110 bg-[#3970B7] py-3 md:border-4 md:border-[#FECB0A] md:rounded-3xl text-white'>
-
-                    <form className='flex flex-col justify-evenly items-center h-full w-full md:h-full md:w-full'>
-
-                        <div className="w-16 h-16 bg-[#FECB0A] rounded-full flex items-center justify-center">
-                            <MdOutlineEmail  className="text-[#3970B7] text-3xl" />
-                        </div>
-
-                        <h1 className='text-[20px] font-bold'>Verifique seu e-mail</h1>
-
-                        <span className='text-xs'>Enviamos um código de verificação para</span>
-
-                        <span className='text-xs'>Digite o código abaixo para confirmar seu e-mail</span>
-
-                        <label className='flex flex-col w-75 md:w-80 gap-1'>
-                            <input maxLength={6} className='rounded-md bg-white placeholder-[#64748B] text-center placeholder:text-xs h-10 text-black text-base' type='text' placeholder='Digite o código de 6 dígitos' />
-                        </label>
-
-                        <button className='rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm'>Verificar e-mail</button>
-
-                        <span className='text-xs'>Não recebeu o código? <a className='text-[#FECB0A] hover:underline' href="">Reenviar</a></span>
-
-                    </form>
-
-                </section>
-
-            </main>
-
-        </div>
-    )
+          {step === 'email' && (
+            <EmailStep email={email} setEmail={setEmail} handleSendCode={handleSendCode} />
+          )}
+          {step === 'code' && (
+            <CodeVerificationStep
+              email={email}
+              code={code}
+              setCode={setCode}
+              handleVerifyCode={handleVerifyCode}
+              handleSendCode={handleSendCode}
+              setStep={setStep}
+            />
+          )}
+          {step === 'new-password' && (
+            <NewPasswordStep
+              newPassword={newPassword}
+              confirmPassword={confirmPassword}
+              setNewPassword={setNewPassword}
+              setConfirmPassword={setConfirmPassword}
+              handleResetPassword={handleResetPassword}
+            />
+          )}
+        </section>
+      </main>
+    </div>
+  );
 };
 
-export default LoginPage;
+const EmailVerificationPage = () => (
+  <EmailVerificationProvider>
+    <EmailVerificationPageContent />
+  </EmailVerificationProvider>
+);
+
+export default EmailVerificationPage;
