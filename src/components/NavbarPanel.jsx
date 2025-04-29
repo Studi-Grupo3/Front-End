@@ -63,16 +63,28 @@ const NavbarPanel = () => {
 
         {/* Links de Navegação */}
         <div className="flex flex-row gap-8 justify-center">
-          <h2 className="font-semibold cursor-pointer hover:text-yellow-400 transition">
+          <h2
+            className="font-semibold cursor-pointer hover:text-yellow-400 transition"
+            onClick={() => navigate("/")}
+          >
             Início
           </h2>
-          <h2 className="font-semibold cursor-pointer hover:text-yellow-400 transition">
+          <h2
+            className="font-semibold cursor-pointer hover:text-yellow-400 transition"
+            onClick={() => navigate("/agendamentos/gerenciar")}
+          >
             Agendamentos
           </h2>
-          <h2 className="font-semibold cursor-pointer hover:text-yellow-400 transition">
+          <h2
+            className="font-semibold cursor-pointer hover:text-yellow-400 transition"
+            onClick={() => navigate("/calendario")}
+          >
             Calendário
           </h2>
-          <h2 className="font-semibold cursor-pointer hover:text-yellow-400 transition">
+          <h2
+            className="font-semibold cursor-pointer hover:text-yellow-400 transition"
+            onClick={() => navigate("/contato")}
+          >
             Contato
           </h2>
         </div>
