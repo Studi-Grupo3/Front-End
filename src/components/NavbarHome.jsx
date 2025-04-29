@@ -8,17 +8,16 @@ import {
 } from "@heroicons/react/24/outline";
 
 const NavbarHome = () => {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    return (
-        <nav className="h-[12vh] w-full bg-[#3970B7] border-b-4 border-b-[#FECB0A] text-white px-4 lg:px-20 flex items-center justify-between text-sm relative">
-
-            {/* Logo */}
-            <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:w-70 flex justify-center">
-                <img src={Imagem} className="h-20" />
-            </div>
+  return (
+    <nav className="h-[12vh] w-full bg-[#3970B7] border-b-4 border-b-[#FECB0A] text-white px-4 lg:px-20 flex items-center justify-between text-sm relative">
+      {/* Logo */}
+      <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:w-70 flex justify-center">
+        <img src={Imagem} className="h-20" alt="Logo" />
+      </div>
 
       {/* Menu de navegação (somente em telas >= 1024px) */}
       <div className="hidden lg:flex flex-row justify-evenly items-center w-150 h-[12vh]">
@@ -57,18 +56,29 @@ const NavbarHome = () => {
         >
           Contato
         </a>
+
+      {/* Botões (somente em telas >= 1024px) */}
+      <div className="hidden lg:flex gap-4 w-70">
+        <button
+          onClick={() => navigate("/entrar")}
+          className="flex items-center justify-center h-10 w-90 gap-2 rounded-xl border border-[#FFFFFF] bg-[#4088E7] text-white font-semibold cursor-pointer"
+        >
+          Entrar <ArrowRightIcon className="h-5" />
+        </button>
+        <button
+          onClick={() => navigate("/cadastrar")}
+          className="flex items-center justify-center h-10 w-100 gap-2 rounded-xl border border-[#000000] bg-[#FECB0A] text-black font-semibold cursor-pointer"
+        >
+          Cadastre-se <ArrowRightIcon className="h-5" />
+        </button>
       </div>
 
-            {/* Botões (somente em telas >= 1024px) */}
-            <div className="hidden lg:flex gap-4 w-70">
-                <button className="flex items-center justify-center h-10 w-90 gap-2 rounded-xl border border-[#FFFFFF] bg-[#4088E7] text-white font-semibold cursor-pointer">
-                    Entrar <ArrowRightIcon className="h-5" />
-                </button>
-                <button className="flex items-center justify-center h-10 w-100 gap-2 rounded-xl border border-[#000000] bg-[#FECB0A] text-black font-semibold cursor-pointer">
-                    Cadastre-se <ArrowRightIcon className="h-5" />
-                </button>
-            </div>
-
+      {/* Menu Hamburguer (para telas menores) */}
+      <div className="absolute right-4 lg:hidden">
+        <button onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <XMarkIcon className="h-8 w-8" /> : <Bars3Icon className="h-8 w-8" />}
+        </button>
+      </div>
       {/* Menu Hamburguer (para telas menores) */}
       <div className="absolute right-4 lg:hidden">
         <button onClick={() => setIsOpen(!isOpen)}>
