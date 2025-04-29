@@ -5,6 +5,7 @@ import AddMaterialModal from './AddMaterialModal';
 import { useNavigate } from 'react-router-dom';
 import NavbarPanel from '../NavbarPanel';
 
+
 const ClassDetailsForm = () => {
   const navigate = useNavigate();  
   const isMobile = useIsMobile();
@@ -116,7 +117,7 @@ const ClassDetailsForm = () => {
           </div>
         </section>
 
-        {/* Continue button */}
+        
         <div>
           <button
             onClick={() => navigate('/class-model')}
@@ -127,7 +128,7 @@ const ClassDetailsForm = () => {
         </div>
       </main>
 
-      {/* Modal stays at root level */}
+      
       <AddMaterialModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

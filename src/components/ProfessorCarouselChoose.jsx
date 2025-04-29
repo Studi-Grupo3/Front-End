@@ -87,7 +87,7 @@ const ProfessorCarouselChoose = () => {
           <div className="flex justify-center mb-2">
             <button
               type="button"
-              onClick={() => alert("Continuar sem escolher professor")}
+              onClick={() => nav("/agendamentos")}
               className="px-4 sm:px-6 py-2 border border-blue-600 text-blue-600 rounded-full text-sm hover:bg-blue-50"
             >
               Não quero escolher um professor
@@ -122,7 +122,9 @@ const ProfessorCarouselChoose = () => {
                         <p className="text-[#3A6FD8] font-semibold mt-2">{card.subject}</p>
                         <p className="text-gray-600 text-sm mt-2">{card.description}</p>
                       </div>
-                      <div className="p-4 border-t border-gray-200 mt-auto">
+                      <div 
+                      onClick={() => nav("/agendamentos")}
+                      className="p-4 border-t border-gray-200 mt-auto">
                         <button className="w-full py-2 bg-[#3A6FD8] text-white font-bold rounded-lg hover:bg-blue-600 transition">
                           📅 Agendar aula →
                         </button>
