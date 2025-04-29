@@ -15,7 +15,6 @@ export const authService = {
     sessionStorage.removeItem('authToken');
     sessionStorage.removeItem('userId');
     sessionStorage.removeItem('userRole');
-    return api.post('/logout').then(res => res.data);
   },
 
   getToken: () => sessionStorage.getItem('authToken'),

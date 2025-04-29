@@ -1,9 +1,12 @@
 import { useState } from "react";
 import Imagem from "../assets/logo.svg";
+import { useNavigate } from "react-router-dom";
 import { ArrowRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const NavbarHome = () => {
     const [isOpen, setIsOpen] = useState(false);
+
+    const navigate = useNavigate();
 
     return (
         <nav className="sticky top-0 z-50 h-[12vh] w-full bg-[#3A6FD8] border-b-4 border-b-[#FECB0A] text-white px-4 md:px-10 flex items-center justify-between md:justify-center flex-row text-sm">
@@ -30,10 +33,14 @@ const NavbarHome = () => {
 
             {/* Botões */}
             <div className="hidden ml-auto md:flex flex-row gap-4 w-70">
-                <button className="flex items-center justify-center h-10 w-90 gap-2 rounded-xl border-1 border-[#FFFFFF] bg-[#4088E7] text-white font-semibold cursor-pointer">
+                <button 
+                    onClick={() => navigate("/entrar")}
+                className="flex items-center justify-center h-10 w-90 gap-2 rounded-xl border-1 border-[#FFFFFF] bg-[#4088E7] text-white font-semibold cursor-pointer">
                     Entrar <ArrowRightIcon className="h-5" />
                 </button>
-                <button className="flex items-center justify-center h-10 w-100 gap-2 rounded-xl border-1 border-[#000000] bg-[#FECB0A] text-black font-semibold cursor-pointer">
+                <button 
+                    onClick={() => navigate("/cadastrar")}
+                className="flex items-center justify-center h-10 w-100 gap-2 rounded-xl border-1 border-[#000000] bg-[#FECB0A] text-black font-semibold cursor-pointer">
                     Cadastre-se <ArrowRightIcon className="h-5" />
                 </button>
             </div>
