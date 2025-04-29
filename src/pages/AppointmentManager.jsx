@@ -5,6 +5,7 @@ import { TabNav } from '../components/appointment-manager/TabNav';
 import { UpcomingAppointments } from '../components/appointment-manager/UpcomingAppointments';
 import { PastAppointments } from '../components/appointment-manager/PastAppointments';
 import { CalendarView } from '../components/appointment-manager/CalendarView';
+import NavbarPanel from '../components/NavbarPanel';
 
 export const AppointmentManager = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
@@ -30,6 +31,7 @@ export const AppointmentManager = () => {
 
   return (
     <div className="w-full min-h-screen bg-gray-50">
+      <NavbarPanel/>
       <main className="w-5/6 mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-center mb-8">Acompanhe seus agendamentos</h1>
 
