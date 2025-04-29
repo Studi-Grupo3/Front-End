@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Imagem from "../assets/logo.svg";
 import { Plus } from "lucide-react";
 import UserAvatar from "./UserAvatar";
@@ -11,9 +12,11 @@ import {
   DocumentTextIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
+import { authService } from "../services/authService";
 
 const NavbarPanel = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Simulação do status de verificação
   const emailVerificado = true;
@@ -25,6 +28,20 @@ const NavbarPanel = () => {
 
   const handleUserAvatarClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      console.log("Logout realizado com sucesso.");
+
+      sessionStorage.clear();
+      navigate("/");
+      window.location.reload();
+    } catch (error) {
+      console.error("Erro ao realizar logout:", error);
+      alert("Erro ao realizar logout. Tente novamente.");
+    }
   };
 
   return (
@@ -141,7 +158,10 @@ const NavbarPanel = () => {
             </li>
 
             {/* Sair */}
-            <li className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+            <li
+              className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition"
+              onClick={handleLogout}
+            >
               <div className="flex items-center gap-2 text-red-600">
                 <ArrowRightOnRectangleIcon className="h-5 w-5" />
                 <span className="text-sm font-semibold">Sair da Conta</span>
