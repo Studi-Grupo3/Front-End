@@ -6,6 +6,8 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { authService } from '../services/authService';
 import { showAlert } from '../components/ShowAlert';
 import LoadingButton from '../components/ui/LoadingButton';
+import { FcGoogle } from "react-icons/fc";
+
 
 const LoginPage = () => {
 

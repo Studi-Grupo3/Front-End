@@ -6,6 +6,8 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { studentService } from '../services/studentService';
 import LoadingButton from '../components/ui/LoadingButton';
 import { showAlert } from '../components/ShowAlert';
+import { FcGoogle } from "react-icons/fc";
+
 
 const RegisterPage = () => {
 
