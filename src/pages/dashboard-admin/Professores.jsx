@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sidebar } from '../../components/dashboard-admin/Sidebar';
 import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
 import { MobileSidebar } from '../../components/dashboard-admin/mobile/MobileSidebar';
@@ -8,11 +8,34 @@ import { ChartSection } from '../../components/dashboard-admin/ChartSection';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
 
 import { Users, CheckCircle, BookOpen, Star } from 'lucide-react';
-import { teacherCharts } from '../../data/data-chart/teacherCharts';
-import { paymentsData } from '../../data/data-table/paymentTable';
+import { teacherService } from '../../services/teacherService';
 
 export function Professores() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [charts, setCharts] = useState([]);
+  const [payments, setPayments] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [statsData, chartsData, paymentsData] = await Promise.all([
+          teacherService.getStats(),
+          teacherService.getCharts(),
+          teacherService.getPayments()
+        ]);
+        setStats(statsData);
+        setCharts(chartsData);
+        setPayments(paymentsData);
+      } catch (err) {
+        console.error('Erro ao carregar dados dos professores:', err.message);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (!stats) return <div className="p-6">Carregando dados...</div>;
 
   return (
     <div className="flex min-h-screen bg-gray-100 flex-col md:flex-row">
@@ -25,39 +48,39 @@ export function Professores() {
         <main className="p-6 space-y-8">
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              title="24"
+              title={stats.totalProfessores}
               subtitle="Total de Professores"
-              percentage="+5% este mês"
+              percentage={stats.totalProfessoresChange}
               percentageColor="text-green-500"
               icon={<Users className="text-blue-500 w-5 h-5" />}
             />
             <StatCard
-              title="18"
+              title={stats.professoresAtivos}
               subtitle="Professores Ativos"
-              percentage="+2% este mês"
+              percentage={stats.professoresAtivosChange}
               percentageColor="text-green-500"
               icon={<CheckCircle className="text-emerald-500 w-5 h-5" />}
             />
             <StatCard
-              title="1.250"
+              title={stats.horasAula}
               subtitle="Horas de Aula"
-              percentage="+8% em relação a Abril"
+              percentage={stats.horasAulaChange}
               percentageColor="text-green-500"
               icon={<BookOpen className="text-purple-500 w-5 h-5" />}
             />
             <StatCard
-              title="4.7"
+              title={stats.mediaAvaliacao}
               subtitle="Média de Avaliação"
-              percentage="Base de 120 avaliações"
+              percentage={stats.avaliacoesBase}
               percentageColor="text-gray-500"
               icon={<Star className="text-yellow-500 w-5 h-5" />}
             />
           </section>
 
-          <ChartSection charts={teacherCharts} />
+          <ChartSection charts={charts} />
           <TableSection
             title="Pagamentos Recentes"
-            data={paymentsData}
+            data={payments}
             columns={[
               { label: 'Professor', accessor: 'name' },
               { label: 'Data', accessor: 'date' },

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sidebar } from '../../components/dashboard-admin/Sidebar';
 import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
 import { MobileSidebar } from '../../components/dashboard-admin/mobile/MobileSidebar';
@@ -7,12 +7,35 @@ import { StatCard } from '../../components/dashboard-admin/StatCard';
 import { ChartSection } from '../../components/dashboard-admin/ChartSection';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
 
-import { DollarSign, CreditCard, BarChart, CalendarClock } from 'lucide-react';
-import { financeCharts } from '../../data/data-chart/financeCharts';
-import { paymentsData } from '../../data/data-table/paymentTable';
+import { Users, CheckCircle, BookOpen, Star } from 'lucide-react';
+import { teacherService } from '../../services/teacherService';
 
-export function Financas() {
+export function Professores() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [charts, setCharts] = useState([]);
+  const [payments, setPayments] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [statsData, chartsData, paymentsData] = await Promise.all([
+          teacherService.getStats(),
+          teacherService.getCharts(),
+          teacherService.getPayments()
+        ]);
+        setStats(statsData);
+        setCharts(chartsData);
+        setPayments(paymentsData);
+      } catch (err) {
+        console.error('Erro ao carregar dados dos professores:', err.message);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (!stats) return <div className="p-6">Carregando dados...</div>;
 
   return (
     <div className="flex min-h-screen bg-gray-100 flex-col md:flex-row">
@@ -21,43 +44,43 @@ export function Financas() {
       <MobileHeader onOpen={() => setMobileMenuOpen(true)} />
 
       <div className="flex-1 md:ml-64 mt-20 md:mt-0">
-        <HeaderSection title="Finanças" />
+        <HeaderSection title="Professores" />
         <main className="p-6 space-y-8">
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              title="R$ 62.543,00"
-              subtitle="Receita Total"
-              percentage="+15% este mês"
+              title={stats.totalProfessores}
+              subtitle="Total de Professores"
+              percentage={stats.totalProfessoresChange}
               percentageColor="text-green-500"
-              icon={<DollarSign className="text-green-600 w-5 h-5" />}
+              icon={<Users className="text-blue-500 w-5 h-5" />}
             />
             <StatCard
-              title="R$ 32.890,00"
-              subtitle="Receita Confirmada"
-              percentage="+10% em relação a Março"
+              title={stats.professoresAtivos}
+              subtitle="Professores Ativos"
+              percentage={stats.professoresAtivosChange}
               percentageColor="text-green-500"
-              icon={<CreditCard className="text-blue-500 w-5 h-5" />}
+              icon={<CheckCircle className="text-emerald-500 w-5 h-5" />}
             />
             <StatCard
-              title="R$ 18.945,00"
-              subtitle="Receita Pendente"
-              percentage="-5% em relação a Março"
-              percentageColor="text-red-500"
-              icon={<BarChart className="text-yellow-500 w-5 h-5" />}
+              title={stats.horasAula}
+              subtitle="Horas de Aula"
+              percentage={stats.horasAulaChange}
+              percentageColor="text-green-500"
+              icon={<BookOpen className="text-purple-500 w-5 h-5" />}
             />
             <StatCard
-              title="2h"
-              subtitle="Tempo Médio por Pagamento"
-              percentage="Base Abril"
+              title={stats.mediaAvaliacao}
+              subtitle="Média de Avaliação"
+              percentage={stats.avaliacoesBase}
               percentageColor="text-gray-500"
-              icon={<CalendarClock className="text-gray-500 w-5 h-5" />}
+              icon={<Star className="text-yellow-500 w-5 h-5" />}
             />
           </section>
 
-          <ChartSection charts={financeCharts} />
+          <ChartSection charts={charts} />
           <TableSection
             title="Pagamentos Recentes"
-            data={paymentsData}
+            data={payments}
             columns={[
               { label: 'Professor', accessor: 'name' },
               { label: 'Data', accessor: 'date' },
