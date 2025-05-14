@@ -8,8 +8,13 @@ export function TableSection({ title, columns, data }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredData = data.filter((row) =>
-    row.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  columns.some((col) =>
+    String(row[col.accessor] || '')
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  )
+);
+
 
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const paginatedData = filteredData.slice(

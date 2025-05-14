@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sidebar } from '../../components/dashboard-admin/Sidebar';
 import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
 import { MobileSidebar } from '../../components/dashboard-admin/mobile/MobileSidebar';
@@ -8,11 +8,34 @@ import { ChartSection } from '../../components/dashboard-admin/ChartSection';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
 
 import { CreditCard, Banknote, Wallet, TrendingUp } from 'lucide-react';
-import { paymentCharts } from '../../data/data-chart/paymentCharts';
-import { paymentsData } from '../../data/data-table/paymentTable';
+import { paymentService } from '../../services/paymentService';
 
 export function Pagamentos() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [charts, setCharts] = useState([]);
+  const [payments, setPayments] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [statsData, chartsData, recentData] = await Promise.all([
+          paymentService.getStats(),
+          paymentService.getCharts(),
+          paymentService.getRecent()
+        ]);
+        setStats(statsData);
+        setCharts(chartsData);
+        setPayments(recentData);
+      } catch (error) {
+        console.error('Erro ao buscar dados de pagamentos:', error.message);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (!stats) return <div className="p-6">Carregando dados...</div>;
 
   return (
     <div className="flex min-h-screen bg-gray-100 flex-col md:flex-row">
@@ -25,28 +48,28 @@ export function Pagamentos() {
         <main className="p-6 space-y-8">
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              title="R$ 45.000,00"
+              title={stats.total}
               subtitle="Total de Pagamentos"
-              percentage="+7% este mês"
+              percentage={stats.totalChange}
               percentageColor="text-green-500"
               icon={<CreditCard className="text-green-600 w-5 h-5" />}
             />
             <StatCard
-              title="R$ 38.000,00"
+              title={stats.confirmados}
               subtitle="Pagamentos Confirmados"
-              percentage="+6% este mês"
+              percentage={stats.confirmadosChange}
               percentageColor="text-green-500"
               icon={<Banknote className="text-blue-500 w-5 h-5" />}
             />
             <StatCard
-              title="R$ 5.500,00"
+              title={stats.pendentes}
               subtitle="Pendentes"
-              percentage="-3% este mês"
+              percentage={stats.pendentesChange}
               percentageColor="text-yellow-500"
               icon={<Wallet className="text-yellow-500 w-5 h-5" />}
             />
             <StatCard
-              title="7 dias"
+              title={stats.tempoMedio}
               subtitle="Tempo Médio de Processamento"
               percentage="Base Março"
               percentageColor="text-gray-500"
@@ -54,10 +77,10 @@ export function Pagamentos() {
             />
           </section>
 
-          <ChartSection charts={paymentCharts} />
+          <ChartSection charts={charts} />
           <TableSection
             title="Pagamentos Recentes"
-            data={paymentsData}
+            data={payments}
             columns={[
               { label: 'Professor', accessor: 'name' },
               { label: 'Data', accessor: 'date' },
