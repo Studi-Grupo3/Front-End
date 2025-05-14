@@ -7,9 +7,9 @@ export default function YourComponent() {
   const nav = useNavigate();
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <NavbarPanel />
-      <ProfessorCarouselChoose />   
+      <ProfessorCarouselChoose />
     </div>
   );
 }
