@@ -10,6 +10,7 @@ export function ChartSection({ charts = [] }) {
           type={chart.type}
           data={chart.data}
           options={chart.options}
+          color={chart.color}
         />
       ))}
     </section>
