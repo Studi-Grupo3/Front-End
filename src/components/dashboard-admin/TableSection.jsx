@@ -15,7 +15,6 @@ export function TableSection({ title, columns, data }) {
   )
 );
 
-
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const paginatedData = filteredData.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
