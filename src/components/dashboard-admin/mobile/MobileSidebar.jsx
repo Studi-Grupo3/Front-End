@@ -26,7 +26,7 @@ import {
           <SidebarNavItem label="Agendamentos" icon={<CalendarDays size={18} />} to="/dashboard/agendamentos" />
           <SidebarNavItem label="Pagamentos" icon={<CreditCard size={18} />} to="/dashboard/pagamentos" />
           <SidebarNavItem label="Gerenciamento" icon={<UserCog size={18} />} to="/dashboard/gerenciamento" />
-          <SidebarNavItem label="Relatórios" icon={<FileText size={18} />} to="/dashboard/relatorios" />
+          {/* <SidebarNavItem label="Relatórios" icon={<FileText size={18} />} to="/dashboard/relatorios" /> */}
           <SidebarNavItem label="Configurações" icon={<Settings size={18} />} to="/dashboard/configuracoes" />
         </nav>
       </div>
