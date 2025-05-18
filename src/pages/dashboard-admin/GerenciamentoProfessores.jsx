@@ -5,10 +5,12 @@ import { MobileSidebar } from '../../components/dashboard-admin/mobile/MobileSid
 import { MobileHeader } from '../../components/dashboard-admin/mobile/MobileHeader';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
 import { Button } from '../../components/ui/Button';
-import { Edit2, Plus, UserPlus } from 'lucide-react';
+import { Edit2, UserPlus } from 'lucide-react';
 import { teacherManagerService } from '../../services/dashboard/teacherManagerService';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
+
+import { translateSubject } from '../../utils/tradutionUtils';
 
 export function GerenciamentoProfessores() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -17,7 +19,7 @@ export function GerenciamentoProfessores() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
@@ -65,12 +67,14 @@ export function GerenciamentoProfessores() {
   const columns = [
     { label: 'Nome', accessor: 'name' },
     { label: 'E-mail', accessor: 'email' },
-    { label: 'CPF', accessor: 'cpf' },
-    { label: 'Disciplina', accessor: 'subject' },
+    {
+      label: 'Disciplina',
+      accessor: 'subject',
+      render: row => translateSubject(row.subject)
+    },
     {
       label: 'Ações',
-      accessor: 'actions',
-      render: (_, row) => (
+      render: row => (
         <Button size="sm" variant="ghost" onClick={() => openEdit(row)}>
           <Edit2 className="w-4 h-4" />
         </Button>
@@ -97,11 +101,10 @@ export function GerenciamentoProfessores() {
             columns={columns}
             loading={loading}
             action={
-              <>
-                <Button variant="primary" onClick={openNew}>
-                  <UserPlus className="w-5 h-5 mr-2" /> Adicionar Professor
-                </Button>
-              </>
+              <Button variant="primary" onClick={openNew}>
+                <UserPlus className="w-5 h-5 mr-2" />
+                Adicionar Professor
+              </Button>
             }
           />
         </main>
@@ -116,24 +119,24 @@ export function GerenciamentoProfessores() {
             <Input
               label="Nome Completo"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
             />
             <Input
               label="E-mail"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
             />
             <Input
               label="Disciplina"
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={e => setSubject(e.target.value)}
             />
             {editingId === null && (
               <Input
                 label="CPF"
                 value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
+                onChange={e => setCpf(e.target.value)}
               />
             )}
           </div>
@@ -141,7 +144,9 @@ export function GerenciamentoProfessores() {
             <Button variant="ghost" onClick={() => setShowForm(false)}>
               Cancelar
             </Button>
-            <Button onClick={save} variant="primary">Salvar</Button>
+            <Button variant="primary" onClick={save}>
+              Salvar
+            </Button>
           </div>
         </Modal>
       )}
