@@ -1,4 +1,5 @@
 import { api } from '../provider/api';
+import { translateMonth, translateWeekday, translatePaymentStatus } from '../../utils/tradutionUtils';
 
 export const overviewDashService = {
   async fetchOverview() {
@@ -17,18 +18,17 @@ export const overviewDashService = {
   },
 
   async getMonthlyRevenueChart() {
-  const data = await this.fetchOverview();
+    const data = await this.fetchOverview();
 
-  return {
-    type: 'bar',
-    title: 'Receita Mensal',
-    data: data.monthlyRevenue.map(item => ({
-      label: item.month, 
-      value: item.revenue  
-    }))
-  };
-},
-
+    return {
+      type: 'bar',
+      title: 'Receita Mensal',
+      data: data.monthlyRevenue.map(item => ({
+        label: translateMonth(item.month),
+        value: item.revenue
+      }))
+    };
+  },
 
   async getLessonsPerDayChart() {
     const data = await this.fetchOverview();
@@ -36,30 +36,37 @@ export const overviewDashService = {
       type: 'bar',
       title: 'Aulas por Dia da Semana',
       data: data.lessonsPerDay.map(item => ({
-        label: item.label,
+        label: translateWeekday(item.label),
         value: item.value
       }))
     };
   },
 
   async getRecentPaymentsTable() {
-  const data = await this.fetchOverview();
-  return data.recentPayments.map(item => {
-    const date = new Date(item.date);
-    const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${
-      (date.getMonth() + 1).toString().padStart(2, '0')
-    }/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${
-      date.getMinutes().toString().padStart(2, '0')
-    }`;
+    const data = await this.fetchOverview();
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
 
-    return {
-      teacherName: item.professor,
-      dateTime: formattedDate,
-      totalValue: item.value,
-      duration: item.hours,
-      paymentStatus: item.status,
-      actions: ''
-    };
-  });
-}
+    return data.recentPayments.map(item => {
+      const date = new Date(item.date);
+      const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')
+        }/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')
+        }`;
+
+      const hourlyRate = item.value;
+      const totalValue = hourlyRate * item.hours;
+
+      return {
+        teacherName: item.professor,
+        dateTime: formattedDate,
+        hourlyRate: formatter.format(hourlyRate),
+        duration: item.hours,
+        totalValue: formatter.format(totalValue),
+        paymentStatus: translatePaymentStatus(item.status),
+        actions: ''
+      };
+    });
+  }
 };

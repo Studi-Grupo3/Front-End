@@ -88,7 +88,6 @@ export function Agendamentos() {
               { label: 'Hora', accessor: 'time' },
               { label: 'Local', accessor: 'location' },
               { label: 'Status', accessor: 'status' },
-              { label: 'Ações', accessor: 'actions' }
             ]}
           />
         </main>

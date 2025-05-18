@@ -85,10 +85,10 @@ export function VisaoGeral() {
             columns={[
               { label: 'Professor', accessor: 'teacherName' },
               { label: 'Data', accessor: 'dateTime' },
-              { label: 'Valor', accessor: 'totalValue' },
-              { label: 'Horas', accessor: 'duration' },
-              { label: 'Status', accessor: 'paymentStatus' },
-              { label: 'Ações', accessor: 'actions' }
+              { label: 'Valor / Hora', accessor: 'hourlyRate' },
+              { label: 'Horas Trabalhadas', accessor: 'duration' },
+              { label: 'Valor Total', accessor: 'totalValue' },
+              { label: 'Status', accessor: 'paymentStatus' }
             ]}
           />
         </main>

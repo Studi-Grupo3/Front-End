@@ -64,7 +64,6 @@ export function Professores() {
               { label: 'Horas Trabalhadas', accessor: 'hours' },
               { label: 'Valor/Hora', accessor: 'value' },
               { label: 'Status', accessor: 'status' },
-              { label: 'Ações', accessor: 'actions' }
             ]}
           />
         </main>

@@ -1,5 +1,5 @@
-// services/dashboard/teacherDashService.js
 import { api } from '../provider/api';
+import { translatePaymentStatus, translateSubject } from '../../utils/tradutionUtils';
 
 export const teacherDashService = {
   async fetchDashboard() {
@@ -33,7 +33,7 @@ export const teacherDashService = {
         type: 'pie',
         title: 'Distribuição por Disciplina',
         data: (data.subsjectChartValues || []).map(d => ({
-          label: d.label,
+          label: translateSubject(d.label),
           value: d.percentage
         }))
       }
@@ -44,10 +44,10 @@ export const teacherDashService = {
     const data = await this.fetchDashboard();
     return (data.teacherTableValues || []).map(item => ({
       name: item.name,
-      subject: item.subject,
+      subject: translateSubject(item.subject),
       hours: item.hoursWorked,
       value: item.hourlyRate,
-      status: item.status,
+      status: translatePaymentStatus(item.status),
       actions: '…'
     }));
   }

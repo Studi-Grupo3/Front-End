@@ -46,11 +46,7 @@ export function TableSection({ title, columns, data, action }) {
         {columns.map((col, i) => (
           <td
             key={i}
-            className={`
-              px-6 py-4 whitespace-nowrap
-              ${col.accessor === 'status' ? 'capitalize' : ''}
-              ${col.label === 'Pago' ? 'text-center' : ''}
-            `}
+            className="px-6 py-4 whitespace-nowrap text-center"
           >
             {col.render
               ? col.render(row[col.accessor], row)
@@ -63,15 +59,12 @@ export function TableSection({ title, columns, data, action }) {
 
   return (
     <section className="bg-white p-6 rounded-xl shadow-sm overflow-hidden">
-      {/* Cabeçalho: título, busca e ação extra (botão, filtros, etc) */}
+      {/* Cabeçalho: título, busca e ação extra */}
       <div className="mb-4 flex items-center justify-between gap-2">
         <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
 
         <div className="flex items-center gap-2">
-          {/* Primeiro o botão/ação extra */}
           {action && <div>{action}</div>}
-
-          {/* Depois o campo de busca */}
           <input
             type="text"
             placeholder="🔍 Buscar..."
@@ -86,16 +79,13 @@ export function TableSection({ title, columns, data, action }) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full text-left text-sm text-gray-600 border border-gray-200">
+        <table className="min-w-full text-center text-sm text-gray-600 border border-gray-200">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               {columns.map((col, i) => (
                 <th
                   key={i}
-                  className={`
-                    px-6 py-3 font-semibold whitespace-nowrap
-                    ${col.label === 'Pago' ? 'text-center w-20' : ''}
-                  `}
+                  className="px-6 py-3 font-semibold whitespace-nowrap text-center"
                 >
                   {col.label}
                 </th>
