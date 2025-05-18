@@ -1,4 +1,3 @@
-// pages/Professores.jsx
 import { useEffect, useState } from 'react';
 import { Sidebar } from '../../components/dashboard-admin/Sidebar';
 import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
@@ -56,7 +55,7 @@ export function Professores() {
           </section>
           <ChartSection charts={charts} />
           <TableSection
-            title="Pagamentos Recentes"
+            title="Lista de Professores"
             data={payments}
             columns={[
               { label: 'Professor', accessor: 'name' },

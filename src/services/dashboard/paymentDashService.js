@@ -1,7 +1,7 @@
 import { api } from '../provider/api';
+import { translatePaymentStatus, translateSubject } from '../../utils/tradutionUtils';
 
 export const paymentDashService = {
-  // Busca dados brutos
   async fetchDashboard(month, year) {
     const response = await api.get('/dashboard/payments', {
       params: { month, year }
@@ -9,7 +9,6 @@ export const paymentDashService = {
     return response.data;
   },
 
-  // Estatísticas
   async getStats(month, year) {
     const { stats } = await this.fetchDashboard(month, year);
     return {
@@ -20,23 +19,20 @@ export const paymentDashService = {
     };
   },
 
-  // Lista recente
   async getRecent(month, year) {
     const { recent } = await this.fetchDashboard(month, year);
     return recent.map(item => ({
       id: item.id,
       name: item.name,
-      subject: item.subject,
+      subject: translateSubject(item.subject),
       valuePerHour: item.valuePerHour,
       hours: item.hours,
       total: item.total,
-      status: item.status
+      status: translatePaymentStatus(item.status)
     }));
   },
 
-  // Toggle pending ↔ paid
   async toggleStatus(id) {
-    // seu endpoint de toggle
     const response = await api.post(`/dashboard/payments/${id}/toggle`);
     return response.data;
   }
