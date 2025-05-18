@@ -1,4 +1,5 @@
 import { api } from "../provider/api";
+import { translateAppointmentStatus } from '../../utils/tradutionUtils';
 
 export const appointmentDashService = {
   async fetchDashboard() {
@@ -60,7 +61,7 @@ export const appointmentDashService = {
       date: formattedDate,
       time: formattedTime,
       location: item.location,
-      status: item.status,
+      status: translateAppointmentStatus(item.status),
       actions: "…"
     };
   });

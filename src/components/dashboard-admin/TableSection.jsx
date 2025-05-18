@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 
 const ITEMS_PER_PAGE = 5;
 
-export function TableSection({ title, columns, data }) {
+export function TableSection({ title, columns, data, action }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredData = data.filter(row =>
-    columns.some(col =>
-      String(row[col.accessor] || '')
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-    )
+    columns.some(col => {
+      if (col.accessor) {
+        return String(row[col.accessor] || '')
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      }
+      return false;
+    })
   );
 
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
@@ -24,34 +27,28 @@ export function TableSection({ title, columns, data }) {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`
-        px-3 py-1.5 rounded-md border font-medium text-sm transition
-        ${disabled
+      className={
+        `px-3 py-1.5 rounded-md border font-medium text-sm transition ` +
+        (disabled
           ? 'cursor-not-allowed text-gray-400 border-gray-200 bg-gray-100'
-          : 'text-blue-600 border-blue-300 hover:bg-blue-50'
-        }
-      `}
+          : 'text-blue-600 border-blue-300 hover:bg-blue-50')
+      }
     >
       {label}
     </button>
   );
 
-  // Renderizador de linha, que respeita 'accessor' ou 'render'
   function TableRow({ row, columns }) {
     return (
       <tr className="odd:bg-white even:bg-gray-50">
-        {columns.map((col, i) => (
-          <td
-            key={i}
-            className={`px-6 py-4 whitespace-nowrap ${
-              col.accessor === 'status' ? 'capitalize' : ''
-            } ${col.label === 'Pago' ? 'text-center' : ''}`}
-          >
-            {col.render
-              ? col.render(row)
-              : row[col.accessor]}
-          </td>
-        ))}
+        {columns.map((col, i) => {
+          const content = col.render ? col.render(row) : row[col.accessor];
+          return (
+            <td key={i} className="px-6 py-4 whitespace-nowrap text-center">
+              {content}
+            </td>
+          );
+        })}
       </tr>
     );
   }
@@ -60,28 +57,30 @@ export function TableSection({ title, columns, data }) {
     <section className="bg-white p-6 rounded-xl shadow-sm overflow-hidden">
       <div className="mb-4 flex items-center justify-between gap-2">
         <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
-        <input
-          type="text"
-          placeholder="🔍 Buscar..."
-          value={searchQuery}
-          onChange={e => {
-            setSearchQuery(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="w-full sm:w-64 px-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+
+        <div className="flex items-center gap-2">
+          {action && <div>{action}</div>}
+          <input
+            type="text"
+            placeholder="🔍 Buscar..."
+            value={searchQuery}
+            onChange={e => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full sm:w-64 px-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full text-left text-sm text-gray-600 border border-gray-200">
+        <table className="min-w-full text-center text-sm text-gray-600 border border-gray-200">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               {columns.map((col, i) => (
                 <th
                   key={i}
-                  className={`px-6 py-3 font-semibold whitespace-nowrap ${
-                    col.label === 'Pago' ? 'text-center w-20' : ''
-                  }`}
+                  className="px-6 py-3 font-semibold whitespace-nowrap text-center"
                 >
                   {col.label}
                 </th>
@@ -95,7 +94,6 @@ export function TableSection({ title, columns, data }) {
           </tbody>
         </table>
 
-        {/* Paginação */}
         <div className="mt-6 flex justify-center">
           <div className="flex items-center space-x-2">
             <Button

@@ -59,9 +59,8 @@ export function Pagamentos() {
 
   if (!stats) return <div className="p-6">Carregando dados...</div>;
 
-  // filtra e formata antes de passar para a tabela
   const filtered = payments
-    .filter(p => !onlyPending || p.status === 'pending')
+    .filter(p => !onlyPending || p.status === 'Pendente')
     .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .map(item => ({
       ...item,
@@ -82,7 +81,6 @@ export function Pagamentos() {
         <HeaderSection title="Pagamentos" />
         <main className="p-6 space-y-8">
 
-          {/* Estatísticas */}
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               title={formatCurrency(stats.totalAmount)}
@@ -106,7 +104,6 @@ export function Pagamentos() {
             />
           </section>
 
-          {/* Filtros */}
           <div className="flex flex-wrap items-center gap-4 bg-white p-4 rounded-xl shadow-sm">
             <select
               value={month}
@@ -129,38 +126,29 @@ export function Pagamentos() {
               ))}
             </select>
             <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
+              <ToggleSwitch
                 checked={onlyPending}
-                onChange={() => setOnlyPending(v => !v)}
+                onChange={() => setOnlyPending(prev => !prev)}
               />
               <span>Somente pendentes</span>
             </label>
-            <input
-              type="text"
-              placeholder="🔍 Buscar professor..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="px-4 py-2 border rounded flex-1 min-w-[200px]"
-            />
           </div>
 
-          {/* Tabela com ToggleSwitch */}
           <TableSection
-            title="Recent Payments"
+            title="Pagamentos Recentes"
             data={filtered}
             columns={[
-              { label: 'Teacher', accessor: 'name' },
-              { label: 'Subject', accessor: 'subject' },
-              { label: 'Value/Hour', accessor: 'valuePerHourFormatted' },
-              { label: 'Hours', accessor: 'hours' },
-              { label: 'Total', accessor: 'totalFormatted' },
+              { label: 'Professor', accessor: 'name' },
+              { label: 'Disciplina', accessor: 'subject' },
+              { label: 'Valor / Hora', accessor: 'valuePerHourFormatted' },
+              { label: 'Horas Trabalhadas', accessor: 'hours' },
+              { label: 'Valor total', accessor: 'totalFormatted' },
               { label: 'Status', accessor: 'status' },
               {
                 label: 'Pago',
                 render: item => (
                   <ToggleSwitch
-                    checked={item.status === 'paid'}
+                    checked={item.status === 'Pago'}
                     onChange={() => handleToggle(item.id)}
                   />
                 )
