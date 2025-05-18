@@ -1,6 +1,5 @@
-// src/components/dashboard-admin/Sidebar.js
 import {
-    Home, BarChart2, Users, CalendarDays, CreditCard, FileText, Settings
+    Home, BarChart2, Users, CalendarDays, CreditCard, FileText, Settings, UserCog
   } from "lucide-react";
   import { SidebarNavItem } from "./SidebarNavItem";
   import logo from "../../assets/logo.svg";
@@ -13,10 +12,10 @@ import {
         </div>
   
         <SidebarNavItem label="Visão Geral" icon={<Home size={18} />} to="/dashboard" />
-        <SidebarNavItem label="Finanças" icon={<BarChart2 size={18} />} to="/dashboard/financas" />
         <SidebarNavItem label="Professores" icon={<Users size={18} />} to="/dashboard/professores" />
         <SidebarNavItem label="Agendamentos" icon={<CalendarDays size={18} />} to="/dashboard/agendamentos" />
         <SidebarNavItem label="Pagamentos" icon={<CreditCard size={18} />} to="/dashboard/pagamentos" />
+        <SidebarNavItem label="Gerenciamento" icon={<UserCog size={18} />} to="/dashboard/gerenciamento" />
         <SidebarNavItem label="Relatórios" icon={<FileText size={18} />} to="/dashboard/relatorios" />
         <SidebarNavItem label="Configurações" icon={<Settings size={18} />} to="/dashboard/configuracoes" />
       </aside>

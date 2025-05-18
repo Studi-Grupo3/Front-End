@@ -1,0 +1,23 @@
+import { api } from '../provider/api';
+
+export const teacherManagerService = {
+
+  async list() {
+    const resp = await api.get('/teachers');
+    return resp.data;
+  },
+
+  async create(payload) {
+    const resp = await api.post('/teachers', payload);
+    return resp.data;
+  },
+
+  async update(id, payload) {
+    const resp = await api.put(`/teachers/${id}`, payload);
+    return resp.data;
+  },
+
+  async remove(cpf) {
+    await api.delete(`/teachers/${cpf}`);
+  },
+};

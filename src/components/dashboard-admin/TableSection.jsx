@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 
 const ITEMS_PER_PAGE = 5;
 
-export function TableSection({ title, columns, data }) {
+export function TableSection({ title, columns, data, action }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // filtra linhas com base em qualquer coluna
   const filteredData = data.filter(row =>
     columns.some(col =>
       String(row[col.accessor] || '')
@@ -14,12 +15,14 @@ export function TableSection({ title, columns, data }) {
     )
   );
 
+  // paginação
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const paginatedData = filteredData.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
 
+  // botão genérico de paginação
   const Button = ({ label, onClick, disabled }) => (
     <button
       onClick={onClick}
@@ -36,19 +39,21 @@ export function TableSection({ title, columns, data }) {
     </button>
   );
 
-  // Renderizador de linha, que respeita 'accessor' ou 'render'
+  // renderiza cada linha, respeitando render customizado
   function TableRow({ row, columns }) {
     return (
       <tr className="odd:bg-white even:bg-gray-50">
         {columns.map((col, i) => (
           <td
             key={i}
-            className={`px-6 py-4 whitespace-nowrap ${
-              col.accessor === 'status' ? 'capitalize' : ''
-            } ${col.label === 'Pago' ? 'text-center' : ''}`}
+            className={`
+              px-6 py-4 whitespace-nowrap
+              ${col.accessor === 'status' ? 'capitalize' : ''}
+              ${col.label === 'Pago' ? 'text-center' : ''}
+            `}
           >
             {col.render
-              ? col.render(row)
+              ? col.render(row[col.accessor], row)
               : row[col.accessor]}
           </td>
         ))}
@@ -58,18 +63,26 @@ export function TableSection({ title, columns, data }) {
 
   return (
     <section className="bg-white p-6 rounded-xl shadow-sm overflow-hidden">
+      {/* Cabeçalho: título, busca e ação extra (botão, filtros, etc) */}
       <div className="mb-4 flex items-center justify-between gap-2">
         <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
-        <input
-          type="text"
-          placeholder="🔍 Buscar..."
-          value={searchQuery}
-          onChange={e => {
-            setSearchQuery(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="w-full sm:w-64 px-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+
+        <div className="flex items-center gap-2">
+          {/* Primeiro o botão/ação extra */}
+          {action && <div>{action}</div>}
+
+          {/* Depois o campo de busca */}
+          <input
+            type="text"
+            placeholder="🔍 Buscar..."
+            value={searchQuery}
+            onChange={e => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full sm:w-64 px-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -79,9 +92,10 @@ export function TableSection({ title, columns, data }) {
               {columns.map((col, i) => (
                 <th
                   key={i}
-                  className={`px-6 py-3 font-semibold whitespace-nowrap ${
-                    col.label === 'Pago' ? 'text-center w-20' : ''
-                  }`}
+                  className={`
+                    px-6 py-3 font-semibold whitespace-nowrap
+                    ${col.label === 'Pago' ? 'text-center w-20' : ''}
+                  `}
                 >
                   {col.label}
                 </th>
