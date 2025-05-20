@@ -8,9 +8,14 @@ export default function Pagamento() {
 
   return (
     <>
-      <NavbarPanel />
+      {/* Navbar fixa no topo */}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <NavbarPanel />
+      </div>
 
       <div className="min-h-screen bg-gray-50 flex flex-col overflow-hidden text-xs">
+        {/* Adicione um espaçamento para compensar a navbar fixa */}
+        <div className="h-16" />
 
         <div className="w-full max-w-6xl text-gray-500 text-sm  mt-14 mx-auto">
           <nav className="text-xs sm:text-sm text-gray-500 mb-6" aria-label="Breadcrumb">

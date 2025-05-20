@@ -17,8 +17,12 @@ export default function ClassModelSelection() {
 
     return (
         <main className="flex flex-col min-h-screen bg-gray-50">
-            <NavbarPanel />
-            <section className="flex-grow flex items-center justify-center p-6">
+            {/* Navbar fixa no topo */}
+            <div className="fixed top-0 left-0 w-full z-50">
+                <NavbarPanel />
+            </div>
+            {/* Adiciona padding-top para não cobrir o conteúdo */}
+            <section className="flex-grow flex items-center justify-center p-1 pt-24">
                 <div className="max-w-4xl w-full bg-white border border-gray-200 rounded-xl p-8 md:p-12 shadow-sm">
                     {/* breadcrumb */}
                     <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-6">

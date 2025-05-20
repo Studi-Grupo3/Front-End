@@ -16,7 +16,6 @@ const professors = [
 ];
 
 const ProfessorCarouselChoose = () => {
-  
   const nav = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const isMobile = useIsMobile();
@@ -32,12 +31,11 @@ const ProfessorCarouselChoose = () => {
   const currentProfessor = professors[currentSlide];
 
   return (
-    <main className="flex min-h-screen bg-gray-50">
-      
+    <main className="flex min-h-screen bg-gray-50 overflow-y-auto p-4">
       <section className="flex-grow flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-full sm:max-w-[1280px] bg-white border border-gray-200 rounded-xl p-6 sm:p-10 shadow-sm">
 
-        <nav className="text-[13px] sm:text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+          <nav className="text-[13px] sm:text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
             <button onClick={() => nav("/Class-Details")} className="hover:underline">Detalhes</button>
             <span className="mx-1">›</span>
             <button onClick={() => nav("/class-model")} className="hover:underline">Modelo de Aula</button>
@@ -52,7 +50,7 @@ const ProfessorCarouselChoose = () => {
           <div className="flex justify-center mb-6">
             <button
               type="button"
-              onClick={() => navigate("/agendamentos")}
+              onClick={() => nav("/agendamentos")}
               className="px-4 sm:px-6 py-2 border border-blue-600 text-blue-600 rounded-full text-sm hover:bg-blue-50"
             >
               Não quero escolher um professor
@@ -68,7 +66,6 @@ const ProfessorCarouselChoose = () => {
                   className="w-full h-64 object-cover rounded-t-xl"
                 />
 
-                
                 <button 
                   onClick={prevSlide} 
                   className="absolute left-1 top-1/2 -translate-y-1/2"
@@ -78,7 +75,7 @@ const ProfessorCarouselChoose = () => {
                 </button>
                 <button 
                   onClick={nextSlide} 
-                  className="absolute right-1 top-1/2 -translate-y-1/2  "
+                  className="absolute right-1 top-1/2 -translate-y-1/2"
                 >
                   <span className="sr-only">Próximo</span>
                   <img src={botaoProximo} alt="Próximo" className="w-9 h-9" />
@@ -96,7 +93,7 @@ const ProfessorCarouselChoose = () => {
 
                 <div className="mt-4">
                   <button 
-                    onClick={() => navigate("/agendamentos")}
+                    onClick={() => nav("/agendamentos")}
                     className="w-full py-2 bg-[#3A6FD8] text-white font-bold rounded-lg hover:bg-blue-600 transition"
                   >
                     📅 Agendar aula →
@@ -113,7 +110,11 @@ const ProfessorCarouselChoose = () => {
               <div className="overflow-hidden w-full flex justify-center">
                 <div className="flex gap-4 w-full justify-center">
                   {professors.map((professor, index) => {
-                    if (Math.abs(currentSlide - index) > 1 && !(currentSlide === 0 && index === professors.length - 1) && !(currentSlide === professors.length - 1 && index === 0)) {
+                    if (
+                      Math.abs(currentSlide - index) > 1 &&
+                      !(currentSlide === 0 && index === professors.length - 1) &&
+                      !(currentSlide === professors.length - 1 && index === 0)
+                    ) {
                       return null;
                     }
 
@@ -140,7 +141,7 @@ const ProfessorCarouselChoose = () => {
                             <p className="text-gray-600 text-sm mt-2">{professor.description}</p>
                           </div>
                           <div 
-                            onClick={() => navigate("/agendamentos")}
+                            onClick={() => nav("/agendamentos")}
                             className="p-4 border-t border-gray-200 mt-auto cursor-pointer"
                           >
                             <button className="w-full py-2 bg-[#3A6FD8] text-white font-bold rounded-lg hover:bg-blue-600 transition">
