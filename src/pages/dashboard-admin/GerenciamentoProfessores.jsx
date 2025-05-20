@@ -10,7 +10,10 @@ import { teacherManagerService } from '../../services/dashboard/teacherManagerSe
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 
-import { translateSubject } from '../../utils/tradutionUtils';
+import {
+  subjectNamesPt,
+  translateSubject
+} from '../../utils/tradutionUtils';
 
 export function GerenciamentoProfessores() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,7 +26,6 @@ export function GerenciamentoProfessores() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
-  const [cpf, setCpf] = useState('');
 
   useEffect(() => {
     load();
@@ -41,7 +43,6 @@ export function GerenciamentoProfessores() {
     setName('');
     setEmail('');
     setSubject('');
-    setCpf('');
     setShowForm(true);
   }
 
@@ -50,15 +51,15 @@ export function GerenciamentoProfessores() {
     setName(row.name);
     setEmail(row.email);
     setSubject(row.subject);
-    setCpf(row.cpf);
     setShowForm(true);
   }
 
   async function save() {
+    const payload = { name, email, subject };
     if (editingId !== null) {
-      await teacherManagerService.update(editingId, { name, email, subject });
+      await teacherManagerService.update(editingId, payload);
     } else {
-      await teacherManagerService.create({ name, email, subject, cpf });
+      await teacherManagerService.create(payload);
     }
     setShowForm(false);
     await load();
@@ -127,18 +128,24 @@ export function GerenciamentoProfessores() {
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
-            <Input
-              label="Disciplina"
-              value={subject}
-              onChange={e => setSubject(e.target.value)}
-            />
-            {editingId === null && (
-              <Input
-                label="CPF"
-                value={cpf}
-                onChange={e => setCpf(e.target.value)}
-              />
-            )}
+
+            <label className="block">
+              <span className="text-sm font-medium">Disciplina</span>
+              <select
+                className="mt-1 block w-full border rounded p-2 max-h-60 overflow-y-auto"
+                value={subject}
+                onChange={e => setSubject(e.target.value)}
+              >
+                <option value="" disabled>
+                  Selecione a disciplina
+                </option>
+                {Object.entries(subjectNamesPt).map(([code, label]) => (
+                  <option key={code} value={code}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="mt-6 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setShowForm(false)}>
