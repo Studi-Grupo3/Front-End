@@ -1,5 +1,5 @@
 import { api } from '../provider/api';
-import { translateMonth, translateWeekday, translatePaymentStatus } from '../../utils/tradutionUtils';
+import { translateMonth, translateWeekday, translatePaymentStatus, translateSubject } from '../../utils/tradutionUtils';
 
 export const overviewDashService = {
   async fetchOverview() {
@@ -43,30 +43,28 @@ export const overviewDashService = {
   },
 
   async getRecentPaymentsTable() {
-    const data = await this.fetchOverview();
-    const formatter = new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    });
+  const data = await this.fetchOverview();
+  const formatter = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
 
-    return data.recentPayments.map(item => {
-      const date = new Date(item.date);
-      const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')
-        }/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')
-        }`;
+  console.log(data.recentPayments);
+  return data.recentPayments.map(item => {
+    const hourlyRate = item.hourlyRate; 
+    const duration = item.durationClass;
 
-      const hourlyRate = item.value;
-      const totalValue = hourlyRate * item.hours;
+    const totalValue = hourlyRate * duration;
+    return {
+      teacherName: item.teacher,         
+      subject: translateSubject(item.subject),               
+      hourlyRate: formatter.format(hourlyRate),
+      duration,                         
+      totalValue: formatter.format(totalValue),
+      paymentStatus: translatePaymentStatus(item.status),
+      actions: ''
+    };
+  });
+}
 
-      return {
-        teacherName: item.professor,
-        dateTime: formattedDate,
-        hourlyRate: formatter.format(hourlyRate),
-        duration: item.hours,
-        totalValue: formatter.format(totalValue),
-        paymentStatus: translatePaymentStatus(item.status),
-        actions: ''
-      };
-    });
-  }
 };
