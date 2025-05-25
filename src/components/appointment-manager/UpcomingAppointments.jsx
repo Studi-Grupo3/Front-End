@@ -1,4 +1,3 @@
-// components/UpcomingAppointments.jsx
 import React, { useState, useEffect } from "react";
 import { appointmentService }      from "../../services/appointmentService";
 import { AppointmentCard }         from "./AppointmentCard";
@@ -39,16 +38,31 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
     };
   });
 
-  const visible = items.filter(app => {
-    switch (filter) {
-      case "CONFIRMED":  return app.status === "SCHEDULED";
-      case "PENDING":    return app.status === "PENDING";
-      case "CANCELLED":  return app.status === "CANCELLED";
-      case "ONLINE":     return app.online;
-      case "OFFLINE":    return !app.online;
-      default:           return true;
-    }
-  });
+  let visible = [];
+  if (filter === "COMPLETED") {
+    visible = [];
+  } else {
+    visible = items.filter(app => {
+      if (app.status === "COMPLETED") return false;
+
+      switch (filter) {
+        case "UPCOMING": 
+          return app.status === "SCHEDULED" || app.status === "CANCELLED";
+        case "CONFIRMED": 
+          return app.status === "SCHEDULED";
+        case "PENDING":   
+          return app.status === "PENDING";
+        case "CANCELLED":  
+          return app.status === "CANCELLED";
+        case "ONLINE":   
+          return app.online;
+        case "OFFLINE":  
+          return !app.online;
+        default: 
+          return app.status === "SCHEDULED" || app.status === "CANCELLED";
+      }
+    });
+  } 
 
   return (
     <>
@@ -64,7 +78,7 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
             time={app.displayTime}
             duration={`${app.duration}min`}
             location={app.location}
-            status={app.status}              // envia o raw status
+            status={app.status}
             online={app.online}
             onDetailsClick={() => {
               setSelected(app);

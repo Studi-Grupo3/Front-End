@@ -1,4 +1,3 @@
-// components/AppointmentCard.jsx
 import React from "react";
 import {
   Calendar,
@@ -76,7 +75,7 @@ export const AppointmentCard = ({
         onClick={onDetailsClick}
         className="w-full border cursor-pointer border-gray-300 text-[var(--azul-custom)] rounded-lg py-2 px-4 hover:bg-blue-50 transition text-center text-sm sm:text-base"
       >
-        <span className="font-medium">Ver Detalhes</span>
+        <span className="font-bold">Ver Detalhes</span>
       </button>
     </div>
   );

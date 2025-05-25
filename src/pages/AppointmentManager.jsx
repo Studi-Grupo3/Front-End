@@ -1,26 +1,31 @@
-import React, { useState } from 'react';
-import { FilterButton }       from '../components/appointment-manager/FilterButton';
-import { ScheduleButton }     from '../components/appointment-manager/ScheduleButton';
-import { TabNav }             from '../components/appointment-manager/TabNav';
-import { UpcomingAppointments } from '../components/appointment-manager/UpcomingAppointments';
-import { PastAppointments }     from '../components/appointment-manager/PastAppointments';
-import { CalendarView }         from '../components/appointment-manager/CalendarView';
-import NavbarPanel             from '../components/NavbarPanel';
+import React, { useState } from 'react'
+import { FilterButton }       from '../components/appointment-manager/FilterButton'
+import { ScheduleButton }     from '../components/appointment-manager/ScheduleButton'
+import { TabNav }             from '../components/appointment-manager/TabNav'
+import { UpcomingAppointments } from '../components/appointment-manager/UpcomingAppointments'
+import { AllAppointments }     from '../components/appointment-manager/AllAppointments'
+import { CalendarView }         from '../components/appointment-manager/CalendarView'
+import NavbarPanel             from '../components/NavbarPanel'
 
 const FILTER_LABELS = {
   ALL:       'Todos os filtros',
   CONFIRMED: 'Aulas Agendadas',
-  PENDING:   'Aulas Concluídas',
+  COMPLETED: 'Aulas Concluídas',
   CANCELLED: 'Aulas Canceladas',
   ONLINE:    'Aulas Online',
   OFFLINE:   'Aulas Presenciais',
-};
+}
 
 export const AppointmentManager = () => {
-  const [activeTab, setActiveTab] = useState('upcoming');
-  const [filter, setFilter]       = useState('ALL');
+  const [activeTab, setActiveTab] = useState('upcoming')
+  const [filter, setFilter]       = useState('ALL')
 
-  const commonProps = { filter, setActiveTab };
+  const handleTabChange = tabId => {
+    setActiveTab(tabId)
+    setFilter('ALL')
+  }
+
+  const commonProps = { filter, setActiveTab }
 
   return (
     <div className="w-full min-h-screen bg-gray-50">
@@ -31,13 +36,14 @@ export const AppointmentManager = () => {
         </h1>
 
         <div className="flex justify-between items-center mb-6">
-          <TabNav tabs={[
-              { id: 'upcoming', label: 'Próximas aulas' },
-              { id: 'past',     label: 'Aulas Passadas' },
+          <TabNav
+            tabs={[
+              { id: 'upcoming', label: 'Próximas Aulas' },
+              { id: 'past',     label: 'Todas as Aulas' },
               { id: 'calendar', label: 'Calendário' },
             ]}
             activeTab={activeTab}
-            onChange={setActiveTab}
+            onChange={handleTabChange}
           />
 
           <div className="flex space-x-3">
@@ -51,9 +57,9 @@ export const AppointmentManager = () => {
         </div>
 
         {activeTab === 'upcoming' && <UpcomingAppointments {...commonProps} />}
-        {activeTab === 'past'     && <PastAppointments     {...commonProps} />}
+        {activeTab === 'past'     && <AllAppointments      {...commonProps} />}
         {activeTab === 'calendar' && <CalendarView         {...commonProps} />}
       </main>
     </div>
-  );
-};
+  )
+}

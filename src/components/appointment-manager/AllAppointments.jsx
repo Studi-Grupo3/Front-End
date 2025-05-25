@@ -1,30 +1,27 @@
-// components/PastAppointments.jsx
+// components/AllAppointments.jsx
 import React, { useState, useEffect } from "react";
 import { appointmentService }      from "../../services/appointmentService";
 import { AppointmentCard }         from "./AppointmentCard";
 import { translateSubject }        from "../../utils/tradutionUtils";
 import { translateProfessorTitle } from "../../utils/tradutionUtils";
 
-export const PastAppointments = ({ filter }) => {
-  const [past, setPast]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+export const AllAppointments = ({ filter = "ALL" }) => {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
 
   useEffect(() => {
     appointmentService
       .list()
-      .then(data => {
-        const completed = data.filter(a => a.status === "COMPLETED");
-        setPast(completed);
-      })
-      .catch(() => setError("Não foi possível carregar o histórico."))
+      .then(data => setAppointments(data))
+      .catch(() => setError("Não foi possível carregar os agendamentos."))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div>Carregando histórico...</div>;
+  if (loading) return <div>Carregando agendamentos...</div>;
   if (error)   return <div>{error}</div>;
 
-  const items = past.map(appt => {
+  const items = appointments.map(appt => {
     const dt = new Date(appt.dateTime);
     return {
       ...appt,
@@ -41,9 +38,25 @@ export const PastAppointments = ({ filter }) => {
 
   const visible = items.filter(app => {
     switch (filter) {
-      case "ONLINE":  return app.online;
-      case "OFFLINE": return !app.online;
-      default:        return true;
+      case "ALL":
+        return true;
+      case "UPCOMING":
+        return app.status === "SCHEDULED" || app.status === "CANCELLED";
+      case "CONFIRMED":
+        return app.status === "SCHEDULED";
+      case "PENDING":
+        return app.status === "PENDING";
+      case "CANCELLED":
+        return app.status === "CANCELLED";
+      case "COMPLETED":
+        return app.status === "COMPLETED";
+      case "ONLINE":
+        return app.online;
+      case "OFFLINE":
+        return !app.online;
+      default:
+        // qualquer outro valor de filter, tratar como ALL
+        return true;
     }
   });
 
@@ -60,7 +73,7 @@ export const PastAppointments = ({ filter }) => {
           time={app.displayTime}
           duration={`${app.duration}min`}
           location={app.location}
-          status="COMPLETED"               // ou app.status, já é "COMPLETED"
+          status={app.status}
           online={app.online}
         />
       ))}
