@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { appointmentService }      from '../../services/appointmentService';
-import { AppointmentCard }         from './AppointmentCard';
-import { AppointmentModal }        from './AppointmentModal';
-import { translateSubject }        from '../../utils/tradutionUtils';
-import { translateProfessorTitle } from '../../utils/tradutionUtils';
+// components/UpcomingAppointments.jsx
+import React, { useState, useEffect } from "react";
+import { appointmentService }      from "../../services/appointmentService";
+import { AppointmentCard }         from "./AppointmentCard";
+import { AppointmentModal }        from "./AppointmentModal";
+import { translateSubject }        from "../../utils/tradutionUtils";
+import { translateProfessorTitle } from "../../utils/tradutionUtils";
 
 export const UpcomingAppointments = ({ filter, setActiveTab }) => {
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
-  const [selected, setSelected]         = useState(null);
-  const [openModal, setOpenModal]       = useState(false);
+  const [loading,      setLoading]      = useState(true);
+  const [error,        setError]        = useState(null);
+  const [selected,     setSelected]     = useState(null);
+  const [openModal,    setOpenModal]    = useState(false);
 
   useEffect(() => {
     appointmentService
       .list()
       .then(data => setAppointments(data))
-      .catch(() => setError('Não foi possível carregar.'))
+      .catch(() => setError("Não foi possível carregar."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -27,22 +28,25 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
     const dt = new Date(appt.dateTime);
     return {
       ...appt,
-      displayDate: dt.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' }),
-      displayTime: dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+      displayDate: dt.toLocaleDateString("pt-BR", {
+        weekday: "long", day: "numeric", month: "long",
+      }),
+      displayTime: dt.toLocaleTimeString("pt-BR", {
+        hour: "2-digit", minute: "2-digit",
+      }),
       displaySubject: translateSubject(appt.subject),
       displayProfTitle: translateProfessorTitle(appt.professorTitle),
-      displayStatus: appt.status === 'SCHEDULED' ? 'confirmed' : appt.status.toLowerCase(),
     };
   });
 
   const visible = items.filter(app => {
     switch (filter) {
-      case 'CONFIRMED': return app.status === 'SCHEDULED';
-      case 'PENDING':   return app.status === 'PENDING';
-      case 'CANCELLED': return app.status === 'CANCELLED';
-      case 'ONLINE':    return app.online;
-      case 'OFFLINE':   return !app.online;
-      default:          return true;
+      case "CONFIRMED":  return app.status === "SCHEDULED";
+      case "PENDING":    return app.status === "PENDING";
+      case "CANCELLED":  return app.status === "CANCELLED";
+      case "ONLINE":     return app.online;
+      case "OFFLINE":    return !app.online;
+      default:           return true;
     }
   });
 
@@ -60,9 +64,12 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
             time={app.displayTime}
             duration={`${app.duration}min`}
             location={app.location}
-            status={app.displayStatus}
+            status={app.status}              // envia o raw status
             online={app.online}
-            onDetailsClick={() => { setSelected(app); setOpenModal(true); }}
+            onDetailsClick={() => {
+              setSelected(app);
+              setOpenModal(true);
+            }}
           />
         ))}
       </div>

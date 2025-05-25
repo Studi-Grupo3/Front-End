@@ -9,8 +9,8 @@ import NavbarPanel             from '../components/NavbarPanel';
 
 const FILTER_LABELS = {
   ALL:       'Todos os filtros',
-  CONFIRMED: 'Aulas Confirmadas',
-  PENDING:   'Aulas Pendentes',
+  CONFIRMED: 'Aulas Agendadas',
+  PENDING:   'Aulas Concluídas',
   CANCELLED: 'Aulas Canceladas',
   ONLINE:    'Aulas Online',
   OFFLINE:   'Aulas Presenciais',
