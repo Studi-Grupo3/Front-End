@@ -49,7 +49,6 @@ export const overviewDashService = {
     currency: 'BRL'
   });
 
-  console.log(data.recentPayments);
   return data.recentPayments.map(item => {
     const hourlyRate = item.hourlyRate; 
     const duration = item.durationClass;
