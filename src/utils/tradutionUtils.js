@@ -72,3 +72,14 @@ export const subjectNamesPt = {
 export function translateSubject(subjectEn) {
     return subjectNamesPt[subjectEn.toUpperCase()] || subjectEn;
 }
+
+export function translateProfessorTitle(titleEn) {
+  const parts = titleEn.split(/ de /i);
+  if (parts.length !== 2) {
+    return titleEn;
+  }
+  
+  const [prefix, subjEn] = parts;
+  const subjPt = translateSubject(subjEn);
+  return `${prefix} de ${subjPt}`;
+}

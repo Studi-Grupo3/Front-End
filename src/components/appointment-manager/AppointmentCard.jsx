@@ -9,7 +9,6 @@ import { StatusBadge, statusStyles } from "./StatusBadge";
 
 export const AppointmentCard = ({
   subject,
-  topic,
   professorName,
   professorTitle,
   date,
@@ -34,7 +33,7 @@ export const AppointmentCard = ({
         <StatusBadge status={status} />
       </div>
 
-      <p className="text-gray-700 text-sm sm:text-base font-medium mb-3 sm:mb-4">{topic}</p>
+      {/* <p className="text-gray-700 text-sm sm:text-base font-medium mb-3 sm:mb-4">{topic}</p> */}
 
       <div className="flex items-center mb-3 sm:mb-4">
         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden">
