@@ -1,62 +1,64 @@
+// components/CalendarView.jsx
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../../styles/calendar-css.css";
-import { appointmentService }      from "../../services/appointmentService";
-import { translateSubject }        from "../../utils/tradutionUtils";
-import { translateProfessorTitle } from "../../utils/tradutionUtils";
-import { statusStyles }            from "./StatusBadge";
+import { appointmentService } from "../../services/appointmentService";
+import { translateSubject, translateProfessorTitle, translateWeekday, translateMonth } from "../../utils/tradutionUtils";
+import { statusStyles } from "./StatusBadge";
+import { DayAppointmentsModal } from "../../components/ui/DayAppointmentsModal";
 
 export const CalendarView = ({ filter, setActiveTab }) => {
   const [value, setValue] = useState(new Date());
   const [aulas, setAulas] = useState([]);
+  const [dayApps, setDayApps] = useState([]);
+  const [dayModalOpen, setDayModalOpen] = useState(false);
 
+  // Carrega e filtra todas as aulas
   useEffect(() => {
-    appointmentService
-      .list()
-      .then(data => {
-        const mapped = data
-          .map(app => {
-            const d = new Date(app.dateTime);
-            return {
-              ...app,
-              dateObj: d,
-              displaySubject: translateSubject(app.subject),
-              displayProfTitle: translateProfessorTitle(app.professorTitle),
-              displayDate: d.toLocaleDateString("pt-BR", {
-                weekday: "long",
-                day:     "numeric",
-                month:   "long",
-                year:    "numeric",
-              }),
-            };
-          })
-          .filter(app => {
-            switch (filter) {
-              case "UPCOMING":
-                return app.status === "SCHEDULED" || app.status === "CANCELLED";
-              case "CONFIRMED":
-                return app.status === "SCHEDULED";
-              case "PENDING":
-                return app.status === "PENDING";
-              case "CANCELLED":
-                return app.status === "CANCELLED";
-              case "COMPLETED":
-                return app.status === "COMPLETED";
-              case "ONLINE":
-                return app.online;
-              case "OFFLINE":
-                return !app.online;
-              default:
-                return app.status !== "COMPLETED";
-            }
-          });
+    appointmentService.list().then(data => {
+      const mapped = data
+        .map(app => {
+          const d = new Date(app.dateTime);
+          return {
+            ...app,
+            dateObj: d,
+            displaySubject: translateSubject(app.subject),
+            displayProfTitle: translateProfessorTitle(app.professorTitle),
+            displayDate: d.toLocaleDateString("pt-BR", {
+              weekday: "long", day: "numeric", month: "long", year: "numeric"
+            }),
+            displayTime: d.toLocaleTimeString("pt-BR", {
+              hour: "2-digit", minute: "2-digit"
+            })
+          };
+        })
+        .filter(app => {
+          switch (filter) {
+            case "UPCOMING":
+              return ["SCHEDULED", "CANCELLED"].includes(app.status);
+            case "CONFIRMED":
+              return app.status === "SCHEDULED";
+            case "PENDING":
+              return app.status === "PENDING";
+            case "CANCELLED":
+              return app.status === "CANCELLED";
+            case "COMPLETED":
+              return app.status === "COMPLETED";
+            case "ONLINE":
+              return app.online;
+            case "OFFLINE":
+              return !app.online;
+            default:
+              return app.status !== "COMPLETED";
+          }
+        });
 
-        setAulas(mapped);
-      })
-      .catch(err => console.error(err));
+      setAulas(mapped);
+    }).catch(err => console.error(err));
   }, [filter]);
 
+  // Extrai o status para colorir o dia
   const getStatusForDate = date => {
     const found = aulas.find(a =>
       a.dateObj.getFullYear() === date.getFullYear() &&
@@ -66,6 +68,18 @@ export const CalendarView = ({ filter, setActiveTab }) => {
     return found?.status;
   };
 
+  // Quando clica no dia, filtra e abre o modal
+  const handleClickDay = date => {
+    setValue(date);
+    const selecionadas = aulas.filter(a =>
+      a.dateObj.getFullYear() === date.getFullYear() &&
+      a.dateObj.getMonth()     === date.getMonth() &&
+      a.dateObj.getDate()      === date.getDate()
+    );
+    setDayApps(selecionadas);
+    setDayModalOpen(true);
+  };
+
   return (
     <div className="w-full flex flex-col md:flex-row gap-6 px-4 py-8">
       <div className="w-full lg:w-2/3">
@@ -73,6 +87,7 @@ export const CalendarView = ({ filter, setActiveTab }) => {
           <Calendar
             onChange={setValue}
             value={value}
+            onClickDay={handleClickDay}
             className="w-full react-calendar-custom"
             tileContent={({ date }) => {
               const status = getStatusForDate(date);
@@ -90,6 +105,7 @@ export const CalendarView = ({ filter, setActiveTab }) => {
             }}
           />
 
+          {/* Legenda */}
           <div className="mt-4 bg-gray-100 rounded-lg p-3">
             <h4 className="font-semibold mb-2 text-base sm:text-lg">Legenda</h4>
             <div className="flex flex-wrap gap-4 text-xs sm:text-sm md:text-base">
@@ -107,16 +123,12 @@ export const CalendarView = ({ filter, setActiveTab }) => {
         </div>
       </div>
 
+      {/* Próximas aulas resumidas */}
       <div className="w-full lg:w-1/3">
         <div className="bg-white shadow-md rounded-xl p-4">
           <h3 className="text-lg font-bold mb-4">Próximas aulas</h3>
           {aulas
             .filter(app => app.status !== "COMPLETED")
-            .filter(app =>
-              filter === "ALL"
-                ? (app.status === "SCHEDULED" || app.status === "CANCELLED")
-                : true
-            )
             .map((a, i) => {
               const bgColor = statusStyles[a.status]?.rawColor + "33";
               return (
@@ -132,12 +144,23 @@ export const CalendarView = ({ filter, setActiveTab }) => {
             })}
           <button
             onClick={() => setActiveTab("upcoming")}
-            className="mt-2 w-full bg-gray-200 hover:bg-gray-300 transition text-sm rounded px-4 py-2"
+            className="mt-2 w-full bg-gray-200 hover:bg-gray-300 transition text-sm rounded px-4 py-2 cursor-pointer"
           >
             Ver lista completa
           </button>
         </div>
       </div>
+
+      {/* Modal de dia */}
+      <DayAppointmentsModal
+        isOpen={dayModalOpen}
+        onClose={() => setDayModalOpen(false)}
+        appointments={dayApps}
+        onUpdate={() => {
+          // re-fetch de ambos: calendário e upcoming
+          appointmentService.list().then(/* ...reload aulas... */);
+        }}
+      />
     </div>
   );
 };
