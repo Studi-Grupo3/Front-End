@@ -5,6 +5,9 @@ import AddMaterialModal from './AddMaterialModal';
 import { useNavigate } from 'react-router-dom';
 import NavbarPanel from '../NavbarPanel';
 
+import { contentService } from '../../services/contentService';
+
+
 const ClassDetailsForm = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -26,55 +29,44 @@ const ClassDetailsForm = () => {
     ]);
   };
 
-  const handleSubmit = async () => {
-    if (!selectedPhase || !selectedSubject || !selectedDuration) {
-      alert('Por favor, preencha todos os campos antes de continuar.');
-      return;
-    }
+const handleSubmit = async () => {
+  if (!selectedPhase || !selectedSubject || !selectedDuration) {
+    alert('Por favor, preencha todos os campos antes de continuar.');
+    return;
+  }
 
-    if (materials.length === 0) {
-      alert('Adicione pelo menos um material.');
-      return;
-    }
+  if (materials.length === 0) {
+    alert('Adicione pelo menos um material.');
+    return;
+  }
 
-    setIsSubmitting(true);
+  setIsSubmitting(true);
 
-    try {
-      const formData = new FormData();
+  try {
+    await contentService.createClass({
+      phase: selectedPhase,
+      subject: selectedSubject,
+      duration: selectedDuration,
+      materials
+    });
 
-      formData.append('phase', selectedPhase);
-      formData.append('subject', selectedSubject);
-      formData.append('duration', selectedDuration);
+    alert('Aula agendada com sucesso!');
+    navigate('/class-model');
 
-      // Adiciona os arquivos no FormData (se tiver mais de um arquivo)
-      materials.forEach((mat, index) => {
-        formData.append(`materials[${index}][name]`, mat.name);
-        formData.append(`materials[${index}][file]`, mat.file);
-      });
-
-      // Envia para backend - ajuste a URL para seu backend real
-      const response = await fetch('/api/classes', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro no envio');
-      }
-
-      // Se precisar, pode pegar dados da resposta:
-      // const result = await response.json();
-
-      alert('Aula agendada com sucesso!');
-      navigate('/class-model');
-
-    } catch (error) {
-      console.error('Erro ao enviar:', error);
-      alert('Erro ao enviar dados. Tente novamente.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  } catch (error) {
+  console.error('Erro ao enviar:', error);
+  if (error.response) {
+    console.error('Detalhes do erro:', error.response.data);
+    alert(`Erro ao enviar dados: ${error.response.data.message || 'Tente novamente.'}`);
+  } else if (error.request) {
+    console.error('Nenhuma resposta recebida:', error.request);
+    alert('Erro ao enviar dados: Nenhuma resposta recebida.');
+  } else {
+    console.error('Erro genérico:', error.message);
+    alert(`Erro: ${error.message}`);
+  }
+}
+};
 
   return (
     <div className="min-h-screen bg-gray-100 overflow-hidden">
