@@ -1,76 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { appointmentService }  from '../../services/appointmentService';
-import { AppointmentCard }        from './AppointmentCard';
-import { AppointmentModal }       from './AppointmentModal';
-import { translateSubject }               from '../../utils/tradutionUtils';
-import { translateProfessorTitle }          from '../../utils/tradutionUtils';
+import { appointmentService }      from '../../services/appointmentService';
+import { AppointmentCard }         from './AppointmentCard';
+import { AppointmentModal }        from './AppointmentModal';
+import { translateSubject }        from '../../utils/tradutionUtils';
+import { translateProfessorTitle } from '../../utils/tradutionUtils';
 
-export const UpcomingAppointments = () => {
-  const [appointments, setAppointments]       = useState([]);
-  const [loading, setLoading]                 = useState(true);
-  const [error, setError]                     = useState(null);
-  const [selectedAppointment, setSelected]    = useState(null);
-  const [isModalOpen, setModalOpen]           = useState(false);
+export const UpcomingAppointments = ({ filter, setActiveTab }) => {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
+  const [selected, setSelected]         = useState(null);
+  const [openModal, setOpenModal]       = useState(false);
 
   useEffect(() => {
     appointmentService
       .list()
-      .then(data => {
-        // supondo que sua API já retorne só os futuros
-        setAppointments(data);
-      })
-      .catch(err => {
-        console.error(err);
-        setError('Não foi possível carregar os agendamentos.');
-      })
+      .then(data => setAppointments(data))
+      .catch(() => setError('Não foi possível carregar.'))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div>Carregando agendamentos...</div>;
   if (error)   return <div>{error}</div>;
 
-  const openModal = appt => {
-    setSelected(appt);
-    setModalOpen(true);
-  };
-  const closeModal = () => {
-    setSelected(null);
-    setModalOpen(false);
-  };
+  const items = appointments.map(appt => {
+    const dt = new Date(appt.dateTime);
+    return {
+      ...appt,
+      displayDate: dt.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' }),
+      displayTime: dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+      displaySubject: translateSubject(appt.subject),
+      displayProfTitle: translateProfessorTitle(appt.professorTitle),
+      displayStatus: appt.status === 'SCHEDULED' ? 'confirmed' : appt.status.toLowerCase(),
+    };
+  });
+
+  const visible = items.filter(app => {
+    switch (filter) {
+      case 'CONFIRMED': return app.status === 'SCHEDULED';
+      case 'PENDING':   return app.status === 'PENDING';
+      case 'CANCELLED': return app.status === 'CANCELLED';
+      case 'ONLINE':    return app.online;
+      case 'OFFLINE':   return !app.online;
+      default:          return true;
+    }
+  });
 
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {appointments.map(appt => {
-          // converte dateTime em date + time legível
-          const dt = new Date(appt.dateTime);
-          const dateStr = dt.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-          const timeStr = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-          return (
-            <AppointmentCard
-              key={appt.id}
-              subject={translateSubject(appt.subject)}
-              // topic={appt.topic}                     // ← ATENÇÃO: campo ausente no seu JSON
-              professorName={appt.professorName}
-              professorTitle={translateProfessorTitle(appt.professorTitle)}
-              professorImageUrl={appt.professorImageUrl}
-              date={dateStr}
-              time={timeStr}
-              duration={`${appt.duration}min`}
-              location={appt.location}
-              status={appt.status === 'SCHEDULED' ? 'confirmed' : appt.status.toLowerCase()}
-              online={appt.online}
-              onDetailsClick={() => openModal(appt)}
-            />
-          );
-        })}
+        {visible.map(app => (
+          <AppointmentCard
+            key={app.id}
+            subject={app.displaySubject}
+            professorName={app.professorName}
+            professorTitle={app.displayProfTitle}
+            professorImageUrl={app.professorImageUrl}
+            date={app.displayDate}
+            time={app.displayTime}
+            duration={`${app.duration}min`}
+            location={app.location}
+            status={app.displayStatus}
+            online={app.online}
+            onDetailsClick={() => { setSelected(app); setOpenModal(true); }}
+          />
+        ))}
       </div>
 
       <AppointmentModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        appointment={selectedAppointment}
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        appointment={selected}
       />
     </>
   );
