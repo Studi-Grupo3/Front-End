@@ -9,7 +9,6 @@ import { StatusBadge, statusStyles } from "./StatusBadge";
 
 export const AppointmentCard = ({
   subject,
-  topic,
   professorName,
   professorTitle,
   date,
@@ -30,11 +29,11 @@ export const AppointmentCard = ({
       style={{ borderTopColor: borderColor }}
     >
       <div className="flex justify-between items-center mb-1">
-        <h2 className="text-[var(--azul-custom)] text-lg sm:text-xl font-bold">{subject}</h2>
+        <h2 className="text-[var(--azul-custom)] text-lg sm:text-xl font-bold">
+          {subject}
+        </h2>
         <StatusBadge status={status} />
       </div>
-
-      <p className="text-gray-700 text-sm sm:text-base font-medium mb-3 sm:mb-4">{topic}</p>
 
       <div className="flex items-center mb-3 sm:mb-4">
         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden">
@@ -44,9 +43,10 @@ export const AppointmentCard = ({
             className="w-full h-full object-cover"
           />
         </div>
-
         <div className="ml-2 sm:ml-3">
-          <p className="text-gray-800 text-sm sm:text-base font-medium mb-0">{professorName}</p>
+          <p className="text-gray-800 text-sm sm:text-base font-medium mb-0">
+            {professorName}
+          </p>
           <div className="flex items-center text-gray-600 text-xs sm:text-sm">
             <GraduationCap className="w-3 h-3 mr-1" />
             {professorTitle}
@@ -54,20 +54,18 @@ export const AppointmentCard = ({
         </div>
       </div>
 
-      <div className="space-y-2 mb-3 sm:mb-4">
-        <div className="flex items-center text-gray-600">
+      <div className="space-y-2 mb-3 sm:mb-4 text-gray-600">
+        <div className="flex items-center">
           <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--azul-custom)]" />
           <span className="text-xs sm:text-sm">{date}</span>
         </div>
-
-        <div className="flex items-center text-gray-600">
+        <div className="flex items-center">
           <Clock className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--azul-custom)]" />
           <span className="text-xs sm:text-sm">
             {time} • Duração: {duration}
           </span>
         </div>
-
-        <div className="flex items-center text-gray-600">
+        <div className="flex items-center">
           <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--azul-custom)]" />
           <span className="text-xs sm:text-sm">{locationDisplay}</span>
         </div>
@@ -77,7 +75,7 @@ export const AppointmentCard = ({
         onClick={onDetailsClick}
         className="w-full border cursor-pointer border-gray-300 text-[var(--azul-custom)] rounded-lg py-2 px-4 hover:bg-blue-50 transition text-center text-sm sm:text-base"
       >
-        <span className="font-medium">Ver Detalhes</span>
+        <span className="font-bold">Ver Detalhes</span>
       </button>
     </div>
   );

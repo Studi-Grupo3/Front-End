@@ -1,44 +1,43 @@
+// components/StatusBadge.jsx
 import React from "react";
 import { Check, X, Clock as ClockIcon } from "lucide-react";
 
 export const statusStyles = {
-  confirmed: {
-    bgColor: "bg-green-500",
+  SCHEDULED: {
+    bgColor:   "bg-yellow-500",
     textColor: "text-white",
-    icon: <Check className="w-3 h-3" />,
-    text: "Confirmado",
-    rawColor: "#22c55e"
+    rawColor:  "#FFBB00",         // amarelo
+    icon:      <ClockIcon className="w-4 h-4" />,
+    text:      "Agendado",
   },
-  pending: {
-    bgColor: "bg-orange-500",
+  COMPLETED: {
+    bgColor:   "bg-green-500",
     textColor: "text-white",
-    icon: <ClockIcon className="w-3 h-3" />,
-    text: "Pendente",
-    rawColor: "#f97316"
+    rawColor:  "#22c55e",         // verde
+    icon:      <Check className="w-4 h-4" />,
+    text:      "Concluído",
   },
-  canceled: {
-    bgColor: "bg-red-500",
+  CANCELLED: {
+    bgColor:   "bg-red-500",
     textColor: "text-white",
-    icon: <X className="w-3 h-3" />,
-    text: "Cancelado",
-    rawColor: "#ef4444"
+    rawColor:  "#ef4444",         // vermelho
+    icon:      <X className="w-4 h-4" />,
+    text:      "Cancelado",
   },
-  cancelled: {
-    bgColor: "bg-red-500",
-    textColor: "text-white",
-    icon: <X className="w-3 h-3" />,
-    text: "Cancelado",
-    rawColor: "#ef4444"
-  }
 };
 
 export const StatusBadge = ({ status }) => {
-  const style = statusStyles[status] || statusStyles.confirmed;
-  
+  const style = statusStyles[status] || statusStyles.SCHEDULED;
   return (
-    <div className={`${style.bgColor} ${style.textColor} px-2 py-1 rounded-full text-xs sm:text-sm flex items-center`}>
+    <div
+      className={`
+        ${style.bgColor} ${style.textColor}
+        px-2 py-1 rounded-full text-xs sm:text-sm
+        flex items-center font-bold
+      `}
+    >
       <span className="mr-1">{style.icon}</span>
-      <span className="font-medium text-xs">{style.text}</span>
+      <span>{style.text}</span>
     </div>
   );
 };
