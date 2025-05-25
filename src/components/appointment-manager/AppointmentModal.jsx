@@ -15,7 +15,7 @@ export const AppointmentModal = ({
   isOpen,
   onClose,
   appointment,
-  onUpdate   // callback para refetch no componente pai
+  onUpdate  
 }) => {
   const modalRef = useRef();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -136,7 +136,7 @@ export const AppointmentModal = ({
           </div>
 
           {/* Botão de cancelar aula (só se não estiver CANCELLED) */}
-          {appointment.status !== "CANCELLED" && (
+          {appointment.status !== "CANCELLED" && appointment.status !== "COMPLETED" && (
             <div className="mt-6 flex justify-end gap-2 border-t pt-4">
               <button
                 onClick={handleCancelClick}
