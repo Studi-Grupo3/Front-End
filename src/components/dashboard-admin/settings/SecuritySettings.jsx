@@ -22,7 +22,7 @@ export function SecuritySettings() {
     setSecurity(prev => ({ ...prev, [field]: value }));
 
   const salvar = async () => {
-    // 1) validação local de confirmação de senha
+
     if (security.newPassword !== security.confirmPassword) {
       return alert('Nova senha e confirmação não conferem.');
     }

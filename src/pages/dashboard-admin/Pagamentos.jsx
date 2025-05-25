@@ -6,6 +6,7 @@ import { MobileHeader } from '../../components/dashboard-admin/mobile/MobileHead
 import { StatCard } from '../../components/dashboard-admin/StatCard';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
 import { ToggleSwitch } from '../../components/ui/ToggleSwitch';
+import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { CreditCard, Banknote, Wallet, TrendingUp } from 'lucide-react';
 import { paymentDashService } from '../../services/dashboard/paymentDashService';
 
@@ -26,6 +27,13 @@ export function Pagamentos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [month, setMonth] = useState(5);
   const [year, setYear] = useState(2025);
+
+  const [modalData, setModalData] = useState({
+    isOpen: false,
+    item: null,
+    title: '',
+    message: ''
+  });
 
   useEffect(() => {
     async function fetchData() {
@@ -57,6 +65,26 @@ export function Pagamentos() {
     }
   };
 
+  const openConfirmation = (item) => {
+    const next = item.status === 'Pago' ? 'pendente' : 'pago';
+    setModalData({
+      isOpen: true,
+      item,
+      title: 'Confirmação de Status',
+      message: `Tem certeza de que deseja marcar o professor "${item.name}" como ${next}?`
+    });
+  };
+
+  const handleConfirm = () => {
+    const { item } = modalData;
+    setModalData(d => ({ ...d, isOpen: false }));
+    handleToggle(item.id);
+  };
+
+  const handleCancel = () => {
+    setModalData(d => ({ ...d, isOpen: false }));
+  };
+
   if (!stats) return <div className="p-6">Carregando dados...</div>;
 
   const filtered = payments
@@ -71,10 +99,7 @@ export function Pagamentos() {
   return (
     <div className="flex min-h-screen bg-gray-100 flex-col md:flex-row">
       <Sidebar />
-      <MobileSidebar
-        isOpen={isMobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-      />
+      <MobileSidebar isOpen={isMobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <MobileHeader onOpen={() => setMobileMenuOpen(true)} />
 
       <div className="flex-1 md:ml-64 mt-20 md:mt-0">
@@ -149,11 +174,19 @@ export function Pagamentos() {
                 render: item => (
                   <ToggleSwitch
                     checked={item.status === 'Pago'}
-                    onChange={() => handleToggle(item.id)}
+                    onChange={() => openConfirmation(item)}
                   />
                 )
               }
             ]}
+          />
+          <ConfirmationModal
+            isOpen={modalData.isOpen}
+            title={modalData.title}
+            message={modalData.message}
+            confirmLabel="Alterar"
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
           />
         </main>
       </div>
