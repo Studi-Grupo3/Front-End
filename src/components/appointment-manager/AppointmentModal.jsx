@@ -2,21 +2,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import { X, Calendar, Clock, MapPin, FileText } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
-import { ConfirmationModal } from "../../components/ui/ConfirmationModal"; 
+import { ConfirmationModal } from "../ui/ConfirmationModal";
 import { appointmentService } from "../../services/appointmentService";
 import {
   translateSubject,
   translateProfessorTitle,
   translateWeekday,
-  translateMonth,
-  translateAppointmentStatus
+  translateMonth
 } from "../../utils/tradutionUtils";
 
 export const AppointmentModal = ({
   isOpen,
   onClose,
   appointment,
-  onUpdate    // callback para refetch no componente pai
+  onUpdate   // callback para refetch no componente pai
 }) => {
   const modalRef = useRef();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -33,9 +32,7 @@ export const AppointmentModal = ({
     }
   };
 
-  const handleCancelClick = () => {
-    setConfirmOpen(true);
-  };
+  const handleCancelClick = () => setConfirmOpen(true);
 
   const handleConfirm = async () => {
     setConfirmOpen(false);
@@ -49,31 +46,20 @@ export const AppointmentModal = ({
     }
   };
 
-  const handleCancelModal = () => {
-    setConfirmOpen(false);
-  };
+  const handleCancelModal = () => setConfirmOpen(false);
 
   if (!isOpen || !appointment) return null;
 
-  // formata data e hora
+  // formatação de data e hora
   const dt = new Date(appointment.dateTime);
-  const weekdayPt = translateWeekday(
-    dt.toLocaleDateString("en-US", { weekday: "long" })
-  );
-  const monthPt = translateMonth(
-    dt.toLocaleDateString("en-US", { month: "long" })
-  );
-  const dayNum = dt.getDate();
-  const formattedDate = `${weekdayPt}, ${dayNum} de ${monthPt}`;
-  const formattedTime = dt.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  const weekdayPt = translateWeekday(dt.toLocaleDateString("en-US", { weekday: "long" }));
+  const monthPt   = translateMonth(dt.toLocaleDateString("en-US",   { month:   "long" }));
+  const formattedDate = `${weekdayPt}, ${dt.getDate()} de ${monthPt}`;
+  const formattedTime = dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
-  // traduções
+  // traduções de subject e title
   const subjectPt        = translateSubject(appointment.subject);
   const professorTitlePt = translateProfessorTitle(appointment.professorTitle);
-  const statusPt         = translateAppointmentStatus(appointment.status);
 
   return (
     <>
@@ -93,7 +79,8 @@ export const AppointmentModal = ({
               {subjectPt}
             </h2>
             <div className="flex items-center gap-2">
-              <StatusBadge status={statusPt} />
+              {/* Aqui passamos o status "bruto" para a badge */}
+              <StatusBadge status={appointment.status} />
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-700 cursor-pointer"
@@ -128,15 +115,11 @@ export const AppointmentModal = ({
             </div>
             <div className="flex items-center text-gray-600">
               <Clock className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
-              <span>
-                {formattedTime} • Duração: {appointment.duration}min
-              </span>
+              <span>{formattedTime} • Duração: {appointment.duration}min</span>
             </div>
             <div className="flex items-center text-gray-600">
               <MapPin className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
-              <span>
-                {appointment.online ? "Online" : appointment.location}
-              </span>
+              <span>{appointment.online ? "Online" : appointment.location}</span>
             </div>
           </div>
 
@@ -147,20 +130,12 @@ export const AppointmentModal = ({
               Material de apoio
             </div>
             <ul className="list-disc list-inside text-blue-600 text-sm space-y-1">
-              <li>
-                <a href="#" className="hover:underline">
-                  Documento de referência.pdf
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Exercícios sugeridos.pdf
-                </a>
-              </li>
+              <li><a href="#" className="hover:underline">Documento de referência.pdf</a></li>
+              <li><a href="#" className="hover:underline">Exercícios sugeridos.pdf</a></li>
             </ul>
           </div>
 
-          {/* Botão Cancelar (só se não estiver CANCELLED) */}
+          {/* Botão de cancelar aula (só se não estiver CANCELLED) */}
           {appointment.status !== "CANCELLED" && (
             <div className="mt-6 flex justify-end gap-2 border-t pt-4">
               <button
@@ -174,7 +149,7 @@ export const AppointmentModal = ({
         </div>
       </div>
 
-      {/* ConfirmationModal agora */}
+      {/* Modal de confirmação */}
       <ConfirmationModal
         isOpen={confirmOpen}
         title="Confirmação de cancelamento"
