@@ -4,7 +4,7 @@ import {ProtectedRoute} from "./ProtectedRoute"; // Ajuste o caminho se necessá
 import { VisaoGeral } from "../pages/dashboard-admin/VisaoGeral";
 import { Agendamentos } from "../pages/dashboard-admin/Agendamentos";
 import { Professores } from "../pages/dashboard-admin/Professores";
-import { Financas } from "../pages/dashboard-admin/Financas";
+import { GerenciamentoProfessores } from "../pages/dashboard-admin/GerenciamentoProfessores";
 import { Pagamentos } from "../pages/dashboard-admin/Pagamentos";
 import { Configuracoes } from "../pages/dashboard-admin/Configuracoes";
 import { Relatorios } from "../pages/dashboard-admin/Relatorios";
@@ -30,7 +30,7 @@ export const AppRouter = () => {
         {/* ROTAS PROTEGIDAS */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<VisaoGeral />} />
-          <Route path="/dashboard/financas" element={<Financas />} />
+          <Route path="/dashboard/gerenciamento" element={<GerenciamentoProfessores />} />
           <Route path="/dashboard/professores" element={<Professores />} />
           <Route path="/dashboard/agendamentos" element={<Agendamentos />} />
           <Route path="/dashboard/pagamentos" element={<Pagamentos />} />
