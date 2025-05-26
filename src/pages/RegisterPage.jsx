@@ -4,6 +4,7 @@ import NavbarHome from '../components/NavbarHome';
 import Imagem from '../assets/imagem-fundo.svg';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { studentService } from '../services/studentService';
+import { authService } from '../services/authService';
 import LoadingButton from '../components/ui/LoadingButton';
 import { showAlert } from '../components/ShowAlert';
 

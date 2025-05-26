@@ -15,6 +15,13 @@ import EmailVerificationPage from "../pages/EmailVerificationPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import StudentInitialPage from "../pages/StudentInitialPage";
+import ClassDetailsForm from "../components/appointment-class/ClassDetailsForm";
+import  ClassModelSelection  from "../components/appointment-class/ClassModelSelection";
+import AddMaterialModal from "../components/appointment-class/AddMaterialModal";
+import ChooseProfessor from "../pages/ChooseProfessor";
+import Scheduling from "../pages/Scheduling";
+import Payment from "../pages/Payment";
+import ConfirmedPayment from "../pages/ConfirmedPayment";
 
 export const AppRouter = () => {
   return (
@@ -36,6 +43,16 @@ export const AppRouter = () => {
           <Route path="/dashboard/pagamentos" element={<Pagamentos />} />
           <Route path="/dashboard/configuracoes" element={<Configuracoes />} />
           <Route path="/dashboard/relatorios" element={<Relatorios />} />
+
+          
+          <Route path="/aluno/formulario" element={<ClassDetailsForm />} />
+          <Route path="/aluno/upload-material" element={<AddMaterialModal />} />
+          <Route path="/aluno/modelo-aula" element={<ClassModelSelection />} />
+          <Route path="/aluno/escolher-professor" element={<ChooseProfessor />} />
+          <Route path="/aluno/agendar-aula" element={<Scheduling />} />
+          <Route path="/aluno/pagamento" element={<Payment />} />
+          <Route path="/aluno/concluido" element={<ConfirmedPayment />} />
+
 
           <Route path="/aluno/inicio" element={<StudentInitialPage />} />
           <Route path="/agendamentos/gerenciar" element={<AppointmentManager />} />
