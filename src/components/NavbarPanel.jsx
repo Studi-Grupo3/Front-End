@@ -4,6 +4,7 @@ import Imagem from "../assets/logo.svg";
 import { Plus } from "lucide-react";
 import UserAvatar from "./UserAvatar";
 import MenuHamburguer from "./MenuHamburguer";
+import { ScheduleButton } from  "./appointment-manager/ScheduleButton"
 import {
   CheckIcon,
   ExclamationCircleIcon,
@@ -62,39 +63,37 @@ const NavbarPanel = () => {
         </div>
 
         {/* Links de Navegação */}
-        <div className="flex flex-row gap-8 justify-center">
+        <div className="flex flex-row gap-16 pl-24 justify-center">
           <h2
-            className="font-semibold cursor-pointer hover:text-yellow-400 transition"
+            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
             onClick={() => navigate("/")}
           >
             Início
           </h2>
           <h2
-            className="font-semibold cursor-pointer hover:text-yellow-400 transition"
+            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
             onClick={() => navigate("/agendamentos/gerenciar")}
           >
             Agendamentos
           </h2>
           <h2
-            className="font-semibold cursor-pointer hover:text-yellow-400 transition"
+            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
             onClick={() => navigate("/calendario")}
           >
             Calendário
           </h2>
           <h2
-            className="font-semibold cursor-pointer hover:text-yellow-400 transition"
+            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
             onClick={() => navigate("/contato")}
           >
             Contato
           </h2>
+          
         </div>
 
         {/* Botão e Avatar */}
         <div className="flex items-center gap-10">
-          <button className="flex items-center justify-center gap-2 bg-blue-600 text-white px-3 py-2 text-sm rounded-lg hover:bg-blue-700 transition border-[0.5px] border-white">
-            <Plus size={10} />
-            Agendar Aula
-          </button>
+          <ScheduleButton />
           <UserAvatar
             name="João Carminatti"
             hasNotification={true}
