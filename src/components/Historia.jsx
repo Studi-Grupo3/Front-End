@@ -31,7 +31,7 @@ const Historia = () => {
                         Desde o início, nossa missão foi criar um ambiente de aprendizado acolhedor e eficaz, onde cada aluno pudesse se desenvolver no seu próprio ritmo, com professores capacitados e métodos de ensino adaptados às suas necessidades.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 mt-6">
-                        <SaibaMaisButton className="border border-black cursor-pointer" />
+                        <SaibaMaisButton />
                     </div>
                 </div>
             </div>
