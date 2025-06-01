@@ -1,8 +1,4 @@
 import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Youtube, 
   MapPin, 
   Phone, 
   Mail 
@@ -21,42 +17,6 @@ const Footer = () => {
           <div className="w-full flex justify-end md:justify-start mb-4 px-7">
             {/* Logo com altura h-32 (128px) */}
             <img src={logo2} alt="Logo" className="h-32 w-auto" />
-          </div>
-          
-          {/* Ícones de redes sociais via lucide-react */}
-          <div className="flex space-x-4 mt-4">
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-yellow-300"
-            >
-              <Facebook size={20} />
-            </a>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-yellow-300"
-            >
-              <Twitter size={20} />
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-yellow-300"
-            >
-              <Instagram size={20} />
-            </a>
-            <a
-              href="https://youtube.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-yellow-300"
-            >
-              <Youtube size={20} />
-            </a>
           </div>
         </div>
 
