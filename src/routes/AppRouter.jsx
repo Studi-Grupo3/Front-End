@@ -15,6 +15,7 @@ import EmailVerificationPage from "../pages/EmailVerificationPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import StudentInitialPage from "../pages/StudentInitialPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 export const AppRouter = () => {
   return (
@@ -47,7 +48,7 @@ export const AppRouter = () => {
         </Route>
 
         {/* CATCH-ALL */}
-        <Route path="*" element={<h1>Página não encontrada</h1>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );
