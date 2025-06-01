@@ -97,7 +97,7 @@ const Professor = () => {
             <div className="text-center mb-8 max-w-2xl">
                 <p className="text-yellow-400 font-semibold">Encontre seu professor ideal</p>
                 <h2 className="text-[#ffffff] text-4xl font-bold">Conheça Nossos Professores</h2>
-                <p className="text-gray-600 font-semibold mt-2">
+                <p className="text-gray-200 font-extralight mt-2">
                     Profissionais qualificados, apaixonados pelo ensino e prontos para ajudar você a alcançar seus objetivos acadêmicos.
                 </p>
             </div>
