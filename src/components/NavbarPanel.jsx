@@ -1,10 +1,11 @@
+// src/components/NavbarPanel.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Imagem from "../assets/logo.svg";
 import { Plus } from "lucide-react";
 import UserAvatar from "./UserAvatar";
 import MenuHamburguer from "./MenuHamburguer";
-import { ScheduleButton } from  "./appointment-manager/ScheduleButton"
+import { ScheduleButton } from "./appointment-manager/ScheduleButton";
 import {
   CheckIcon,
   ExclamationCircleIcon,
@@ -23,7 +24,6 @@ const NavbarPanel = () => {
   const emailVerificado = true;
   const infoPessoaisCompletas = true;
   const documentosCompletos = true;
-
   const hasPendencias =
     !emailVerificado || !infoPessoaisCompletas || !documentosCompletos;
 
@@ -59,26 +59,35 @@ const NavbarPanel = () => {
       <div className="hidden md:flex items-center justify-evenly w-full">
         {/* Logo */}
         <div className="flex justify-start">
-          <img src={Imagem} className="h-20" alt="Logo" />
+          <img
+            src={Imagem}
+            className="h-20 cursor-pointer"
+            alt="Logo"
+            onClick={() => navigate("/")}
+          />
         </div>
 
         {/* Links de Navegação */}
         <div className="flex flex-row gap-16 pl-24 justify-center">
           <h2
             className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/aluno/inicio")}
           >
-            Início
+            Painel
           </h2>
           <h2
             className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
-            onClick={() => navigate("/agendamentos/gerenciar")}
+            onClick={() =>
+              navigate("/agendamentos/gerenciar/proximas-aulas")
+            }
           >
             Agendamentos
           </h2>
           <h2
             className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
-            onClick={() => navigate("/calendario")}
+            onClick={() =>
+              navigate("/agendamentos/gerenciar/calendario")
+            }
           >
             Calendário
           </h2>
@@ -88,7 +97,6 @@ const NavbarPanel = () => {
           >
             Contato
           </h2>
-          
         </div>
 
         {/* Botão e Avatar */}
@@ -107,12 +115,12 @@ const NavbarPanel = () => {
       {isDropdownOpen && (
         <div className="absolute top-full right-55 mt-2 w-72 bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-sm font-medium text-gray-800">João Carminatti</p>
+            <p className="text-sm font-medium text-gray-800">
+              João Carminatti
+            </p>
             <div className="flex justify-between text-xs text-gray-500">
               <strong>Status do perfil</strong>
-              <span
-                className={hasPendencias ? "text-red-500" : "text-green-600"}
-              >
+              <span className={hasPendencias ? "text-red-500" : "text-green-600"}>
                 {hasPendencias ? "Incompleto" : "Completo"}
               </span>
             </div>
