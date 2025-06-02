@@ -24,7 +24,7 @@ const NavbarHome = () => {
       <div className="hidden lg:flex flex-row justify-evenly items-center w-150 h-[10vh]">
         <a
           href="#historia"
-          className="font-semibold cursor-pointer hover:text-[#FECB0A] text-base" // <--- text-base em vez de text-lg
+          className="font-semibold cursor-pointer hover:text-[#FECB0A] text-base" 
           onClick={() => setIsOpen(false)}
         >
           Sobre nós
