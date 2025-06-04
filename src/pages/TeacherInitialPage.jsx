@@ -11,23 +11,17 @@ export default function TeacherInitialPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchStats() {
-      try {
-        const data = await teacherDashboardService.getStats();
-        setStats(data);
-      } catch (err) {
-        setStats(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchStats();
+    teacherDashboardService
+      .getStats()
+      .then(setStats)
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
     <div className="bg-[#f9fbfc] min-h-screen">
       <div className="w-full sticky top-0 z-50">
-        <NavbarPanel role="teacher"/>
+        <NavbarPanel role="teacher" />
       </div>
       <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-screen-xl mx-auto">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">

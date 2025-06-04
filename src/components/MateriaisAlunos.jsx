@@ -1,31 +1,18 @@
+import React, { useEffect, useState } from "react";
 import { Eye, Download, FileText } from 'lucide-react';
-
-const materiais = [
-  {
-    id: 1,
-    titulo: 'Lista de Exercícios - Cálculo I',
-    autor: 'Maria Santos',
-    data: '10/05/2023',
-    categoria: 'Matemática',
-    tamanho: '1.2 MB',
-    cor: 'text-red-500',
-    bg: 'bg-red-100',
-    icone: 'text-red-500',
-  },
-  {
-    id: 2,
-    titulo: 'Resumo para Prova - Mecânica',
-    autor: 'João Oliveira',
-    data: '09/05/2023',
-    categoria: 'Física',
-    tamanho: '850 KB',
-    cor: 'text-blue-500',
-    bg: 'bg-blue-100',
-    icone: 'text-blue-500',
-  },
-];
+import { teacherDashboardService } from "../services/teacherDashboardService";
 
 export default function MateriaisAlunos() {
+  const [materiais, setMateriais] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    teacherDashboardService.getMateriaisAlunos()
+      .then(setMateriais)
+      .catch(() => setMateriais([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       <h2 className="text-2xl font-bold text-gray-800">Materiais dos Alunos</h2>

@@ -1,9 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NavbarPanel from "../components/NavbarPanel";
 import TabelaAulas from "../components/TabelaAulas";
 import { FiSearch } from "react-icons/fi";
+import { teacherDashboardService } from "../services/teacherDashboardService";
 
 const TeacherLessonsHistoryPage = () => {
+  const [historico, setHistorico] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    teacherDashboardService
+      .getLessonsHistory?.({ search }) // Adapte o nome/método conforme seu backend
+      .then(setHistorico)
+      .catch(() => setHistorico([]))
+      .finally(() => setLoading(false));
+  }, [search]);
+
   return (
     <div className="bg-[#f8f8f8] min-h-screen h-screen overflow-hidden flex flex-col">
       <div className="w-full sticky top-0 z-50">
@@ -22,6 +36,8 @@ const TeacherLessonsHistoryPage = () => {
               <input
                 type="text"
                 placeholder="Buscar no histórico..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
                 className="border border-[#E2E8F0] rounded-md px-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                 style={{ paddingLeft: "2.25rem" }}
               />
@@ -46,12 +62,12 @@ const TeacherLessonsHistoryPage = () => {
           </div>
         </div>
 
-        <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mt-4 w-[1000px]">
+        <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mt-4 w-full max-w-full mx-auto">
           <h3 className="text-xl font-bold mb-1">Aulas ministradas</h3>
           <p className="text-sm text-gray-500 mb-4">
             Histórico de aulas concluídas e canceladas.
           </p>
-          <TabelaAulas />
+          <TabelaAulas aulas={historico} loading={loading} />
         </section>
       </div>
     </div>
