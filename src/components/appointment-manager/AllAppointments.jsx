@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { appointmentService } from "../../services/appointmentService";
-import { AppointmentCard } from "./AppointmentCard";
-import { AppointmentModal } from "./AppointmentModal";
+import { AppointmentCard }    from "./AppointmentCard";
+import { AppointmentModal }   from "./AppointmentModal";
 import {
   translateSubject,
   translateProfessorTitle
 } from "../../utils/tradutionUtils";
 
-export const UpcomingAppointments = ({ filter, setActiveTab }) => {
+export const AllAppointments = ({ filter = "ALL" }) => {
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
-  const [selected, setSelected] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
+  const [loading,      setLoading]      = useState(true);
+  const [error,        setError]        = useState(null);
+  const [selected,     setSelected]     = useState(null);
+  const [openModal,    setOpenModal]    = useState(false);
 
-  // função de refetch
   const fetchAppointments = useCallback(() => {
     setLoading(true);
     appointmentService
@@ -23,7 +22,7 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
         setAppointments(data);
         setError(null);
       })
-      .catch(() => setError("Não foi possível carregar."))
+      .catch(() => setError("Não foi possível carregar os agendamentos."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -34,7 +33,6 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
   if (loading) return <div>Carregando agendamentos...</div>;
   if (error)   return <div>{error}</div>;
 
-  // prepara cada item com strings exibíveis
   const items = appointments.map(appt => {
     const dt = new Date(appt.dateTime);
     return {
@@ -46,28 +44,21 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
         hour: "2-digit", minute: "2-digit"
       }),
       displaySubject: translateSubject(appt.subject),
-      displayProfTitle: translateProfessorTitle(appt.professorTitle),
+      displayProfTitle: translateProfessorTitle(appt.professorTitle)
     };
   });
 
-  // filtro conforme tab ativa
   const visible = items.filter(app => {
-    if (filter === "COMPLETED") return false;
     switch (filter) {
-      case "UPCOMING":
-        return ["SCHEDULED", "CANCELLED"].includes(app.status);
-      case "CONFIRMED":
-        return app.status === "SCHEDULED";
-      case "PENDING":
-        return app.status === "PENDING";
-      case "CANCELLED":
-        return app.status === "CANCELLED";
-      case "ONLINE":
-        return app.online;
-      case "OFFLINE":
-        return !app.online;
-      default:
-        return ["SCHEDULED", "CANCELLED"].includes(app.status);
+      case "ALL":       return true;
+      case "UPCOMING":  return ["SCHEDULED", "CANCELLED"].includes(app.status);
+      case "CONFIRMED": return app.status === "SCHEDULED";
+      case "PENDING":   return app.status === "PENDING";
+      case "CANCELLED": return app.status === "CANCELLED";
+      case "COMPLETED": return app.status === "COMPLETED";
+      case "ONLINE":    return app.online;
+      case "OFFLINE":   return !app.online;
+      default:          return true;
     }
   });
 
@@ -99,7 +90,7 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
         appointment={selected}
-        onUpdate={fetchAppointments}  // refetch após cancelamento
+        onUpdate={fetchAppointments}
       />
     </>
   );

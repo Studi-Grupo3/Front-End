@@ -1,14 +1,15 @@
+// src/AppRouter.jsx  (ou onde você tenha o AppRouter)
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import {ProtectedRoute} from "./ProtectedRoute"; // Ajuste o caminho se necessário
+import { ProtectedRoute } from "./ProtectedRoute"; // ajuste o caminho conforme necessário
 
 import { VisaoGeral } from "../pages/dashboard-admin/VisaoGeral";
 import { Agendamentos } from "../pages/dashboard-admin/Agendamentos";
 import { Professores } from "../pages/dashboard-admin/Professores";
-import { Financas } from "../pages/dashboard-admin/Financas";
+import { GerenciamentoProfessores } from "../pages/dashboard-admin/GerenciamentoProfessores";
 import { Pagamentos } from "../pages/dashboard-admin/Pagamentos";
 import { Configuracoes } from "../pages/dashboard-admin/Configuracoes";
 import { Relatorios } from "../pages/dashboard-admin/Relatorios";
-import  HomePage  from "../pages/HomePage";
+import HomePage from "../pages/HomePage";
 import { AppointmentManager } from "../pages/AppointmentManager";
 import { CheckoutPage } from "../pages/CheckoutPage";
 import EmailVerificationPage from "../pages/EmailVerificationPage";
@@ -20,12 +21,12 @@ import TeacherChartClassesPage from "../pages/TeacherChartClassesPage";
 import TeacherLessonsHistoryPage from "../pages/TeacherLessonsHistoryPage";
 import TeacherGraph from "../pages/TeacherGraph";
 import TeacherRequests from "../pages/TeacherRequests";
+import NotFoundPage from "../pages/NotFoundPage";
 
 export const AppRouter = () => {
   return (
     <Router>
       <Routes>
-
         {/* ROTAS PÚBLICAS */}
         <Route path="/entrar" element={<LoginPage />} />
         <Route path="/" element={<HomePage />} />
@@ -41,7 +42,7 @@ export const AppRouter = () => {
         {/* ROTAS PROTEGIDAS */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<VisaoGeral />} />
-          <Route path="/dashboard/financas" element={<Financas />} />
+          <Route path="/dashboard/gerenciamento" element={<GerenciamentoProfessores />} />
           <Route path="/dashboard/professores" element={<Professores />} />
           <Route path="/dashboard/agendamentos" element={<Agendamentos />} />
           <Route path="/dashboard/pagamentos" element={<Pagamentos />} />
@@ -49,7 +50,15 @@ export const AppRouter = () => {
           <Route path="/dashboard/relatorios" element={<Relatorios />} />
 
           <Route path="/aluno/inicio" element={<StudentInitialPage />} />
+          
+          {/*
+            Aqui incluímos DUAS rotas para “/agendamentos/gerenciar”:
+            1) Sem parâmetro → carrega sempre a aba padrão (Upcoming)  
+            2) Com parâmetro → :tab (upcoming, past, calendar, etc.)
+          */}
           <Route path="/agendamentos/gerenciar" element={<AppointmentManager />} />
+          <Route path="/agendamentos/gerenciar/:tab" element={<AppointmentManager />} />
+
           <Route path="/pagamento" element={<CheckoutPage />} />
 
           <Route path="/students" element={<h1>Students (Substituir depois)</h1>} />
@@ -57,8 +66,8 @@ export const AppRouter = () => {
           <Route path="/appointments" element={<h1>Appointments (Substituir depois)</h1>} />
         </Route>
 
-        {/* CATCH-ALL */}
-        <Route path="*" element={<h1>Página não encontrada</h1>} />
+        {/* CATCH-ALL (404) */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );

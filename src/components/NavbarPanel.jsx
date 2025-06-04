@@ -1,9 +1,11 @@
+// src/components/NavbarPanel.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Imagem from "../assets/logo.svg";
 import { Plus } from "lucide-react";
 import UserAvatar from "./UserAvatar";
 import MenuHamburguer from "./MenuHamburguer";
+import { ScheduleButton } from "./appointment-manager/ScheduleButton";
 import {
   CheckIcon,
   ExclamationCircleIcon,
@@ -24,7 +26,6 @@ const NavbarPanel = ({ role }) => {
   const emailVerificado = true;
   const infoPessoaisCompletas = true;
   const documentosCompletos = true;
-
   const hasPendencias =
     !emailVerificado || !infoPessoaisCompletas || !documentosCompletos;
 
@@ -60,84 +61,49 @@ const NavbarPanel = ({ role }) => {
       <div className="hidden md:flex items-center justify-evenly w-full">
         {/* Logo */}
         <div className="flex justify-start">
-          <img src={Imagem} className="h-20" alt="Logo" />
+          <img
+            src={Imagem}
+            className="h-20 cursor-pointer"
+            alt="Logo"
+            onClick={() => navigate("/")}
+          />
         </div>
 
         {/* Links de Navegação */}
-        <div className="flex flex-row gap-8 justify-center">
-          {role === "teacher" ? (
-            <>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/")}
-              >
-                Início
-              </h2>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/agendamentos/gerenciar")}
-              >
-                Aulas
-              </h2>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/historico")}
-              >
-                Histórico
-              </h2>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/solicitacoes")}
-              >
-                Solicitações
-              </h2>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/metricas")}
-              >
-                Métricas
-              </h2>
-            </>
-          ) : (
-            <>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/")}
-              >
-                Início
-              </h2>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/agendamentos/gerenciar")}
-              >
-                Agendamentos
-              </h2>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/calendario")}
-              >
-                Calendário
-              </h2>
-              <h2
-                className="font-semibold cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/contato")}
-              >
-                Contato
-              </h2>
-            </>
-          )}
+        <div className="flex flex-row gap-16 pl-24 justify-center">
+          <h2
+            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+            onClick={() => navigate("/aluno/inicio")}
+          >
+            Painel
+          </h2>
+          <h2
+            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+            onClick={() =>
+              navigate("/agendamentos/gerenciar/proximas-aulas")
+            }
+          >
+            Agendamentos
+          </h2>
+          <h2
+            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+            onClick={() =>
+              navigate("/agendamentos/gerenciar/calendario")
+            }
+          >
+            Calendário
+          </h2>
+          <h2
+            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+            onClick={() => navigate("/contato")}
+          >
+            Contato
+          </h2>
         </div>
 
         {/* Botão e Avatar */}
         <div className="flex items-center gap-10">
-          {role === "teacher" ? (
-            <FiBell className="w-7 h-7 text-white cursor-pointer" />
-          ) : (
-            <button className="flex items-center justify-center gap-2 bg-blue-600 text-white px-3 py-2 text-sm rounded-lg hover:bg-blue-700 transition border-[0.5px] border-white">
-              <Plus size={10} />
-              Agendar Aula
-            </button>
-          )}
+          <ScheduleButton />
           <UserAvatar
             name="João Carminatti"
             hasNotification={true}
@@ -151,12 +117,12 @@ const NavbarPanel = ({ role }) => {
       {isDropdownOpen && (
         <div className="absolute top-full right-55 mt-2 w-72 bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-sm font-medium text-gray-800">João Carminatti</p>
+            <p className="text-sm font-medium text-gray-800">
+              João Carminatti
+            </p>
             <div className="flex justify-between text-xs text-gray-500">
               <strong>Status do perfil</strong>
-              <span
-                className={hasPendencias ? "text-red-500" : "text-green-600"}
-              >
+              <span className={hasPendencias ? "text-red-500" : "text-green-600"}>
                 {hasPendencias ? "Incompleto" : "Completo"}
               </span>
             </div>
