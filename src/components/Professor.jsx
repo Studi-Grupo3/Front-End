@@ -74,14 +74,23 @@ const Professor = () => {
         },
       },
       created(s) {
-        // Assim que o slider é criado, calculamos quantas “páginas” cabem no total.
         const details = s.track.details;
         const totalSlides = details.slides.length;
         const perView = (s.options.slides && s.options.slides.perView) || 3;
-        const pages = Math.ceil(totalSlides / perView);
-        setPageCount(pages);
-        // Se quiser começar em outra página, pode usar s.moveToIdx(...)
-      },
+        setPageCount(Math.ceil(totalSlides / perView));
+        
+        // + Após todas as imagens carregarem, força um re-cálculo do slider:
+        const imgs = document.querySelectorAll('.keen-slider__slide img');
+        let loaded = 0;
+        imgs.forEach(img => {
+          img.addEventListener('load', () => {
+            loaded += 1;
+            if (loaded === imgs.length) {
+              s.update();      // <— aqui é o “refresh” do Keen
+            }
+          });
+        });
+     },
       slideChanged(s) {
         // A cada mudança de slide (scroll), atualizamos currentPage.
         const details = s.track.details;
