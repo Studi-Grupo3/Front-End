@@ -17,7 +17,7 @@ export function DayAppointmentsModal({
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
         <div className="bg-white p-6 rounded-xl shadow-lg">
           <p>Nenhuma aula agendada para este dia.</p>
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">
+          <button onClick={onClose} className="mt-4 px-4 py-2 bg-[#3970B7] text-white rounded cursor-pointer">
             Fechar
           </button>
         </div>

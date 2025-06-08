@@ -49,7 +49,7 @@ export const AppointmentManager = () => {
     Object.keys(tabMapping).find((key) => tabMapping[key] === activeTab) ||
     "proximas-aulas";
 
-  const commonProps = { filter, setFilter };
+  const commonProps = { filter, setFilter, setActiveTab  };
 
   return (
     <div className="w-full min-h-screen bg-gray-50">
