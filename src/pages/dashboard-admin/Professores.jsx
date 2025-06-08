@@ -51,7 +51,11 @@ export function Professores() {
             <StatCard title={stats.totalTeachers} subtitle="Total de Professores" icon={<Users className="w-5 h-5 text-blue-500" />} />
             <StatCard title={stats.activeTeachers} subtitle="Professores Ativos" icon={<CheckCircle className="w-5 h-5 text-emerald-500" />} />
             <StatCard title={stats.totalHoursWorked} subtitle="Total Horas de Aula no Mês" icon={<BookOpen className="w-5 h-5 text-purple-500" />} />
-            <StatCard title={stats.averageHourlyRate} subtitle="Média Valor por Hora" icon={<Star className="w-5 h-5 text-yellow-500" />} />
+            <StatCard
+              title={Number(stats.averageMonthlyHours).toFixed(0)}
+              subtitle="Média de Horas Mensais"
+              icon={<Star className="w-5 h-5 text-yellow-500" />}
+            />
           </section>
           <ChartSection charts={charts} />
           <TableSection

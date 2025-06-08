@@ -15,7 +15,7 @@ export function VisaoGeral() {
   const [stats, setStats] = useState({
     totalRevenue: 0,
     totalTeachers: 0,
-    totalHours: 0,
+    pendingAmount: 0,
     totalAppointments: 0
   });
   const [charts, setCharts] = useState([]);
@@ -48,7 +48,12 @@ export function VisaoGeral() {
         <main className="p-6 space-y-8">
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              title={`R$ ${stats.totalRevenue.toLocaleString('pt-BR')}`}
+             title={stats.totalRevenue.toLocaleString('pt-BR', {
+               style: 'currency',
+               currency: 'BRL',
+               minimumFractionDigits: 2,
+               maximumFractionDigits: 2
+             })}
               subtitle="Receita Total"
               // percentage="+12% este mês"
               percentageColor="text-green-500"
@@ -62,18 +67,22 @@ export function VisaoGeral() {
               icon={<BarChart className="text-blue-500 w-5 h-5" />}
             />
             <StatCard
-              title={stats.totalHours}
-              subtitle="Horas de Aula"
-              // percentage="+8% comparado a Abril"
-              percentageColor="text-green-500"
-              icon={<BarChart className="text-purple-500 w-5 h-5" />}
-            />
+               title={stats.pendingAmount.toLocaleString('pt-BR', {
+                 style: 'currency',
+                 currency: 'BRL',
+                 minimumFractionDigits: 2,
+                 maximumFractionDigits: 2
+               })}
+               subtitle="Pagamentos Pendentes"
+               percentageColor="text-red-500"
+               icon={<DollarSign className="text-blue-500 w-5 h-5" />}
+             />
             <StatCard
               title={stats.totalAppointments}
               subtitle="Agendamentos"
               // percentage="+3% este mês"
               percentageColor="text-green-500"
-              icon={<CheckCircle className="text-emerald-500 w-5 h-5" />}
+              icon={<CheckCircle className="text-blue-500 w-5 h-5" />}
             />
           </section>
 
