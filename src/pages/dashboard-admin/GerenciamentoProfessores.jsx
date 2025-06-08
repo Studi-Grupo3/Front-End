@@ -1,3 +1,4 @@
+// src/pages/dashboard-admin/GerenciamentoProfessores.jsx
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../../components/dashboard-admin/Sidebar';
 import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
@@ -5,7 +6,7 @@ import { MobileSidebar } from '../../components/dashboard-admin/mobile/MobileSid
 import { MobileHeader } from '../../components/dashboard-admin/mobile/MobileHeader';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
 import { Button } from '../../components/ui/Button';
-import { Edit2, UserPlus } from 'lucide-react';
+import { Edit2, UserPlus, Copy, RefreshCw } from 'lucide-react';
 import { teacherManagerService } from '../../services/dashboard/teacherManagerService';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
@@ -25,7 +26,10 @@ export function GerenciamentoProfessores() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [cpf, setCpf] = useState('');
   const [subject, setSubject] = useState('');
+  const [password, setPassword] = useState('');
+  const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
     load();
@@ -38,11 +42,23 @@ export function GerenciamentoProfessores() {
     setLoading(false);
   }
 
+  const generatePassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let pwd = '';
+    for (let i = 0; i < 12; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return pwd;
+  };
+
   function openNew() {
     setEditingId(null);
     setName('');
     setEmail('');
+    setCpf('');
     setSubject('');
+    setPassword(generatePassword());
+    +    setCopySuccess(false);
     setShowForm(true);
   }
 
@@ -50,12 +66,16 @@ export function GerenciamentoProfessores() {
     setEditingId(row.id);
     setName(row.name);
     setEmail(row.email);
+    setCpf(row.cpf || '');
     setSubject(row.subject);
+    setPassword(''); // não altera senha ao editar
+    +    setCopySuccess(false);
     setShowForm(true);
   }
 
   async function save() {
-    const payload = { name, email, subject };
+    const cleanedCpf = cpf.replace(/[^\d]/g, '');
+    const payload = { name, email, cpf: cleanedCpf, subject, password };
     if (editingId !== null) {
       await teacherManagerService.update(editingId, payload);
     } else {
@@ -128,6 +148,12 @@ export function GerenciamentoProfessores() {
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
+            <Input
+              label="CPF"
+              type="text"
+              value={cpf}
+              onChange={e => setCpf(e.target.value)}
+            />
 
             <label className="block">
               <span className="text-sm font-medium">Disciplina</span>
@@ -146,7 +172,46 @@ export function GerenciamentoProfessores() {
                 ))}
               </select>
             </label>
+
+            {/* Campo de senha temporária */}
+            <label className="block relative">
+              <span className="text-sm font-medium">Senha Temporária</span>
+              <div className="mt-1 flex items-center">
+                <input
+                  type="text"
+                  readOnly
+                  value={password}
+                  className="flex-1 border rounded p-2 bg-gray-100"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(password);
+                    setCopySuccess(true);
+                    setTimeout(() => setCopySuccess(false), 2000);
+                  }}
+                  className="ml-2 p-2 bg-gray-200 rounded hover:bg-gray-300 transition cursor-pointer"
+                  title="Copiar senha"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPassword(generatePassword())}
+                  className="ml-2 p-2 bg-gray-200 rounded hover:bg-gray-300 transition cursor-pointer"
+                  title="Gerar nova senha"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
+              {copySuccess && (
+                <span className="absolute top-full mt-1 left-0 text-sm text-green-600">
+                  Copiado!
+                </span>
+              )}
+            </label>
           </div>
+
           <div className="mt-6 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setShowForm(false)}>
               Cancelar
