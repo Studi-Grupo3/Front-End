@@ -67,7 +67,7 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
       case "OFFLINE":
         return !app.online;
       default:
-        return ["SCHEDULED", "CANCELLED"].includes(app.status);
+         return app.status === "SCHEDULED";
     }
   });
 
