@@ -1,4 +1,3 @@
-// src/pages/dashboard-admin/GerenciamentoProfessores.jsx
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../../components/dashboard-admin/Sidebar';
 import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
@@ -6,7 +5,7 @@ import { MobileSidebar } from '../../components/dashboard-admin/mobile/MobileSid
 import { MobileHeader } from '../../components/dashboard-admin/mobile/MobileHeader';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
 import { Button } from '../../components/ui/Button';
-import { Edit2, UserPlus, Copy, RefreshCw } from 'lucide-react';
+import { Edit2, UserPlus, Copy, RefreshCw, Trash2 } from 'lucide-react';
 import { teacherManagerService } from '../../services/dashboard/teacherManagerService';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
@@ -30,6 +29,10 @@ export function GerenciamentoProfessores() {
   const [subject, setSubject] = useState('');
   const [password, setPassword] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteName, setDeleteName] = useState('');
 
   useEffect(() => {
     load();
@@ -58,7 +61,7 @@ export function GerenciamentoProfessores() {
     setCpf('');
     setSubject('');
     setPassword(generatePassword());
-    +    setCopySuccess(false);
+    setCopySuccess(false);
     setShowForm(true);
   }
 
@@ -68,9 +71,15 @@ export function GerenciamentoProfessores() {
     setEmail(row.email);
     setCpf(row.cpf || '');
     setSubject(row.subject);
-    setPassword(''); // não altera senha ao editar
-    +    setCopySuccess(false);
+    setPassword('');
+    setCopySuccess(false);
     setShowForm(true);
+  }
+
+  function openDelete(row) {
+    setDeleteId(row.id);
+    setDeleteName(row.name);
+    setShowDeleteModal(true);
   }
 
   async function save() {
@@ -85,6 +94,13 @@ export function GerenciamentoProfessores() {
     await load();
   }
 
+  async function confirmDelete() {
+    await teacherManagerService.softDelete(deleteId);
+    setShowDeleteModal(false);
+    setDeleteId(null);
+    await load();
+  }
+
   const columns = [
     { label: 'Nome', accessor: 'name' },
     { label: 'E-mail', accessor: 'email' },
@@ -96,9 +112,14 @@ export function GerenciamentoProfessores() {
     {
       label: 'Ações',
       render: row => (
-        <Button size="sm" variant="ghost" onClick={() => openEdit(row)}>
-          <Edit2 className="w-4 h-4" />
-        </Button>
+        <div className="items-center space-x-2">
+          <Button size="sm" variant="ghost" className="cursor-pointer" onClick={() => openEdit(row)}>
+            <Edit2 className="w-4 h-4" />
+          </Button>
+          <Button size="sm" variant="ghost" className="cursor-pointer" onClick={() => openDelete(row)}>
+            <Trash2 className="w-4 h-4 text-red-600" />
+          </Button>
+        </div>
       ),
     },
   ];
@@ -122,7 +143,7 @@ export function GerenciamentoProfessores() {
             columns={columns}
             loading={loading}
             action={
-              <Button variant="primary" onClick={openNew}>
+              <Button variant="primary" className="cursor-pointer" onClick={openNew}>
                 <UserPlus className="w-5 h-5 mr-2" />
                 Adicionar Professor
               </Button>
@@ -158,7 +179,7 @@ export function GerenciamentoProfessores() {
             <label className="block">
               <span className="text-sm font-medium">Disciplina</span>
               <select
-                className="mt-1 block w-full border rounded p-2 max-h-60 overflow-y-auto"
+                className="mt-1 block w-full border rounded p-2 max-h-60 overflow-y-auto cursor-pointer"
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
               >
@@ -185,20 +206,20 @@ export function GerenciamentoProfessores() {
                 />
                 <button
                   type="button"
+                  className="ml-2 p-2 bg-gray-200 rounded hover:bg-gray-300 transition cursor-pointer"
                   onClick={() => {
                     navigator.clipboard.writeText(password);
                     setCopySuccess(true);
                     setTimeout(() => setCopySuccess(false), 2000);
                   }}
-                  className="ml-2 p-2 bg-gray-200 rounded hover:bg-gray-300 transition cursor-pointer"
                   title="Copiar senha"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPassword(generatePassword())}
                   className="ml-2 p-2 bg-gray-200 rounded hover:bg-gray-300 transition cursor-pointer"
+                  onClick={() => setPassword(generatePassword())}
                   title="Gerar nova senha"
                 >
                   <RefreshCw className="w-4 h-4" />
@@ -213,11 +234,28 @@ export function GerenciamentoProfessores() {
           </div>
 
           <div className="mt-6 flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => setShowForm(false)}>
+            <Button variant="ghost" className="cursor-pointer" onClick={() => setShowForm(false)}>
               Cancelar
             </Button>
-            <Button variant="primary" onClick={save}>
+            <Button variant="primary" className="cursor-pointer" onClick={save}>
               Salvar
+            </Button>
+          </div>
+        </Modal>
+      )}
+
+      {showDeleteModal && (
+        <Modal
+          title="Confirmar Exclusão"
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <p>Tem certeza que deseja excluir <strong>{deleteName}</strong>?</p>
+          <div className="mt-6 flex justify-end gap-2">
+            <Button variant="ghost" className="cursor-pointer" onClick={() => setShowDeleteModal(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" className="text-white cursor-pointer" onClick={confirmDelete}>
+              Excluir
             </Button>
           </div>
         </Modal>
