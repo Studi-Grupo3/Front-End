@@ -56,7 +56,7 @@ export function MobileSidebar({ isOpen, onClose }) {
             className="flex items-center w-full text-left px-4 py-3 rounded-md transition-colors text-sm bg-[#3970B7] text-white hover:bg-[#FECB0A]/80 cursor-pointer"
           >
             <LogOut size={18} className="mr-3" />
-            Sair
+            Sair da Conta
           </button>
         </div>
       </nav>
