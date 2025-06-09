@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import NavbarPanel from "../components/NavbarPanel";
 import TabelaAulas from "../components/TabelaAulas";
 import { FiSearch } from "react-icons/fi";
-import { teacherDashboardService } from "../services/teacherDashboardService";
+import { teacherService } from "../services/teacherService";
 
 const TeacherLessonsHistoryPage = () => {
   const [historico, setHistorico] = useState([]);
@@ -11,7 +11,7 @@ const TeacherLessonsHistoryPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    teacherDashboardService
+    teacherService
       .getLessonsHistory?.({ search }) // Adapte o nome/método conforme seu backend
       .then(setHistorico)
       .catch(() => setHistorico([]))

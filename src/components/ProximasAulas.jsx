@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { CalendarDays, Clock, MapPin, Download, ExternalLink } from 'lucide-react';
-import { teacherDashboardService } from "../services/teacherDashboardService";
+import { teacherService } from "../services/teacherService";
 
 export default function ProximasAulas() {
   const [aulas, setAulas] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    teacherDashboardService.getProximasAulas()
+    teacherService.getProximasAulas()
       .then(setAulas)
       .catch(() => setAulas([]))
       .finally(() => setLoading(false));

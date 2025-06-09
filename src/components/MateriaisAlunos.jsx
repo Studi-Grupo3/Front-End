@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Eye, Download, FileText } from 'lucide-react';
-import { teacherDashboardService } from "../services/teacherDashboardService";
+import { teacherService } from "../services/teacherService";
 
 export default function MateriaisAlunos() {
   const [materiais, setMateriais] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    teacherDashboardService.getMateriaisAlunos()
+    teacherService.getMateriaisAlunos()
       .then(setMateriais)
       .catch(() => setMateriais([]))
       .finally(() => setLoading(false));

@@ -4,14 +4,14 @@ import ProximasAulas from "../components/ProximasAulas";
 import MateriaisAlunos from "../components/MateriaisAlunos";
 import NavbarPanel from "../components/NavbarPanel";
 import { DollarSign, Users, Clock, LineChart } from "lucide-react";
-import { teacherDashboardService } from "../services/teacherDashboardService";
+import { teacherService } from "../services/teacherService";
 
 export default function TeacherInitialPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    teacherDashboardService
+    teacherService
       .getStats()
       .then(setStats)
       .catch(() => setStats(null))

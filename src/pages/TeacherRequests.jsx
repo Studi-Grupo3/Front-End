@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Calendar, User } from 'lucide-react';
 import NavbarPanel from '../components/NavbarPanel';
-import { teacherDashboardService } from '../services/teacherDashboardService';
+import { teacherService } from '../services/teacherService';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -18,7 +18,7 @@ const TeacherRequests = () => {
 
 	useEffect(() => {
 		setLoading(true);
-		teacherDashboardService.getRequests?.()
+		teacherService.getRequests?.()
 			.then(data => setRequests(data))
 			.catch(() => setRequests([]))
 			.finally(() => setLoading(false));

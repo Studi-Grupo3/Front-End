@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LinhaAula from './LinhaAula';
-import { teacherDashboardService } from '../services/teacherDashboardService';
+import { teacherService } from '../services/teacherService';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -9,14 +9,13 @@ const TabelaAulas = ({ aulas: aulasProp = null, loading: loadingProp = false }) 
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Se receber aulas por props, usa elas. Senão, busca do backend.
   useEffect(() => {
     if (aulasProp) {
       setAulas(aulasProp);
       setLoading(!!loadingProp);
     } else {
       setLoading(true);
-      teacherDashboardService.getLessonsHistory()
+      teacherService.getLessonsHistory()
         .then(data => setAulas(data))
         .catch(() => setAulas([]))
         .finally(() => setLoading(false));
