@@ -1,3 +1,4 @@
+// src/components/dashboard-admin/settings/NotificationSettings.jsx
 import React, { useEffect, useState } from 'react';
 import { SaveButton } from './SaveButton';
 import { adminSettingsService } from '../../../services/dashboard/adminSettingsService';
@@ -9,24 +10,25 @@ const labels = {
 };
 
 export function NotificationSettings() {
+  // já inicializa com todas as flags em false
   const [notif, setNotif] = useState({
     notifyPayments: false,
     notifyAppointments: false,
     notifyCancellations: false
   });
-  const [loading, setLoading] = useState(true);
 
+  // carrega e preenche quando chegar
   useEffect(() => {
     adminSettingsService.get()
       .then(data => {
         setNotif({
-          notifyPayments: data.notifyPayments,
+          notifyPayments:     data.notifyPayments,
           notifyAppointments: data.notifyAppointments,
-          notifyCancellations: data.notifyCancellations
+          notifyCancellations:data.notifyCancellations
         });
       })
-      .catch(err => console.error('Erro ao carregar notificações:', err))
-      .finally(() => setLoading(false));
+      .catch(err => console.error('Erro ao carregar notificações:', err));
+      // sem finally: mesmo que demore, a UI já está visível com os switches em false
   }, []);
 
   const toggle = key =>
@@ -34,7 +36,6 @@ export function NotificationSettings() {
 
   const salvar = async () => {
     try {
-      // Chama PATCH enviando apenas as flags
       await adminSettingsService.patch(notif);
       alert('Notificações salvas com sucesso!');
     } catch (err) {
@@ -42,8 +43,6 @@ export function NotificationSettings() {
       alert('Erro ao salvar configurações.');
     }
   };
-
-  if (loading) return <p>Carregando…</p>;
 
   return (
     <div className="bg-white p-6 rounded shadow">
@@ -57,7 +56,6 @@ export function NotificationSettings() {
           <div key={key} className="flex justify-between items-start">
             <div>
               <p className="text-sm font-medium text-gray-900">{labels[key]}</p>
-              <p className="text-xs text-gray-500">{/* descrição opcional */}</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
