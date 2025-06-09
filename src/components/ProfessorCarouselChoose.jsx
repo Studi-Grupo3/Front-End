@@ -36,9 +36,9 @@ const ProfessorCarouselChoose = () => {
         <div className="w-full max-w-full sm:max-w-[1280px] bg-white border border-gray-200 rounded-xl p-6 sm:p-10 shadow-sm">
 
           <nav className="text-[13px] sm:text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-            <button onClick={() => nav("/Class-Details")} className="hover:underline">Detalhes</button>
+            <button onClick={() => nav("/aluno/formulario")} className="hover:underline">Detalhes</button>
             <span className="mx-1">›</span>
-            <button onClick={() => nav("/class-model")} className="hover:underline">Modelo de Aula</button>
+            <button onClick={() => nav("/aluno/modelo-aula")} className="hover:underline">Modelo de Aula</button>
             <span className="mx-1">›</span>
             <span className="text-blue-600 font-medium">Professor</span>
           </nav>
@@ -50,7 +50,7 @@ const ProfessorCarouselChoose = () => {
           <div className="flex justify-center mb-6">
             <button
               type="button"
-              onClick={() => nav("/agendamentos")}
+              onClick={() => nav("/aluno/agendar-aula")}
               className="px-4 sm:px-6 py-2 border border-blue-600 text-blue-600 rounded-full text-sm hover:bg-blue-50"
             >
               Não quero escolher um professor
@@ -66,15 +66,15 @@ const ProfessorCarouselChoose = () => {
                   className="w-full h-64 object-cover rounded-t-xl"
                 />
 
-                <button 
-                  onClick={prevSlide} 
+                <button
+                  onClick={prevSlide}
                   className="absolute left-1 top-1/2 -translate-y-1/2"
                 >
                   <span className="sr-only">Anterior</span>
                   <img src={botaoAnterior} alt="Anterior" className="w-9 h-9" />
                 </button>
-                <button 
-                  onClick={nextSlide} 
+                <button
+                  onClick={nextSlide}
                   className="absolute right-1 top-1/2 -translate-y-1/2"
                 >
                   <span className="sr-only">Próximo</span>
@@ -92,8 +92,11 @@ const ProfessorCarouselChoose = () => {
                 <p className="text-gray-600 text-sm mt-2">{currentProfessor.description}</p>
 
                 <div className="mt-4">
-                  <button 
-                    onClick={() => nav("/agendamentos")}
+                  <button
+                    onClick={() => {
+                      localStorage.setItem('selectedProfessorId', currentProfessor.id);
+                      nav("/aluno/agendar-aula");
+                    }}
                     className="w-full py-2 bg-[#3A6FD8] text-white font-bold rounded-lg hover:bg-blue-600 transition"
                   >
                     📅 Agendar aula →
@@ -121,9 +124,8 @@ const ProfessorCarouselChoose = () => {
                     return (
                       <div
                         key={professor.id}
-                        className={`bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col ${
-                          currentSlide === index ? "w-full max-w-sm" : "w-full max-w-xs"
-                        }`}
+                        className={`bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col ${currentSlide === index ? "w-full max-w-sm" : "w-full max-w-xs"
+                          }`}
                       >
                         <div className="w-full mx-auto flex flex-col h-full">
                           <img
@@ -140,8 +142,11 @@ const ProfessorCarouselChoose = () => {
                             <p className="text-[#3A6FD8] font-semibold mt-2">{professor.subject}</p>
                             <p className="text-gray-600 text-sm mt-2">{professor.description}</p>
                           </div>
-                          <div 
-                            onClick={() => nav("/agendamentos")}
+                          <div
+                            onClick={() => {
+                              localStorage.setItem('selectedProfessorId', professor.id);
+                              nav("/aluno/agendar-aula");
+                            }}
                             className="p-4 border-t border-gray-200 mt-auto cursor-pointer"
                           >
                             <button className="w-full py-2 bg-[#3A6FD8] text-white font-bold rounded-lg hover:bg-blue-600 transition">

@@ -4,7 +4,6 @@ import NavbarHome from '../components/NavbarHome';
 import Imagem from '../assets/imagem-fundo.svg';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { studentService } from '../services/studentService';
-import { authService } from '../services/authService';
 import LoadingButton from '../components/ui/LoadingButton';
 import { showAlert } from '../components/ShowAlert';
 
@@ -45,7 +44,7 @@ const RegisterPage = () => {
       });
 
       setTimeout(() => {
-        navigate('/entrar');
+        navigate('/logar');
       }, 2000);
     } catch (err) {
       console.error("Erro ao tentar cadastrar:", err);
@@ -166,7 +165,7 @@ const RegisterPage = () => {
               Já tem uma conta?{' '}
               <button
                 type="button"
-                onClick={() => navigate('/entrar')}
+                onClick={() => navigate('/logar')}
                 className="font-bold text-[#FECB0A] hover:underline cursor-pointer"
               >
                 Clique aqui

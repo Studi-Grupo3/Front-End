@@ -57,7 +57,7 @@ const NavbarHome = () => {
       {/* Botões (somente em telas >= 1024px) */}
       <div className="hidden lg:flex gap-4 w-70">
         <button
-          onClick={() => navigate("/entrar")}
+          onClick={() => navigate("/logar")}
           className="flex items-center justify-center h-10 w-90 gap-2 rounded-xl border border-[#FFFFFF] bg-[#4088E7] text-white font-semibold cursor-pointer"
         >
           Entrar <ArrowRightIcon className="h-5" />

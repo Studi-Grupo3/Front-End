@@ -17,23 +17,17 @@ export const contentService = {
 
 createClass: async (data) => {
     const formData = new FormData();
-
-    formData.append('phase', data.phase);
-    formData.append('subject', data.subject);
-    formData.append('duration', data.duration);
-
-    data.materials.forEach((mat) => {
-        formData.append('materials', mat.file);
-        formData.append('materialsNames', mat.name); 
-    });
+    formData.append("file", data.file);
+    formData.append("idStudent", String(data.idStudent));
 
     const response = await api.post('/files', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        "Content-Type": "multipart/form-data"
       }
     });
 
     return response.data;
 }
+
 
 };

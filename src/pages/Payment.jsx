@@ -1,48 +1,79 @@
 import { useState } from "react";
 import NavbarPanel from "../components/NavbarPanel";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Pagamento() {
   const [step, setStep] = useState("dados");
   const [paymentMethod, setPaymentMethod] = useState("credito");
+  const [cep, setCep] = useState("");
+  const [endereco, setEndereco] = useState({
+    rua: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    numero: "",
+    complemento: "",
+  });
+  const navigate = useNavigate();
+
+  const handleCepChange = async (e) => {
+    const inputCep = e.target.value.replace(/\D/g, ""); // remove tudo que não for número
+    setCep(inputCep);
+
+    if (inputCep.length === 8) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${inputCep}/json/`);
+        const data = await response.json();
+        if (!data.erro) {
+          setEndereco((prev) => ({
+            ...prev,
+            rua: data.logradouro,
+            bairro: data.bairro,
+            cidade: data.localidade,
+            estado: data.uf,
+          }));
+        } else {
+          alert("CEP não encontrado.");
+        }
+      } catch (error) {
+        alert("Erro ao buscar CEP.");
+      }
+    }
+  };
 
   return (
     <>
-      {/* Navbar fixa no topo */}
       <div className="fixed top-0 left-0 w-full z-50">
         <NavbarPanel />
       </div>
 
       <div className="min-h-screen bg-gray-50 flex flex-col overflow-hidden text-xs">
-        {/* Adicione um espaçamento para compensar a navbar fixa */}
         <div className="h-16" />
 
-        <div className="w-full max-w-6xl text-gray-500 text-sm  mt-14 mx-auto">
+        <div className="w-full max-w-6xl text-gray-500 text-sm mt-14 mx-auto">
           <nav className="text-xs sm:text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
             <ol className="inline-flex flex-wrap items-center space-x-2">
-              <li><Link to="/" className="hover:underline">Detalhes</Link></li>
+              <li><Link to="/aluno/formulario" className="hover:underline">Detalhes</Link></li>
               <li>›</li>
-              <li><Link to="/class-model" className="hover:underline">Modelo de Aula</Link></li>
+              <li><Link to="/aluno/modelo-aula" className="hover:underline">Modelo de Aula</Link></li>
               <li>›</li>
-              <li><Link to="/choose-professor" className="hover:underline">Professor</Link></li>
+              <li><Link to="/aluno/escolher-professor" className="hover:underline">Professor</Link></li>
               <li>›</li>
-              <li><Link to="/agendamentos" className="hover:underline">Agendamento</Link></li>
+              <li><Link to="/aluno/agendar-aula" className="hover:underline">Agendamento</Link></li>
               <li>›</li>
               <li className="text-blue-600 font-medium">Pagamento</li>
             </ol>
           </nav>
         </div>
 
-        
         <div className="w-full text-center">
           <h1 className="text-blue-600 text-2xl font-bold">Pagamento</h1>
         </div>
+
         <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 mt-8 overflow-hidden mx-auto flex-1">
-          
           <div className="flex-1 bg-white rounded-md shadow p-6 overflow-y-auto">
             <h2 className="text-lg font-bold mb-6">Finalizar compra</h2>
 
-            
             <div className="flex flex-col sm:flex-row mb-6 border-b">
               {["dados", "endereco", "pagamento"].map((item) => (
                 <button
@@ -50,7 +81,7 @@ export default function Pagamento() {
                   className={`w-full sm:w-auto flex-1 p-2 text-center ${step === item
                     ? "text-blue-600 font-semibold border-b-2 border-blue-600"
                     : "text-gray-500"
-                  }`}
+                    }`}
                   onClick={() => setStep(item)}
                 >
                   {item === "dados" ? "Dados pessoais" : item === "endereco" ? "Endereço" : "Pagamento"}
@@ -58,7 +89,6 @@ export default function Pagamento() {
               ))}
             </div>
 
-            
             {step === "dados" && (
               <form className="space-y-4">
                 <div>
@@ -78,7 +108,11 @@ export default function Pagamento() {
                   <input type="text" placeholder="(00) 00000-0000" className="w-full p-2 border rounded-md mt-1 text-sm" />
                 </div>
 
-                <button type="button" className="bg-blue-600 text-white rounded-md w-full py-2 mt-4">
+                <button
+                  type="button"
+                  className="bg-blue-600 text-white rounded-md w-full py-2 mt-4"
+                  onClick={() => setStep("endereco")}
+                >
                   Continuar
                 </button>
               </form>
@@ -88,36 +122,82 @@ export default function Pagamento() {
               <form className="space-y-4">
                 <div>
                   <label className="text-gray-600 text-sm">CEP</label>
-                  <input type="text" placeholder="00000-000" className="w-full p-2 border rounded-md mt-1 text-sm" />
+                  <input
+                    type="text"
+                    placeholder="00000-000"
+                    className="w-full p-2 border rounded-md mt-1 text-sm"
+                    value={cep.length > 5 ? `${cep.slice(0, 5)}-${cep.slice(5)}` : cep}
+                    onChange={handleCepChange}
+                  />
                 </div>
                 <div>
                   <label className="text-gray-600 text-sm">Rua</label>
-                  <input type="text" placeholder="Rua Exemplo" className="w-full p-2 border rounded-md mt-1 text-sm" />
+                  <input
+                    type="text"
+                    placeholder="Rua Exemplo"
+                    className="w-full p-2 border rounded-md mt-1 text-sm"
+                    value={endereco.rua}
+                    onChange={(e) => setEndereco({ ...endereco, rua: e.target.value })}
+                  />
                 </div>
                 <div>
                   <label className="text-gray-600 text-sm">Número</label>
-                  <input type="text" placeholder="123" className="w-full p-2 border rounded-md mt-1 text-sm" />
+                  <input
+                    type="text"
+                    placeholder="123"
+                    className="w-full p-2 border rounded-md mt-1 text-sm"
+                    value={endereco.numero}
+                    onChange={(e) => setEndereco({ ...endereco, numero: e.target.value })}
+                  />
                 </div>
                 <div>
                   <label className="text-gray-600 text-sm">Complemento</label>
-                  <input type="text" placeholder="Apartamento, bloco, etc." className="w-full p-2 border rounded-md mt-1 text-sm" />
+                  <input
+                    type="text"
+                    placeholder="Apartamento, bloco, etc."
+                    className="w-full p-2 border rounded-md mt-1 text-sm"
+                    value={endereco.complemento}
+                    onChange={(e) => setEndereco({ ...endereco, complemento: e.target.value })}
+                  />
                 </div>
                 <div>
                   <label className="text-gray-600 text-sm">Bairro</label>
-                  <input type="text" placeholder="Bairro Exemplo" className="w-full p-2 border rounded-md mt-1 text-sm" />
+                  <input
+                    type="text"
+                    placeholder="Bairro Exemplo"
+                    className="w-full p-2 border rounded-md mt-1 text-sm"
+                    value={endereco.bairro}
+                    onChange={(e) => setEndereco({ ...endereco, bairro: e.target.value })}
+                  />
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
                     <label className="text-gray-600 text-sm">Cidade</label>
-                    <input type="text" placeholder="Cidade" className="w-full p-2 border rounded-md mt-1 text-sm" />
+                    <input
+                      type="text"
+                      placeholder="Cidade"
+                      className="w-full p-2 border rounded-md mt-1 text-sm"
+                      value={endereco.cidade}
+                      onChange={(e) => setEndereco({ ...endereco, cidade: e.target.value })}
+                    />
                   </div>
                   <div className="flex-1">
                     <label className="text-gray-600 text-sm">Estado</label>
-                    <input type="text" placeholder="UF" className="w-full p-2 border rounded-md mt-1 text-sm" />
+                    <input
+                      type="text"
+                      placeholder="UF"
+                      className="w-full p-2 border rounded-md mt-1 text-sm"
+                      value={endereco.estado}
+                      onChange={(e) => setEndereco({ ...endereco, estado: e.target.value })}
+                    />
                   </div>
                 </div>
 
-                <button type="button" className="bg-blue-600 text-white rounded-md w-full py-2 mt-4">
+                <button
+                  type="button"
+                  className="bg-blue-600 text-white rounded-md w-full py-2 mt-4"
+                  onClick={() => setStep("pagamento")}
+                >
                   Continuar
                 </button>
               </form>
@@ -159,7 +239,11 @@ export default function Pagamento() {
                       <input type="text" placeholder="Nome impresso no cartão" className="w-full p-2 border rounded-md mt-1 text-sm" />
                     </div>
 
-                    <button type="button" className="bg-blue-600 text-white rounded-md w-full py-2 mt-4">
+                    <button
+                      type="button"
+                      className="bg-blue-600 text-white rounded-md w-full py-2 mt-4"
+                      onClick={() => navigate("/aluno/concluido")}
+                    >
                       Finalizar Pagamento
                     </button>
                   </form>
@@ -168,11 +252,9 @@ export default function Pagamento() {
             )}
           </div>
 
-          
           <div className="w-full lg:w-96 bg-white rounded-md shadow p-6 overflow-y-auto">
             <h2 className="text-lg font-bold mb-6 bg-yellow-100 p-2 rounded-md">Resumo do Pedido</h2>
 
-            
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="bg-blue-100 p-2 rounded-md">
@@ -202,7 +284,6 @@ export default function Pagamento() {
               </div>
             </div>
 
-            
             <div className="mt-6">
               <p className="text-sm text-blue-600 font-semibold mb-2">Cupom de desconto</p>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -211,7 +292,6 @@ export default function Pagamento() {
               </div>
             </div>
 
-            
             <div className="border-t mt-6 pt-4 space-y-2 text-sm">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>

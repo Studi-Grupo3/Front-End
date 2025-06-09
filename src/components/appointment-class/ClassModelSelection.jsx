@@ -5,7 +5,7 @@ import NavbarPanel from "../NavbarPanel";
 
 export default function ClassModelSelection() {
     const navigate = useNavigate();
-    const [choice, setChoice] = useState(null);        // "online" | "home"
+    const [choice, setChoice] = useState(() => localStorage.getItem("classModel") || null);
 
     /* quick helpers for styling */
     const base = "w-full sm:w-80 border rounded-lg px-8 py-10 transition-colors cursor-pointer flex flex-col items-center text-center";
@@ -27,7 +27,7 @@ export default function ClassModelSelection() {
                     {/* breadcrumb */}
                     <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-6">
                         <button
-                            onClick={() => navigate("/")}           // ← back to Details page
+                            onClick={() => navigate("/aluno/formulario")}           // ← back to Details page
                             className="hover:underline cursor-pointer"
                         >
                             Detalhes
@@ -44,7 +44,10 @@ export default function ClassModelSelection() {
                     <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center">
                         {/* ONLINE */}
                         <div
-                            onClick={() => setChoice("online")}
+                            onClick={() => {
+                                setChoice("online");
+                                localStorage.setItem("classModel", "online");
+                            }}
                             className={`${base} ${choice === "online" ? active : def}`}
                         >
                             <span className={radio(choice === "online")} />
@@ -69,7 +72,10 @@ export default function ClassModelSelection() {
 
                         {/* DOMICÍLIO */}
                         <div
-                            onClick={() => setChoice("home")}
+                            onClick={() => {
+                                setChoice("home");
+                                localStorage.setItem("classModel", "home");
+                            }}
                             className={`${base} ${choice === "home" ? active : def}`}
                         >
                             <span className={radio(choice === "home")} />
@@ -96,7 +102,7 @@ export default function ClassModelSelection() {
                     {/* continue */}
                     <div className="flex justify-center mt-10">
                         <button
-                            onClick={() => navigate("/choose-professor")}
+                            onClick={() => navigate("/aluno/escolher-professor")}
                             disabled={!choice}
                             className="w-72 sm:w-60 bg-blue-600 text-white font-medium py-2 rounded hover:bg-blue-700 disabled:opacity-50"
                         >

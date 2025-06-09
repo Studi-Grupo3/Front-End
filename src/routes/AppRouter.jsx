@@ -29,7 +29,7 @@ export const AppRouter = () => {
       <Routes>
 
         {/* ROTAS PÚBLICAS */}
-        <Route path="/entrar" element={<LoginPage />} />
+        <Route path="/logar" element={<LoginPage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/cadastrar" element={<RegisterPage />} />
         <Route path="/redefinir-senha" element={<EmailVerificationPage />} />
@@ -46,7 +46,6 @@ export const AppRouter = () => {
 
           
           <Route path="/aluno/formulario" element={<ClassDetailsForm />} />
-          <Route path="/aluno/upload-material" element={<AddMaterialModal />} />
           <Route path="/aluno/modelo-aula" element={<ClassModelSelection />} />
           <Route path="/aluno/escolher-professor" element={<ChooseProfessor />} />
           <Route path="/aluno/agendar-aula" element={<Scheduling />} />
