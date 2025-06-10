@@ -15,8 +15,10 @@ import {
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { authService } from "../services/authService";
+import React from "react";
+import { FiBell } from "react-icons/fi";
 
-const NavbarPanel = () => {
+const NavbarPanel = ({ role }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 

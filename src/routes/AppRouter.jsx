@@ -16,6 +16,11 @@ import EmailVerificationPage from "../pages/EmailVerificationPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import StudentInitialPage from "../pages/StudentInitialPage";
+import TeacherInitialPage from "../pages/TeacherInitialPage";
+import TeacherChartClassesPage from "../pages/TeacherChartClassesPage";
+import TeacherLessonsHistoryPage from "../pages/TeacherLessonsHistoryPage";
+import TeacherGraph from "../pages/TeacherGraph";
+import TeacherRequests from "../pages/TeacherRequests";
 import NotFoundPage from "../pages/NotFoundPage";
 
 export const AppRouter = () => {
@@ -27,6 +32,12 @@ export const AppRouter = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/cadastrar" element={<RegisterPage />} />
         <Route path="/redefinir-senha" element={<EmailVerificationPage />} />
+        <Route path="/professor/inicio" element={<TeacherInitialPage />} />
+        <Route path="/professor/tabela-aula" element={<TeacherChartClassesPage />} />
+        <Route path="/professor/historico-aulas" element={<TeacherLessonsHistoryPage />} />
+        <Route path="/professor/metricas-aula" element={<TeacherGraph />} />
+        <Route path="/professor/solicitacoes" element={<TeacherRequests />} />
+
 
         {/* ROTAS PROTEGIDAS */}
         <Route element={<ProtectedRoute />}>
