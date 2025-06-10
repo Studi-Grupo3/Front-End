@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { appointmentService } from "../../services/appointmentService";
 import { AppointmentCard }    from "./AppointmentCard";
 import { AppointmentModal }   from "./AppointmentModal";
+import { SkeletonAppointmentCard } from "../../components/common/SkeletonAppointmentCard";
 import {
   translateSubject,
   translateProfessorTitle
@@ -30,9 +31,27 @@ export const AllAppointments = ({ filter = "ALL" }) => {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  if (loading) return <div>Carregando agendamentos...</div>;
-  if (error)   return <div>{error}</div>;
+  // 1) skeleton enquanto carrega
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {Array(6).fill().map((_, i) => (
+          <SkeletonAppointmentCard key={i} />
+        ))}
+      </div>
+    );
+  }
 
+  // 2) mensagem de erro padronizada
+  if (error) {
+    return (
+      <div className="p-6 text-red-600 text-center">
+        {error}
+      </div>
+    );
+  }
+
+  // 3) prepare display
   const items = appointments.map(appt => {
     const dt = new Date(appt.dateTime);
     return {
@@ -48,6 +67,16 @@ export const AllAppointments = ({ filter = "ALL" }) => {
     };
   });
 
+  // 4) empty state padronizado
+  if (items.length === 0) {
+    return (
+      <div className="p-6 text-center text-gray-500">
+        Nenhum agendamento encontrado.
+      </div>
+    );
+  }
+
+  // 5) aplica filtro e render normal
   const visible = items.filter(app => {
     switch (filter) {
       case "ALL":       return true;

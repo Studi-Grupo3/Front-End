@@ -31,7 +31,7 @@ export function TableSection({ title, columns, data, action }) {
         `px-3 py-1.5 rounded-md border font-medium text-sm transition ` +
         (disabled
           ? 'cursor-not-allowed text-gray-400 border-gray-200 bg-gray-100'
-          : 'text-blue-600 border-blue-300 hover:bg-blue-50')
+          : 'text-[#3970B7] border-[#3970B7] hover:bg-[#3970B7]/10 cursor-pointer')
       }
     >
       {label}

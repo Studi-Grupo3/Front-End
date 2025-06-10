@@ -1,8 +1,9 @@
+// src/pages/dashboard/Pagamentos.jsx
 import React, { useEffect, useState } from 'react';
 import { Sidebar } from '../../components/dashboard-admin/Sidebar';
-import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
 import { MobileSidebar } from '../../components/dashboard-admin/mobile/MobileSidebar';
 import { MobileHeader } from '../../components/dashboard-admin/mobile/MobileHeader';
+import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
 import { StatCard } from '../../components/dashboard-admin/StatCard';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
 import { ToggleSwitch } from '../../components/ui/ToggleSwitch';
@@ -11,7 +12,7 @@ import { CreditCard, Banknote, Wallet, TrendingUp } from 'lucide-react';
 import { paymentDashService } from '../../services/dashboard/paymentDashService';
 
 function formatCurrency(value) {
-  if (value == null || isNaN(value)) return 'R$ 0,00';
+  if (!value) return '';  // deixa título do card em branco enquanto carrega
   return value.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
@@ -21,19 +22,18 @@ function formatCurrency(value) {
 
 export function Pagamentos() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [stats, setStats] = useState(null);
+  // stats inicial vazio para manter layout estático
+  const [stats, setStats] = useState({
+    totalAmount: '',
+    pendingAmount: '',
+    realizedAmount: '',
+    averageAmountPerTeacher: ''
+  });
   const [payments, setPayments] = useState([]);
   const [onlyPending, setOnlyPending] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [month, setMonth] = useState(5);
-  const [year, setYear] = useState(2025);
-
-  const [modalData, setModalData] = useState({
-    isOpen: false,
-    item: null,
-    title: '',
-    message: ''
-  });
+  const [month, setMonth] = useState( new Date().getMonth() + 1 );
+  const [year, setYear] = useState( new Date().getFullYear() );
+  const [modalData, setModalData] = useState({ isOpen: false });
 
   useEffect(() => {
     async function fetchData() {
@@ -51,45 +51,27 @@ export function Pagamentos() {
     fetchData();
   }, [month, year]);
 
-  const handleToggle = async (id) => {
-    try {
-      await paymentDashService.toggleStatus(id);
-      const [statsData, recentData] = await Promise.all([
-        paymentDashService.getStats(month, year),
-        paymentDashService.getRecent(month, year)
-      ]);
-      setStats(statsData);
-      setPayments(recentData);
-    } catch (error) {
-      console.error('Erro ao alternar status:', error);
-    }
-  };
-
   const openConfirmation = (item) => {
-    const next = item.status === 'Pago' ? 'pendente' : 'pago';
     setModalData({
       isOpen: true,
       item,
       title: 'Confirmação de Status',
-      message: `Tem certeza de que deseja marcar o professor "${item.name}" como ${next}?`
+      message: `Deseja marcar "${item.name}" como ${item.status === 'Pago' ? 'pendente' : 'pago'}?`
     });
   };
-
   const handleConfirm = () => {
     const { item } = modalData;
     setModalData(d => ({ ...d, isOpen: false }));
-    handleToggle(item.id);
+    paymentDashService.toggleStatus(item.id).then(() => {
+      // re-fetch
+      return paymentDashService.getRecent(month, year);
+    }).then(data => {
+      setPayments(data);
+    });
   };
-
-  const handleCancel = () => {
-    setModalData(d => ({ ...d, isOpen: false }));
-  };
-
-  if (!stats) return <div className="p-6">Carregando dados...</div>;
 
   const filtered = payments
     .filter(p => !onlyPending || p.status === 'Pendente')
-    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .map(item => ({
       ...item,
       valuePerHourFormatted: formatCurrency(item.valuePerHour),
@@ -105,7 +87,6 @@ export function Pagamentos() {
       <div className="flex-1 md:ml-64 mt-20 md:mt-0">
         <HeaderSection title="Pagamentos" />
         <main className="p-6 space-y-8">
-
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               title={formatCurrency(stats.totalAmount)}
@@ -146,15 +127,12 @@ export function Pagamentos() {
               onChange={e => setYear(Number(e.target.value))}
               className="px-4 py-2 border rounded"
             >
-              {[2025, 2024, 2023].map(y => (
+              {[year, year - 1, year - 2].map(y => (
                 <option key={y} value={y}>{y}</option>
               ))}
             </select>
             <label className="flex items-center space-x-2">
-              <ToggleSwitch
-                checked={onlyPending}
-                onChange={() => setOnlyPending(prev => !prev)}
-              />
+              <ToggleSwitch checked={onlyPending} onChange={() => setOnlyPending(p => !p)} />
               <span>Somente pendentes</span>
             </label>
           </div>
@@ -180,13 +158,14 @@ export function Pagamentos() {
               }
             ]}
           />
+
           <ConfirmationModal
             isOpen={modalData.isOpen}
             title={modalData.title}
             message={modalData.message}
             confirmLabel="Alterar"
             onConfirm={handleConfirm}
-            onCancel={handleCancel}
+            onCancel={() => setModalData(d => ({ ...d, isOpen: false }))}
           />
         </main>
       </div>

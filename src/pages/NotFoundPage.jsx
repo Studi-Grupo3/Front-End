@@ -37,7 +37,7 @@ const NotFoundPage = () => {
             <button
             onClick={handleGoBack}
             className="inline-flex items-center px-6 py-3 bg-[#3970B7] text-white font-semibold rounded-lg 
-                      hover:bg-[#2e5a94] transition-colors shadow-md"
+                      hover:bg-[#2e5a94] transition-colors shadow-md cursor-pointer"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Voltar para a página anterior

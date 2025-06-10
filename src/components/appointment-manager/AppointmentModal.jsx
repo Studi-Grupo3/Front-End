@@ -1,6 +1,6 @@
 // components/AppointmentModal.jsx
 import React, { useEffect, useRef, useState } from "react";
-import { X, Calendar, Clock, MapPin, FileText } from "lucide-react";
+import { X, Calendar, Clock, MapPin, FileText, DollarSign } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
 import { appointmentService } from "../../services/appointmentService";
@@ -15,7 +15,7 @@ export const AppointmentModal = ({
   isOpen,
   onClose,
   appointment,
-  onUpdate  
+  onUpdate
 }) => {
   const modalRef = useRef();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -53,12 +53,12 @@ export const AppointmentModal = ({
   // formatação de data e hora
   const dt = new Date(appointment.dateTime);
   const weekdayPt = translateWeekday(dt.toLocaleDateString("en-US", { weekday: "long" }));
-  const monthPt   = translateMonth(dt.toLocaleDateString("en-US",   { month:   "long" }));
+  const monthPt = translateMonth(dt.toLocaleDateString("en-US", { month: "long" }));
   const formattedDate = `${weekdayPt}, ${dt.getDate()} de ${monthPt}`;
   const formattedTime = dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
   // traduções de subject e title
-  const subjectPt        = translateSubject(appointment.subject);
+  const subjectPt = translateSubject(appointment.subject);
   const professorTitlePt = translateProfessorTitle(appointment.professorTitle);
 
   return (
@@ -120,6 +120,10 @@ export const AppointmentModal = ({
             <div className="flex items-center text-gray-600">
               <MapPin className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
               <span>{appointment.online ? "Online" : appointment.location}</span>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <DollarSign className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
+              <span>Valor da aula: R$ {appointment.totalValue.toFixed(2)}</span>
             </div>
           </div>
 
