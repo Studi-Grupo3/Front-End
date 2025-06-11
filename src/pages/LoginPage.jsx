@@ -20,6 +20,8 @@ const LoginPage = () => {
     try {
       const response = await authService.login(credentials);
 
+      localStorage.setItem('userId', response.id);
+
       showAlert({
         title: 'Login realizado!',
         text: `Bem-vindo, ${response.username || response.email || 'usuário'}!`,

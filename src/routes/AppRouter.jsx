@@ -15,6 +15,8 @@ import EmailVerificationPage from "../pages/EmailVerificationPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import StudentInitialPage from "../pages/StudentInitialPage";
+import CompleteTeacherRegistrationPage from "../pages/CompleteTeacherRegistrationPage";
+import CompleteStudentRegistrationPage from "../pages/CompleteStudentRegistrationPage";
 
 export const AppRouter = () => {
   return (
@@ -41,9 +43,13 @@ export const AppRouter = () => {
           <Route path="/agendamentos/gerenciar" element={<AppointmentManager />} />
           <Route path="/pagamento" element={<CheckoutPage />} />
 
-          <Route path="/students" element={<h1>Students (Substituir depois)</h1>} />
-          <Route path="/teachers" element={<h1>Teachers (Substituir depois)</h1>} />
+          <Route path="/aluno" element={<h1>Students (Substituir depois)</h1>} />
+          <Route path="/professor" element={<h1>Teachers (Substituir depois)</h1>} />
           <Route path="/appointments" element={<h1>Appointments (Substituir depois)</h1>} />
+
+          <Route path="/aluno/completar-cadastro" element={<CompleteStudentRegistrationPage />} />
+          <Route path="/professor/completar-cadastro" element={<CompleteTeacherRegistrationPage />} />
+
         </Route>
 
         {/* CATCH-ALL */}
