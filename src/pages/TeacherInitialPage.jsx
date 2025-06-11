@@ -29,7 +29,7 @@ export default function TeacherInitialPage() {
         </h2>
 
         {/* Cards informativos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           <InfoCard
             title="Aulas Hoje"
             value={loading ? "..." : stats?.aulasHoje ?? 0}
@@ -48,12 +48,12 @@ export default function TeacherInitialPage() {
             icon={<Clock className="w-4 h-4 text-gray-400" />}
             subtitle={loading ? "" : stats?.horasMinistradasSubtitle}
           />
-          <InfoCard
+          {/* <InfoCard
             title="Avaliação"
             value={loading ? "..." : stats?.avaliacao ?? "-"}
             icon={<LineChart className="w-4 h-4 text-gray-400" />}
             subtitle={loading ? "" : stats?.avaliacaoSubtitle}
-          />
+          /> */}
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">

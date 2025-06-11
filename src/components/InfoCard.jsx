@@ -8,7 +8,7 @@ export default function InfoCard({ title, value, icon, subtitle }) {
         {icon}
       </div>
       <div className="text-xl font-bold text-gray-900">{value}</div>
-      <div className="text-xs text-blue-500 mt-1">{subtitle}</div>
+      <div className="text-sm text-[#3970B7] mt-1">{subtitle}</div>
     </div>
   );
 }
