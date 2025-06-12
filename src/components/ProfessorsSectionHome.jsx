@@ -7,44 +7,44 @@ import professoraJuliana from "../assets/professoraJuliana.png";
 import botaoAnterior from "../assets/botaoAnterior.png";
 import botaoProximo from "../assets/botaoProximo.png";
 
-const Professor = () => {
-  const cards = [
-    {
-      name: "Fábio",
-      location: "São Paulo (disponível online)",
-      subject: "Professor(a) de Inglês",
-      description: "Professor certificado por Cambridge e ex-cast member da Disney",
-      image: professorFabio,
-    },
-    {
-      name: "Mariana Silva",
-      location: "São Paulo (disponível online)",
-      subject: "Professor(a) de História",
-      description: "Mestrado em História",
-      image: professorFabio,
-    },
-    {
-      name: "Juliana Costa",
-      location: "São Paulo (disponível online)",
-      subject: "Professor(a) de Matemática",
-      description: "Doutorado em Matemática",
-      image: professoraJuliana,
-    },
-    {
-      name: "Fábio",
-      location: "São Paulo (disponível online)",
-      subject: "Professor(a) de Inglês",
-      description: "Professor certificado por Cambridge e ex-cast member da Disney",
-      image: professorFabio,
-    },
-    {
-      name: "Mariana Silva",
-      location: "São Paulo (disponível online)",
-      subject: "Professor(a) de História",
-      description: "Mestrado em História",
-      image: professorFabio,
-    },
-  ];
+const ProfessorsSectionHome = () => {
+    const cards = [
+        {
+            name: "Fábio",
+            location: "São Paulo (disponível online)",
+            subject: "Professor(a) de Inglês",
+            description: "Professor certificado por Cambridge e ex-cast member da Disney",
+            image: professorFabio,
+        },
+        {
+            name: "Mariana Silva",
+            location: "São Paulo (disponível online)",
+            subject: "Professor(a) de História",
+            description: "Mestrado em História",
+            image: professorFabio,
+        },
+        {
+            name: "Juliana Costa",
+            location: "São Paulo (disponível online)",
+            subject: "Professor(a) de Matemática",
+            description: "Doutorado em Matemática",
+            image: professoraJuliana,
+        },
+        {
+            name: "Fábio",
+            location: "São Paulo (disponível online)",
+            subject: "Professor(a) de Inglês",
+            description: "Professor certificado por Cambridge e ex-cast member da Disney",
+            image: professorFabio,
+        },
+        {
+            name: "Mariana Silva",
+            location: "São Paulo (disponível online)",
+            subject: "Professor(a) de História",
+            description: "Mestrado em História",
+            image: professorFabio,
+        },
+    ];
 
   // Quantas “páginas” existem (cada página exibe `perView` cards)
   const [pageCount, setPageCount] = useState(0);
@@ -198,4 +198,4 @@ const Professor = () => {
   );
 };
 
-export default Professor;
+export default ProfessorsSectionHome;
