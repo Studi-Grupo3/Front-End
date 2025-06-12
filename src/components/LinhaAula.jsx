@@ -1,36 +1,50 @@
 import React from 'react';
+import { translateSubject, translateAppointmentStatus } from '../utils/tradutionUtils';
 
-const getStatusBadge = (status) => {
-  if (status === 'Em breve') {
-    return (
-      <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">
-        {status}
-      </span>
-    );
-  }
+const LinhaAula = ({
+  studentName,
+  subject,
+  disciplina,
+  date,
+  time,
+  duration,
+  lessonDuration,
+  status,
+  semAcao = false
+}) => {
+  const [year, month, day] = date?.split('-') || [];
+  const dataFormatada = day && month && year ? `${day}/${month}/${year}` : '---';
+  const horario = time ? time.slice(0,5) : '---';
+
+  const rawSubject = subject ?? disciplina ?? '';
+  const disciplinaTraduzida = rawSubject ? translateSubject(rawSubject) : '---';
+
+  const duracao = duration ?? lessonDuration;
+  const duracaoTexto = duracao ? `${duracao} min` : '---';
+
+  const statusClasses = {
+    SCHEDULED: 'bg-yellow-100 text-yellow-800',
+    COMPLETED: 'bg-green-100 text-green-800',
+    CANCELLED: 'bg-red-100 text-red-800',
+  };
+  const statusTraduzido = translateAppointmentStatus
+    ? translateAppointmentStatus(status)
+    : status;
 
   return (
-    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">
-      {status}
-    </span>
+    <tr>
+      <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{studentName}</td>
+      <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{disciplinaTraduzida}</td>
+      <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{dataFormatada}</td>
+      <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{horario}</td>
+      <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{duracaoTexto}</td>
+      <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>
+        <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusClasses[status] || 'bg-gray-100 text-gray-800'}`}>
+          {statusTraduzido}
+        </span>
+      </td>
+    </tr>
   );
 };
-
-const LinhaAula = ({ aluno, disciplina, data, horario, duracao, status, semAcao }) => (
-  <tr className="border-t border-gray-200 hover:bg-gray-50 transition-colors">
-    <td className="px-4 py-3 border border-gray-200">{aluno}</td>
-    <td className="px-4 py-3 border border-gray-200">{disciplina}</td>
-    <td className="px-4 py-3 border border-gray-200">{data}</td>
-    <td className="px-4 py-3 border border-gray-200">{horario}</td>
-    <td className="px-4 py-3 border border-gray-200">{duracao}</td>
-    <td className="px-4 py-3 border border-gray-200">{getStatusBadge(status)}</td>
-    {/* Remova a coluna de ação se semAcao for true */}
-    {!semAcao && (
-      <td className="px-4 py-3 border border-gray-200">
-        {/* ...botão de ação... */}
-      </td>
-    )}
-  </tr>
-);
 
 export default LinhaAula;
