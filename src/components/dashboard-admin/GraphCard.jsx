@@ -40,8 +40,14 @@ export function GraphCard({ title, data = [], type = 'bar', options = {}, color 
     'rgba(201, 203, 207, 0.6)'
   ];
 
-  const labels = data.map(item => item.label);
-  const values = data.map(item => item.value);
+  let labels = [], values = [];
+  if (Array.isArray(data)) {
+    labels = data.map(d => d.label);
+    values = data.map(d => d.value);
+  } else if (data.labels && data.datasets) {
+    labels = data.labels;
+    values = data.datasets[0]?.data || [];
+  }
 
   const barColor = color || 'rgba(54, 162, 235, 0.6)';
   const barBorderColor = color ? color : 'rgba(54, 162, 235, 1)';
