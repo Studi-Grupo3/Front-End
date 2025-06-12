@@ -44,7 +44,7 @@ const RegisterPage = () => {
       });
 
       setTimeout(() => {
-        navigate('/logar');
+        navigate('/entrar');
       }, 2000);
     } catch (err) {
       console.error("Erro ao tentar cadastrar:", err);
