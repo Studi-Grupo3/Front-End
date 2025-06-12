@@ -3,15 +3,14 @@ import { useNavigate } from "react-router-dom";
 import ProfessorCarouselChoose from "../components/ProfessorCarouselChoose";
 import NavbarPanel from "../components/NavbarPanel";
 
-export default function YourComponent() {
-  const nav = useNavigate();
+export default function ChooseProfessor() {
+  const navigate = useNavigate();
 
   return (
-    <div className="h-screen overflow-auto sm:overflow-hidden">
-      <div className="fixed top-0 left-0 w-full z-50">
-        <NavbarPanel />
-      </div>
-      <div className="pt-12">
+    <div className="min-h-screen bg-[#f8f8f8]">
+      <NavbarPanel />
+      
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4 py-8">
         <ProfessorCarouselChoose />
       </div>
     </div>
