@@ -59,7 +59,7 @@ export const teacherService = {
 
   getProximasAulas: () => {
     try {
-      const url = buildTeacherUrl("proximas-aulas");
+      const url = buildTeacherUrl("lessons/upcoming");
       return api.get(url).then(res => res.data);
     } catch (err) {
       return Promise.reject(err);

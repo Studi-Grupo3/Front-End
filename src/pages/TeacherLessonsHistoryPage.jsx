@@ -1,69 +1,37 @@
 import React, { useEffect, useState } from "react";
 import NavbarPanel from "../components/NavbarPanel";
 import TabelaAulas from "../components/TabelaAulas";
-import { FiSearch } from "react-icons/fi";
 import { teacherService } from "../services/teacherService";
 
 const TeacherLessonsHistoryPage = () => {
   const [historico, setHistorico] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     setLoading(true);
     teacherService
-      .getLessonsHistory({ search: filter })
+      .getLessonsHistory()
       .then(setHistorico)
       .catch(() => setHistorico([]))
       .finally(() => setLoading(false));
-  }, [filter]);
-
-  const handleFilter = () => {
-    setFilter(searchTerm);
-  };
+  }, []);
 
   return (
-    <div className="bg-[#f8f8f8] min-h-screen h-screen overflow-hidden flex flex-col">
+    <div className="bg-[#f9fbfc] min-h-screen">
       <div className="w-full sticky top-0 z-50">
         <NavbarPanel role="teacher" />
       </div>
-      <div className="flex-1 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-0">
-            Histórico de Aulas
-          </h2>
-          <div className="flex gap-2">
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <FiSearch className="text-gray-400 w-4 h-4" />
-              </span>
-              <input
-                type="text"
-                placeholder="Buscar no histórico..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="border border-[#E2E8F0] rounded-md px-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-                style={{ paddingLeft: "2.25rem" }}
-              />
-            </div>
-            <button
-              onClick={handleFilter}
-              disabled={loading}
-              className="flex items-center gap-1 border border-[#E2E8F0] rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-            >
-              <FiSearch className="w-4 h-4" />
-              Filtrar
-            </button>
-          </div>
+      <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-screen-xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <h1 className="text-2xl font-bold mb-4 md:mb-0">Histórico de Aulas</h1>
         </div>
 
-        <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mt-4 w-full max-w-full mx-auto">
-          <h3 className="text-xl font-bold mb-1">Aulas ministradas</h3>
+        <section className="bg-white rounded-xl p-6 shadow-sm border-gray-200">
+          <h2 className="text-xl font-bold mb-1">Aulas ministradas</h2>
           <p className="text-sm text-gray-500 mb-4">
             Histórico de aulas concluídas e canceladas.
           </p>
-          <TabelaAulas aulas={historico} loading={loading} />
+          <TabelaAulas aulas={historico} loading={loading} semAcao />
         </section>
       </div>
     </div>
