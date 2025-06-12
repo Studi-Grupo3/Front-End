@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import InfoCard from "../components/InfoCard";
 import { GraphCard } from "../components/dashboard-admin/GraphCard";
-import NavbarPanel from "../components/NavbarPanel";
+import NavbarPanel from "../components/NavbarTeacher";
 import { teacherService } from "../services/teacherService";
 
 // mapeia seu enum Subject para label amigável

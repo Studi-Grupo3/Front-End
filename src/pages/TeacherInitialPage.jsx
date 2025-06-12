@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import NavbarPanel from "../components/NavbarPanel";
+import NavbarPanel from "../components/NavbarTeacher";
 import InfoCard from "../components/InfoCard";
 import { DollarSign, Users, Clock, Download } from "lucide-react";
 import { teacherService } from "../services/teacherService";
