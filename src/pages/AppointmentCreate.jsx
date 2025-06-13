@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NavbarPanel from "../components/NavbarPanel";
 import ClassDetailsForm from "../components/appointment-class/ClassDetailsForm";
@@ -7,7 +7,6 @@ import ProfessorCarouselChoose from "../components/appointment-class/ProfessorCa
 import Scheduling from "../components/appointment-class/Scheduling";
 import Pagamento from "../components/appointment-class/Payment";
 
-// Define each step with label, component and title
 const steps = [
     {
         key: "detalhes",
@@ -45,19 +44,14 @@ export default function MultiStepFlowContainer() {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState({
-        // detalhes
         phase: "",
         subject: "",
         duration: "",
         materials: [],
-        // modelo
         classModel: null,
-        // professor
         professorId: null,
-        // scheduling
         date: null,
         time: null,
-        // pagamento - placeholder for payment data
         personal: {},
         endereco: {},
         pagamento: {},
@@ -65,7 +59,6 @@ export default function MultiStepFlowContainer() {
 
     const Step = steps[currentStep];
 
-    // Handler to update formData from child
     const handleUpdate = (partialData) => {
         setFormData(prev => ({ ...prev, ...partialData }));
     };
@@ -74,24 +67,63 @@ export default function MultiStepFlowContainer() {
         if (currentStep < steps.length - 1) {
             setCurrentStep(prev => prev + 1);
         } else {
-            // final step handled inside Payment component
+            // roteamento final é feito em Pagamento via onNext
             navigate('/aluno/concluido');
         }
     };
+
+    // Exemplo de cálculo de total; adapte conforme regra de negócio:
+    const calculateTotal = (data) => {
+      // Exemplo: R$ 50 por hora online, R$ 70 por hora presencial
+      const rateOnline = 50;
+      const rateHome = 70;
+      const parseDurationToHours = (str) => {
+        let hours = 0, minutes = 0;
+        const horaMatch = str.match(/(\d+)\s*hora/);
+        if (horaMatch) hours = parseInt(horaMatch[1], 10);
+        const minMatch = str.match(/(\d+)\s*min/);
+        if (minMatch) minutes = parseInt(minMatch[1], 10);
+        return hours + minutes / 60;
+      };
+      const dur = data.duration ? parseDurationToHours(data.duration) : 0;
+      if (!data.classModel) return 0;
+      return data.classModel === 'home' ? rateHome * dur : rateOnline * dur;
+    };
+
+    // Ao entrar no passo de pagamento, calculamos e armazenamos totalValue
+    useEffect(() => {
+      if (currentStep === steps.length - 1) {
+        const total = calculateTotal(formData);
+        setFormData(prev => ({
+          ...prev,
+          pagamento: {
+            ...prev.pagamento,
+            totalValue: total,
+          }
+        }));
+      }
+    }, [currentStep]);
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
             <NavbarPanel />
             <main className="flex-1 px-4 py-6 max-w-screen-xl mx-auto w-full">
                 <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
-                    {/* Breadcrumb */}
                     <nav className="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
                         <ol className="inline-flex items-center">
                             {steps.map((s, idx) => (
                                 <li key={s.key} className="flex items-center">
                                     <button
-                                        onClick={() => setCurrentStep(idx)}
-                                        className={`hover:underline cursor-pointer ${idx === currentStep ? 'font-medium text-[#3970B7]' : ''}`}
+                                        onClick={() => {
+                                          // só permite navegar para etapas já alcançadas ou a atual
+                                          if (idx <= currentStep) {
+                                            setCurrentStep(idx);
+                                          }
+                                        }}
+                                        className={`hover:underline cursor-pointer ${
+                                          idx === currentStep ? 'font-medium text-[#3970B7]' : (idx < currentStep ? '' : 'text-gray-400')
+                                        }`}
+                                        disabled={idx > currentStep}
                                     >
                                         {s.label}
                                     </button>
@@ -103,12 +135,10 @@ export default function MultiStepFlowContainer() {
                         </ol>
                     </nav>
 
-                    {/* Title */}
                     <h1 className="text-xl sm:text-2xl font-bold text-[#3970B7] text-center mb-5">
                         {Step.title}
                     </h1>
 
-                    {/* Dynamic Content: includes its own action buttons */}
                     <Step.Component
                         data={formData}
                         onUpdate={handleUpdate}

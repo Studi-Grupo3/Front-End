@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { appointmentCreateService } from '../../services/appointmentCreateService';
 
 export default function Pagamento({ data, onUpdate, onNext }) {
   const [step, setStep] = useState('dados');
-  const [paymentMethod, setPaymentMethod] = useState(
-    data.pagamento.method || 'credito'
-  );
+  const [paymentMethod, setPaymentMethod] = useState(data.pagamento.method || 'credito');
   const [cep, setCep] = useState(data.endereco.cep || '');
   const [endereco, setEndereco] = useState({ ...data.endereco });
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     onUpdate({ endereco: { ...endereco, cep } });
@@ -17,9 +18,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
     setCep(inputCep);
     if (inputCep.length === 8) {
       try {
-        const resp = await fetch(
-          `https://viacep.com.br/ws/${inputCep}/json/`
-        );
+        const resp = await fetch(`https://viacep.com.br/ws/${inputCep}/json/`);
         const json = await resp.json();
         if (!json.erro) {
           setEndereco(prev => ({
@@ -29,18 +28,47 @@ export default function Pagamento({ data, onUpdate, onNext }) {
             cidade: json.localidade,
             estado: json.uf,
           }));
-        } else alert('CEP não encontrado.');
+        } else {
+          alert('CEP não encontrado.');
+        }
       } catch {
         alert('Erro ao buscar CEP.');
       }
     }
   };
 
+  const handlePaymentFieldChange = (field, value) => {
+    onUpdate({ pagamento: { ...data.pagamento, [field]: value } });
+  };
+
+  const handleFinalize = async () => {
+    setErrorMsg('');
+    setLoading(true);
+    try {
+      const payload = {
+        ...data,
+        pagamento: {
+          ...data.pagamento,
+          totalValue: data.pagamento.totalValue
+        }
+      };
+      await appointmentCreateService.create(payload);
+      setLoading(false);
+      onNext();
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Erro ao agendar. Tente novamente.');
+      setLoading(false);
+    }
+  };
+
+  // Exibe apenas o resumo estático ou dinâmico conforme totalValue em data.pagamento.totalValue.
+  // Aqui mostra subtotal e total usando data.pagamento.totalValue.
+  const totalValue = data.pagamento.totalValue || 0;
+
   return (
     <div className="flex flex-col lg:flex-row gap-8">
-      {/* Left: checkout form */}
       <div className="flex-1 bg-white rounded-md shadow p-6 space-y-6">
-        {/* Step tabs */}
         <div className="flex space-x-4">
           {['dados', 'endereco', 'pagamento'].map(item => (
             <button
@@ -61,7 +89,6 @@ export default function Pagamento({ data, onUpdate, onNext }) {
           ))}
         </div>
 
-        {/* Forms */}
         {step === 'dados' && (
           <form className="space-y-4">
             <div>
@@ -69,9 +96,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
               <input
                 type="text"
                 value={data.personal.nome || ''}
-                onChange={e =>
-                  onUpdate({ personal: { ...data.personal, nome: e.target.value } })
-                }
+                onChange={e => onUpdate({ personal: { ...data.personal, nome: e.target.value } })}
                 className="w-full p-2 border rounded-md text-sm"
               />
             </div>
@@ -80,9 +105,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
               <input
                 type="email"
                 value={data.personal.email || ''}
-                onChange={e =>
-                  onUpdate({ personal: { ...data.personal, email: e.target.value } })
-                }
+                onChange={e => onUpdate({ personal: { ...data.personal, email: e.target.value } })}
                 className="w-full p-2 border rounded-md text-sm"
               />
             </div>
@@ -91,9 +114,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
               <input
                 type="text"
                 value={data.personal.cpf || ''}
-                onChange={e =>
-                  onUpdate({ personal: { ...data.personal, cpf: e.target.value } })
-                }
+                onChange={e => onUpdate({ personal: { ...data.personal, cpf: e.target.value } })}
                 className="w-full p-2 border rounded-md text-sm"
               />
             </div>
@@ -102,9 +123,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
               <input
                 type="text"
                 value={data.personal.telefone || ''}
-                onChange={e =>
-                  onUpdate({ personal: { ...data.personal, telefone: e.target.value } })
-                }
+                onChange={e => onUpdate({ personal: { ...data.personal, telefone: e.target.value } })}
                 className="w-full p-2 border rounded-md text-sm"
               />
             </div>
@@ -224,9 +243,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
                 <input
                   type="text"
                   value={data.pagamento.numero || ''}
-                  onChange={e =>
-                    onUpdate({ pagamento: { ...data.pagamento, numero: e.target.value } })
-                  }
+                  onChange={e => handlePaymentFieldChange('numero', e.target.value)}
                   className="w-full p-2 border rounded-md text-sm"
                 />
               </div>
@@ -236,9 +253,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
                   <input
                     type="text"
                     value={data.pagamento.validade || ''}
-                    onChange={e =>
-                      onUpdate({ pagamento: { ...data.pagamento, validade: e.target.value } })
-                    }
+                    onChange={e => handlePaymentFieldChange('validade', e.target.value)}
                     className="w-full p-2 border rounded-md text-sm"
                   />
                 </div>
@@ -247,9 +262,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
                   <input
                     type="text"
                     value={data.pagamento.cvv || ''}
-                    onChange={e =>
-                      onUpdate({ pagamento: { ...data.pagamento, cvv: e.target.value } })
-                    }
+                    onChange={e => handlePaymentFieldChange('cvv', e.target.value)}
                     className="w-full p-2 border rounded-md text-sm"
                   />
                 </div>
@@ -259,60 +272,33 @@ export default function Pagamento({ data, onUpdate, onNext }) {
                 <input
                   type="text"
                   value={data.pagamento.nomeCartao || ''}
-                  onChange={e =>
-                    onUpdate({ pagamento: { ...data.pagamento, nomeCartao: e.target.value } })
-                  }
+                  onChange={e => handlePaymentFieldChange('nomeCartao', e.target.value)}
                   className="w-full p-2 border rounded-md text-sm"
                 />
               </div>
+              {errorMsg && <p className="text-red-500">{errorMsg}</p>}
               <button
                 type="button"
                 className="w-full py-2 bg-[#3970B7] text-white rounded-md cursor-pointer"
-                onClick={onNext}
+                onClick={handleFinalize}
+                disabled={loading}
               >
-                Finalizar Pagamento
+                {loading ? 'Processando...' : 'Confirmar e Agendar'}
               </button>
             </div>
           </form>
         )}
       </div>
 
-      {/* Right: mock order summary */}
       <aside className="w-full lg:w-96 bg-white rounded-md shadow p-6 space-y-4">
         <h2 className="text-lg font-bold mb-4 bg-yellow-100 p-2 rounded">Resumo do Pedido</h2>
-        <div className="space-y-3">
-          {/* Item 1 */}
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="font-semibold">Curso de Inglês</p>
-              <p className="text-xs text-gray-500">Aula de 1h30min</p>
-            </div>
-            <span className="font-semibold">R$ 99,90</span>
-          </div>
-          {/* Item 2 */}
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="font-semibold">Plano Mensal - Ciências</p>
-              <p className="text-xs text-gray-500">4 semanas</p>
-            </div>
-            <span className="font-semibold">R$ 99,90</span>
-          </div>
-        </div>
-        {/* Coupon */}
-        <div className="mt-4">
-          <label className="block text-sm text-[#3970B7] mb-1">Cupom de desconto</label>
-          <div className="flex gap-2">
-            <input type="text" placeholder="Digite o código" className="flex-1 p-2 border rounded-md text-sm" />
-            <button className="px-4 py-2 border border-[#3970B7] text-[#3970B7] rounded-md text-sm cursor-pointer">Aplicar</button>
-          </div>
-        </div>
-        {/* Totals */}
         <div className="mt-4 space-y-2 text-sm">
-          <div className="flex justify-between"><span>Subtotal</span><span>R$ 199,80</span></div>
-          <div className="flex justify-between text-green-600"><span>Desconto</span><span>R$ 0,00</span></div>
-          <div className="flex justify-between font-bold text-base"><span>Total</span><span>R$ 199,80</span></div>
+          <div className="flex justify-between">
+            <span>Total</span>
+            <span>{`R$ ${totalValue.toFixed(2).replace('.', ',')}`}</span>
+          </div>
         </div>
       </aside>
     </div>
-  );
+);
 }

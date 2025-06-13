@@ -4,8 +4,6 @@ import { Laptop, MapPin } from 'lucide-react';
 export default function ClassModelSelection({ data, onUpdate, onNext }) {
   const choice = data.classModel;
 
-  /* quick helpers for styling */
-  // changed width class to fixed card width for better horizontal sizing
   const base =
     "w-full sm:w-105 border rounded-lg px-8 py-10 transition-colors cursor-pointer flex flex-col items-center text-center";
   const def = "border-gray-300 hover:border-[#3970B7]";
@@ -26,7 +24,6 @@ export default function ClassModelSelection({ data, onUpdate, onNext }) {
 
   return (
     <div className="space-y-6">
-      {/* Cards */}
       <div className="flex flex-col sm:flex-row gap-8 justify-center">
         <div
           onClick={() => select('online')}
@@ -75,7 +72,6 @@ export default function ClassModelSelection({ data, onUpdate, onNext }) {
         </div>
       </div>
 
-      {/* Botão Continuar */}
       <div className="flex justify-center">
         <button
           onClick={onNext}

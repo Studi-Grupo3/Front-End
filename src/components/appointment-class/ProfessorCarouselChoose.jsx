@@ -19,14 +19,13 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
 
   const nextSlide = () => setCurrentSlide(i => (i + 1) % professors.length);
   const prevSlide = () => setCurrentSlide(i => (i - 1 + professors.length) % professors.length);
-
   const getThree = () => [0, 1, 2].map(offset => professors[(currentSlide + offset) % professors.length]);
+
   const choose = prof => onUpdate({ professorId: prof.id });
   const enabled = !!data.professorId;
 
   return (
     <div className="space-y-6">
-      {/* 'Não quero escolher um professor' */}
       <div className="flex justify-center">
         <button
           type="button"
@@ -54,10 +53,13 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
             <ChevronRight size={32} />
           </button>
           <div className="p-4 border-t rounded-b-lg" style={{ borderColor: primary }}>
-            <h2 className="text-lg font-bold" style={{ color: primary }}>{professors[currentSlide].name}</h2>
+            <h2 className="text-lg font-bold" style={{ color: primary }}>
+              {professors[currentSlide].name}
+            </h2>
             <p className="text-gray-500 text-sm mt-1">{professors[currentSlide].location}</p>
-            <p className="font-semibold mt-2" style={{ color: primary }}>{professors[currentSlide].subject}</p>
-            <p className="text-gray-600 text-sm mt-2">{professors[currentSlide].description}</p>
+            <p className="font-semibold mt-2" style={{ color: primary }}>
+              {professors[currentSlide].subject}
+            </p>
             <button
               type="button"
               onClick={() => { choose(professors[currentSlide]); onNext(); }}
@@ -71,7 +73,9 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
       ) : (
         <div className="relative bg-white rounded-lg p-1">
           <div className="flex items-center justify-between">
-            <button onClick={prevSlide} className="cursor-pointer"><ChevronLeft size={32} /></button>
+            <button onClick={prevSlide} className="cursor-pointer">
+              <ChevronLeft size={32} />
+            </button>
             <div className="flex gap-6 overflow-hidden">
               {getThree().map(prof => (
                 <div
@@ -88,8 +92,9 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
                   <div className="p-4 flex flex-col">
                     <h2 className="font-bold">{prof.name}</h2>
                     <p className="text-gray-500 text-sm mt-1">{prof.location}</p>
-                    <p className="font-semibold mt-2" style={{ color: primary }}>{prof.subject}</p>
-                    <p className="text-gray-600 text-sm mt-2">{prof.description}</p>
+                    <p className="font-semibold mt-2" style={{ color: primary }}>
+                      {prof.subject}
+                    </p>
                     <button
                       type="button"
                       onClick={() => { choose(prof); onNext(); }}
@@ -102,9 +107,10 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
                 </div>
               ))}
             </div>
-            <button onClick={nextSlide} className="cursor-pointer"><ChevronRight size={32} /></button>
+            <button onClick={nextSlide} className="cursor-pointer">
+              <ChevronRight size={32} />
+            </button>
           </div>
-          {/* indicators */}
           <div className="flex justify-center mt-4">
             {professors.map((_, idx) => (
               <div
@@ -116,5 +122,5 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
         </div>
       )}
     </div>
-  );
+);
 }

@@ -46,7 +46,6 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
 
   return (
     <div className="space-y-4.5">
-      {/* Fase escolar */}
       <div>
         <label className="block text-sm text-gray-700 mb-2">
           Escolha a fase escolar
@@ -71,7 +70,6 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         </div>
       </div>
 
-      {/* Matéria */}
       <div>
         <label className="block text-sm text-gray-700 mb-2">
           Escolha uma matéria
@@ -96,7 +94,6 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         </div>
       </div>
 
-      {/* Duração */}
       <div>
         <label className="block text-sm text-gray-700 mb-2">
           Selecione a duração da aula
@@ -121,7 +118,6 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         </div>
       </div>
 
-      {/* Material */}
       <div>
         <label className="block text-sm text-gray-700 mb-2">
           Material de Aula
@@ -144,7 +140,6 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         </button>
       </div>
 
-      {/* Botão Continuar */}
       <button
         onClick={onNext}
         disabled={!allFilled}
@@ -157,12 +152,11 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         Continuar
       </button>
 
-      {/* Modal */}
       <AddMaterialModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddMaterial={handleAddMaterial}
       />
     </div>
-);
+  );
 }

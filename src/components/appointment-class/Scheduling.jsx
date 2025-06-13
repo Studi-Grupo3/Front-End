@@ -16,7 +16,6 @@ export default function Scheduling({ data, onUpdate, onNext }) {
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
   const days = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 
-  // Calculate days for calendar grid
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -40,7 +39,10 @@ export default function Scheduling({ data, onUpdate, onNext }) {
   const allDays = [...prevDays, ...monthDays, ...nextDays];
   const timeSlots = ['8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
 
-  const selectDate = date => { onUpdate({ date }); onUpdate({ time: null }); };
+  const selectDate = date => {
+    onUpdate({ date });
+    onUpdate({ time: null });
+  };
   const selectTime = time => onUpdate({ time });
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
@@ -48,9 +50,7 @@ export default function Scheduling({ data, onUpdate, onNext }) {
 
   return (
     <div className="space-y-6">
-      {/* Hero title is provided by parent */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Calendar Panel */}
         <div className="w-full">
           <h2 className="text-base text-gray-700 font-medium mb-2">Selecione uma data:</h2>
           <div className="border border-gray-200 rounded-lg p-4 shadow-sm w-full">
@@ -84,7 +84,6 @@ export default function Scheduling({ data, onUpdate, onNext }) {
           </div>
         </div>
 
-        {/* Time Slots Panel */}
         <div className="w-full flex flex-col justify-between">
           <h2 className="text-base text-gray-700 font-medium mb-2">Selecione um horário:</h2>
           <div className="border border-gray-200 rounded-lg p-4 h-64 bg-gray-50 w-full">
@@ -111,7 +110,9 @@ export default function Scheduling({ data, onUpdate, onNext }) {
             className={`w-full py-4 mt-4 text-lg font-medium rounded-lg transition-colors
               ${enabled ? 'bg-[#3970B7] text-white hover:bg-[#2e5a94]' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
           >
-            {enabled ? `Continuar para ${format(data.date, 'dd/MM/yyyy')} às ${data.time}` : 'Selecione uma data e horário'}
+            {enabled
+              ? `Continuar para ${format(data.date, 'dd/MM/yyyy')} às ${data.time}`
+              : 'Selecione uma data e horário'}
           </button>
         </div>
       </div>
