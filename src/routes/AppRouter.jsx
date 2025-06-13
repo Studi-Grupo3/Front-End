@@ -29,6 +29,7 @@ import ChooseProfessor from "../pages/ChooseProfessor";
 import Scheduling from "../pages/Scheduling";
 import Payment from "../pages/Payment";
 import ConfirmedPayment from "../pages/ConfirmedPayment";
+import MultiStepFlowContainer from "../pages/AppointmentCreate";
 
 export const AppRouter = () => {
   return (
@@ -63,7 +64,7 @@ export const AppRouter = () => {
           <Route path="/aluno/agendar-aula" element={<Scheduling />} />
           <Route path="/aluno/pagamento" element={<Payment />} />
           <Route path="/aluno/concluido" element={<ConfirmedPayment />} />
-
+          <Route path="/aluno/agendamento/criar" element={<MultiStepFlowContainer />} />
 
           <Route path="/aluno/inicio" element={<StudentInitialPage />} />
           

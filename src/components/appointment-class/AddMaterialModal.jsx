@@ -40,7 +40,7 @@ const AddMaterialModal = ({ isOpen, onClose, onAddMaterial }) => {
                 {/* Header */}
                 <div className="relative flex items-center border-b pb-3">
                     {/* centered title */}
-                    <h2 className="flex-1 text-blue-600 font-medium text-center">
+                    <h2 className="flex-1 text-[#3970B7] font-medium text-center">
                         Adicionar Material de Aula
                     </h2>
 
@@ -86,7 +86,7 @@ const AddMaterialModal = ({ isOpen, onClose, onAddMaterial }) => {
                                 />
                                 <label
                                     htmlFor="file-upload"
-                                    className="ml-2 text-blue-600 cursor-pointer hover:text-blue-800 text-sm"
+                                    className="ml-2 text-[#3970B7] cursor-pointer hover:text-blue-800 text-sm"
                                 >
                                     Escolher
                                 </label>
@@ -100,7 +100,7 @@ const AddMaterialModal = ({ isOpen, onClose, onAddMaterial }) => {
 
                     <button
                         type="submit"
-                        className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded flex items-center justify-center text-sm"
+                        className="w-full cursor-pointer mt-4 bg-[#3970B7] hover:bg-blue-600 text-white py-2 rounded flex items-center justify-center text-sm"
                     >
                         <Upload size={16} className="mr-2" />
                         Adicionar Material
