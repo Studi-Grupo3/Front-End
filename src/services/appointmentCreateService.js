@@ -17,7 +17,6 @@ function getStudentIdFromSession() {
 export const appointmentCreateService = {
   create: async (data) => {
     const debugPayload = {};
-    // Obter idStudent de data ou sessionStorage
     const studentId = data.idStudent != null ? data.idStudent : getStudentIdFromSession();
     if (studentId != null) {
       debugPayload.idStudent = studentId;
