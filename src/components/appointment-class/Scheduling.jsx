@@ -108,7 +108,7 @@ export default function Scheduling({ data, onUpdate, onNext }) {
             onClick={onNext}
             disabled={!enabled}
             className={`w-full py-4 mt-4 text-lg font-medium rounded-lg transition-colors
-              ${enabled ? 'bg-[#3970B7] text-white hover:bg-[#2e5a94]' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+              ${enabled ? 'bg-[#3970B7] text-white hover:bg-[#2e5a94] cursor-pointer' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
           >
             {enabled
               ? `Continuar para ${format(data.date, 'dd/MM/yyyy')} às ${data.time}`

@@ -37,22 +37,22 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
     setIsModalOpen(false);
   };
 
+  // Não exige material de aula para avançar
   const allFilled =
     data.phase &&
     data.subject &&
-    data.duration &&
-    data.materials &&
-    data.materials.length > 0;
+    data.duration;
 
   return (
     <div className="space-y-4.5">
+      {/* Fase escolar */}
       <div>
         <label className="block text-sm text-gray-700 mb-2">
           Escolha a fase escolar
         </label>
         <div className="relative">
           <select
-            className="w-full p-2.5 border border-gray-300 rounded text-sm"
+            className="w-full p-2.5 pr-8 border border-gray-300 rounded text-sm appearance-none"
             value={data.phase || ''}
             onChange={e => onUpdate({ phase: e.target.value })}
           >
@@ -70,13 +70,14 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         </div>
       </div>
 
+      {/* Matéria */}
       <div>
         <label className="block text-sm text-gray-700 mb-2">
           Escolha uma matéria
         </label>
         <div className="relative">
           <select
-            className="w-full p-2.5 border border-gray-300 rounded text-sm"
+            className="w-full p-2.5 pr-8 border border-gray-300 rounded text-sm appearance-none"
             value={data.subject || ''}
             onChange={e => onUpdate({ subject: e.target.value })}
           >
@@ -94,13 +95,14 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         </div>
       </div>
 
+      {/* Duração */}
       <div>
         <label className="block text-sm text-gray-700 mb-2">
           Selecione a duração da aula
         </label>
         <div className="relative">
           <select
-            className="w-full p-2.5 border border-gray-300 rounded text-sm"
+            className="w-full p-2.5 pr-8 border border-gray-300 rounded text-sm appearance-none"
             value={data.duration || ''}
             onChange={e => onUpdate({ duration: e.target.value })}
           >
@@ -118,6 +120,7 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         </div>
       </div>
 
+      {/* Material de Aula */}
       <div>
         <label className="block text-sm text-gray-700 mb-2">
           Material de Aula
@@ -133,13 +136,15 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
         )}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center w-full py-2.5 text-[#3970B7] cursor-pointer hover:bg-[#3970B7]/10 rounded border border-gray-200 text-sm"
+          className="flex items-center justify-center w-full py-2.5 text-[#3970B7] hover:bg-[#3970B7]/10 rounded border border-gray-200 text-sm"
+          type="button"
         >
           <Upload size={16} className="mr-2" />
           Adicionar Material
         </button>
       </div>
 
+      {/* Botão Continuar */}
       <button
         onClick={onNext}
         disabled={!allFilled}
@@ -148,10 +153,12 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
             ? 'w-full cursor-pointer py-2.5 bg-[#3970B7] text-white rounded hover:bg-[#2e5a94]'
             : 'w-full py-2.5 bg-gray-300 text-gray-500 rounded cursor-not-allowed'
         }
+        type="button"
       >
         Continuar
       </button>
 
+      {/* Modal de adição de material */}
       <AddMaterialModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -27,7 +27,7 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
   return (
     <div className="space-y-6">
       <div className="flex justify-center">
-        <button
+        {/* <button
           type="button"
           disabled={!enabled}
           onClick={onNext}
@@ -36,7 +36,7 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
           }`}
         >
           Não quero escolher um professor
-        </button>
+        </button> */}
       </div>
 
       {isMobile ? (

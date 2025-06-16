@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Award,
+  BookOpen,
+  Clock,
+  Calendar,
+  CreditCard,
+  MapPin
+} from 'lucide-react';
 import { appointmentCreateService } from '../../services/appointmentCreateService';
 
 export default function Pagamento({ data, onUpdate, onNext }) {
-  const [step, setStep] = useState('dados');
+  const [step, setStep] = useState('endereco');
   const [paymentMethod, setPaymentMethod] = useState(data.pagamento.method || 'credito');
   const [cep, setCep] = useState(data.endereco.cep || '');
   const [endereco, setEndereco] = useState({ ...data.endereco });
@@ -13,12 +21,30 @@ export default function Pagamento({ data, onUpdate, onNext }) {
     onUpdate({ endereco: { ...endereco, cep } });
   }, [endereco, cep]);
 
+  const dateStr = data.date
+    ? new Date(data.date).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
+    : '';
+  const timeStr = data.time || '';
+
+  const fasesPt = {
+    'Ensino Fundamental I': 'Fundamental I',
+    'Ensino Fundamental II': 'Fundamental II',
+    'Ensino Médio': 'Médio',
+    'Ensino Superior': 'Superior'
+  };
+
+  const totalValue = data.pagamento.totalValue || 0;
+
   const handleCepChange = async e => {
-    const inputCep = e.target.value.replace(/\D/g, '');
-    setCep(inputCep);
-    if (inputCep.length === 8) {
+    const onlyDigits = e.target.value.replace(/\D/g, '');
+    setCep(onlyDigits);
+    if (onlyDigits.length === 8) {
       try {
-        const resp = await fetch(`https://viacep.com.br/ws/${inputCep}/json/`);
+        const resp = await fetch(`https://viacep.com.br/ws/${onlyDigits}/json/`);
         const json = await resp.json();
         if (!json.erro) {
           setEndereco(prev => ({
@@ -26,7 +52,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
             rua: json.logradouro,
             bairro: json.bairro,
             cidade: json.localidade,
-            estado: json.uf,
+            estado: json.uf
           }));
         } else {
           alert('CEP não encontrado.');
@@ -45,13 +71,7 @@ export default function Pagamento({ data, onUpdate, onNext }) {
     setErrorMsg('');
     setLoading(true);
     try {
-      const payload = {
-        ...data,
-        pagamento: {
-          ...data.pagamento,
-          totalValue: data.pagamento.totalValue
-        }
-      };
+      const payload = { ...data, pagamento: { ...data.pagamento, totalValue } };
       await appointmentCreateService.create(payload);
       setLoading(false);
       onNext();
@@ -62,154 +82,110 @@ export default function Pagamento({ data, onUpdate, onNext }) {
     }
   };
 
-  // Exibe apenas o resumo estático ou dinâmico conforme totalValue em data.pagamento.totalValue.
-  // Aqui mostra subtotal e total usando data.pagamento.totalValue.
-  const totalValue = data.pagamento.totalValue || 0;
-
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
-      <div className="flex-1 bg-white rounded-md shadow p-6 space-y-6">
-        <div className="flex space-x-4">
-          {['dados', 'endereco', 'pagamento'].map(item => (
+    <div className="flex flex-col lg:flex-row gap-6 pt-4">
+      {/* FORMULÁRIO: Endereço + Pagamento */}
+      <div className="flex-1 bg-white rounded-md shadow p-4 space-y-4">
+        <div className="flex space-x-4 text-xs">
+          {['endereco', 'pagamento'].map(item => (
             <button
               key={item}
-              className={`px-4 py-2 ${
-                step === item
-                  ? 'border-b-2 border-[#3970B7] text-[#3970B7] font-semibold cursor-pointer'
-                  : 'text-gray-500 cursor-pointer'
-              }`}
               onClick={() => setStep(item)}
+              className={`px-3 py-1 ${step === item
+                  ? 'border-b-2 border-[#3970B7] text-[#3970B7] font-semibold'
+                  : 'text-gray-500'
+                }`}
             >
-              {item === 'dados'
-                ? 'Dados pessoais'
-                : item === 'endereco'
-                ? 'Endereço'
-                : 'Pagamento'}
+              {item === 'endereco' ? 'Endereço' : 'Pagamento'}
             </button>
           ))}
         </div>
 
-        {step === 'dados' && (
-          <form className="space-y-4">
-            <div>
-              <label className="text-sm text-gray-600">Nome completo</label>
-              <input
-                type="text"
-                value={data.personal.nome || ''}
-                onChange={e => onUpdate({ personal: { ...data.personal, nome: e.target.value } })}
-                className="w-full p-2 border rounded-md text-sm"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Email</label>
-              <input
-                type="email"
-                value={data.personal.email || ''}
-                onChange={e => onUpdate({ personal: { ...data.personal, email: e.target.value } })}
-                className="w-full p-2 border rounded-md text-sm"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">CPF</label>
-              <input
-                type="text"
-                value={data.personal.cpf || ''}
-                onChange={e => onUpdate({ personal: { ...data.personal, cpf: e.target.value } })}
-                className="w-full p-2 border rounded-md text-sm"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Telefone</label>
-              <input
-                type="text"
-                value={data.personal.telefone || ''}
-                onChange={e => onUpdate({ personal: { ...data.personal, telefone: e.target.value } })}
-                className="w-full p-2 border rounded-md text-sm"
-              />
-            </div>
-            <button
-              type="button"
-              className="w-full py-2 bg-[#3970B7] text-white rounded-md"
-              onClick={() => setStep('endereco')}
-            >
-              Continuar
-            </button>
-          </form>
-        )}
-
         {step === 'endereco' && (
-          <form className="space-y-4">
+          <form className="space-y-2">
             <div>
-              <label className="text-sm text-gray-600">CEP</label>
+              <label className="text-xs text-gray-600">CEP</label>
               <input
                 type="text"
                 value={cep.length > 5 ? `${cep.slice(0, 5)}-${cep.slice(5)}` : cep}
                 onChange={handleCepChange}
-                className="w-full p-2 border rounded-md text-sm"
+                className="w-full p-1 border rounded text-xs"
               />
             </div>
             <div>
-              <label className="text-sm text-gray-600">Rua</label>
+              <label className="text-xs text-gray-600">Rua</label>
               <input
                 type="text"
                 value={endereco.rua || ''}
-                onChange={e => setEndereco(prev => ({ ...prev, rua: e.target.value }))}
-                className="w-full p-2 border rounded-md text-sm"
+                onChange={e =>
+                  setEndereco(prev => ({ ...prev, rua: e.target.value }))
+                }
+                className="w-full p-1 border rounded text-xs"
               />
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <div className="flex-1">
-                <label className="text-sm text-gray-600">Número</label>
+                <label className="text-xs text-gray-600">Número</label>
                 <input
                   type="text"
                   value={endereco.numero || ''}
-                  onChange={e => setEndereco(prev => ({ ...prev, numero: e.target.value }))}
-                  className="w-full p-2 border rounded-md text-sm"
+                  onChange={e =>
+                    setEndereco(prev => ({ ...prev, numero: e.target.value }))
+                  }
+                  className="w-full p-1 border rounded text-xs"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-sm text-gray-600">Complemento</label>
+                <label className="text-xs text-gray-600">Complemento</label>
                 <input
                   type="text"
                   value={endereco.complemento || ''}
-                  onChange={e => setEndereco(prev => ({ ...prev, complemento: e.target.value }))}
-                  className="w-full p-2 border rounded-md text-sm"
+                  onChange={e =>
+                    setEndereco(prev => ({ ...prev, complemento: e.target.value }))
+                  }
+                  className="w-full p-1 border rounded text-xs"
                 />
               </div>
             </div>
             <div>
-              <label className="text-sm text-gray-600">Bairro</label>
+              <label className="text-xs text-gray-600">Bairro</label>
               <input
                 type="text"
                 value={endereco.bairro || ''}
-                onChange={e => setEndereco(prev => ({ ...prev, bairro: e.target.value }))}
-                className="w-full p-2 border rounded-md text-sm"
+                onChange={e =>
+                  setEndereco(prev => ({ ...prev, bairro: e.target.value }))
+                }
+                className="w-full p-1 border rounded text-xs"
               />
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <div className="flex-1">
-                <label className="text-sm text-gray-600">Cidade</label>
+                <label className="text-xs text-gray-600">Cidade</label>
                 <input
                   type="text"
                   value={endereco.cidade || ''}
-                  onChange={e => setEndereco(prev => ({ ...prev, cidade: e.target.value }))}
-                  className="w-full p-2 border rounded-md text-sm"
+                  onChange={e =>
+                    setEndereco(prev => ({ ...prev, cidade: e.target.value }))
+                  }
+                  className="w-full p-1 border rounded text-xs"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-sm text-gray-600">Estado</label>
+                <label className="text-xs text-gray-600">Estado</label>
                 <input
                   type="text"
                   value={endereco.estado || ''}
-                  onChange={e => setEndereco(prev => ({ ...prev, estado: e.target.value }))}
-                  className="w-full p-2 border rounded-md text-sm"
+                  onChange={e =>
+                    setEndereco(prev => ({ ...prev, estado: e.target.value }))
+                  }
+                  className="w-full p-1 border rounded text-xs"
                 />
               </div>
             </div>
             <button
               type="button"
-              className="w-full py-2 bg-[#3970B7] text-white rounded-md"
               onClick={() => setStep('pagamento')}
+              className="w-full py-2 bg-[#3970B7] text-white rounded text-sm"
             >
               Continuar
             </button>
@@ -217,8 +193,8 @@ export default function Pagamento({ data, onUpdate, onNext }) {
         )}
 
         {step === 'pagamento' && (
-          <form className="space-y-4">
-            <div className="flex gap-4">
+          <form className="space-y-3">
+            <div className="flex gap-3 text-xs">
               {['credito', 'debito'].map(method => (
                 <button
                   key={method}
@@ -227,61 +203,65 @@ export default function Pagamento({ data, onUpdate, onNext }) {
                     setPaymentMethod(method);
                     onUpdate({ pagamento: { ...data.pagamento, method } });
                   }}
-                  className={`flex-1 p-2 border rounded-md text-sm ${
-                    paymentMethod === method
-                      ? 'border-[#3970B7] text-[#3970B7] font-semibold cursor-pointer'
-                      : 'border-gray-300 text-gray-500 cursor-pointer'
-                  }`}
+                  className={`flex-1 p-1 border rounded text-xs ${paymentMethod === method
+                      ? 'border-[#3970B7] text-[#3970B7] font-semibold'
+                      : 'border-gray-300 text-gray-500'
+                    }`}
                 >
                   {method === 'credito' ? 'Cartão de Crédito' : 'Cartão de Débito'}
                 </button>
               ))}
             </div>
-            <div className="space-y-4">
+
+            <div className="space-y-3">
               <div>
-                <label className="text-sm text-gray-600">Número do Cartão</label>
+                <label className="text-xs text-gray-600">Número do Cartão</label>
                 <input
                   type="text"
                   value={data.pagamento.numero || ''}
                   onChange={e => handlePaymentFieldChange('numero', e.target.value)}
-                  className="w-full p-2 border rounded-md text-sm"
+                  className="w-full p-1 border rounded text-xs"
                 />
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <div className="flex-1">
-                  <label className="text-sm text-gray-600">Validade</label>
+                  <label className="text-xs text-gray-600">Validade</label>
                   <input
                     type="text"
                     value={data.pagamento.validade || ''}
-                    onChange={e => handlePaymentFieldChange('validade', e.target.value)}
-                    className="w-full p-2 border rounded-md text-sm"
+                    onChange={e =>
+                      handlePaymentFieldChange('validade', e.target.value)
+                    }
+                    className="w-full p-1 border rounded text-xs"
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-sm text-gray-600">CVV</label>
+                  <label className="text-xs text-gray-600">CVV</label>
                   <input
                     type="text"
                     value={data.pagamento.cvv || ''}
                     onChange={e => handlePaymentFieldChange('cvv', e.target.value)}
-                    className="w-full p-2 border rounded-md text-sm"
+                    className="w-full p-1 border rounded text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-sm text-gray-600">Nome no Cartão</label>
+                <label className="text-xs text-gray-600">Nome no Cartão</label>
                 <input
                   type="text"
                   value={data.pagamento.nomeCartao || ''}
-                  onChange={e => handlePaymentFieldChange('nomeCartao', e.target.value)}
-                  className="w-full p-2 border rounded-md text-sm"
+                  onChange={e =>
+                    handlePaymentFieldChange('nomeCartao', e.target.value)
+                  }
+                  className="w-full p-1 border rounded text-xs"
                 />
               </div>
-              {errorMsg && <p className="text-red-500">{errorMsg}</p>}
+              {errorMsg && <p className="text-red-500 text-xs">{errorMsg}</p>}
               <button
                 type="button"
-                className="w-full py-2 bg-[#3970B7] text-white rounded-md cursor-pointer"
                 onClick={handleFinalize}
                 disabled={loading}
+                className="w-full py-2 bg-[#3970B7] text-white rounded text-sm"
               >
                 {loading ? 'Processando...' : 'Confirmar e Agendar'}
               </button>
@@ -290,15 +270,84 @@ export default function Pagamento({ data, onUpdate, onNext }) {
         )}
       </div>
 
-      <aside className="w-full lg:w-96 bg-white rounded-md shadow p-6 space-y-4">
-        <h2 className="text-lg font-bold mb-4 bg-yellow-100 p-2 rounded">Resumo do Pedido</h2>
-        <div className="mt-4 space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span>Total</span>
-            <span>{`R$ ${totalValue.toFixed(2).replace('.', ',')}`}</span>
-          </div>
-        </div>
-      </aside>
+      {/* RESUMO DO PEDIDO */}
+      <aside
+  className="
+    flex-none lg:w-1/3
+    bg-white rounded-md shadow-md
+    p-4 space-y-4
+    border-l-4 border-yellow-300
+    self-start
+  "
+>
+  {/* Título */}
+  <h2 className="flex items-center text-xl font-bold text-[#3970B7] space-x-2">
+    <CreditCard size={20} />
+    <span className="text-base">Resumo do Pedido</span>
+  </h2>
+
+  {/* Cupom de desconto */}
+  <div className="space-y-1 text-sm">
+    <label className="block font-medium text-gray-700">Cupom de desconto</label>
+    <div className="flex gap-2">
+      <input
+        type="text"
+        placeholder="Digite o código"
+        className="flex-1 p-1 border rounded text-sm"
+        value={data.pagamento.cupom || ''}
+        onChange={e => onUpdate({ pagamento: { ...data.pagamento, cupom: e.target.value } })}
+      />
+      <button
+        type="button"
+        onClick={() => onUpdate({ pagamento: { ...data.pagamento, descontoAplicado: true } })}
+        className="px-3 py-1 bg-[#3970B7] text-white rounded text-sm cursor-pointer"
+      >
+        Aplicar
+      </button>
     </div>
-);
+  </div>
+
+  {/* Detalhes da aula */}
+  <ul className="space-y-2 text-sm">
+    <li className="flex items-center space-x-2">
+      <BookOpen className="text-[#3970B7]" size={16}/>
+      <span>{data.subject || '—'}</span>
+    </li>
+    <li className="flex items-center space-x-2">
+      <Clock className="text-[#3970B7]" size={16}/>
+      <span>{data.duration || '—'}</span>
+    </li>
+    <li className="flex items-center space-x-2">
+      <Calendar className="text-[#3970B7]" size={16}/>
+      <span>{dateStr || '—'}</span>
+    </li>
+    <li className="flex items-center space-x-2">
+      <Clock className="text-[#3970B7]" size={16}/>
+      <span>{timeStr || '—'}</span>
+    </li>
+  </ul>
+
+  {/* Separador */}
+  <div className="border-t border-gray-200" />
+
+  {/* Valores */}
+  <div className="space-y-1 text-sm">
+    <div className="flex justify-between">
+      <span>Subtotal</span>
+      <span>R$ {totalValue.toFixed(2).replace('.', ',')}</span>
+    </div>
+    <div className="flex justify-between">
+      <span>Desconto</span>
+      <span className="text-green-600">- R$ {data.pagamento.desconto?.toFixed(2).replace('.', ',') || '0,00'}</span>
+    </div>
+    <div className="flex justify-between items-center pt-1 border-t border-gray-200">
+      <span className="font-medium">TOTAL</span>
+      <span className="text-2xl font-bold text-[#3970B7]">
+        R$ {totalValue.toFixed(2).replace('.', ',')}
+      </span>
+    </div>
+  </div>
+</aside>
+    </div>
+  );
 }
