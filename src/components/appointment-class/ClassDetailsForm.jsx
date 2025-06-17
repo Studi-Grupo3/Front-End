@@ -104,7 +104,10 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
           <select
             className="w-full p-2.5 pr-8 border border-gray-300 rounded text-sm appearance-none"
             value={data.duration || ''}
-            onChange={e => onUpdate({ duration: e.target.value })}
+             onChange={e => {
+             console.log('ClassDetailsForm — nova duration:', e.target.value);
+             onUpdate({ duration: e.target.value });
+           }}
           >
             <option value="">Selecione a duração da aula</option>
             {durationOptions.map(duration => (

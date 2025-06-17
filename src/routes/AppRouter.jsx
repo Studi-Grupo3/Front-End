@@ -23,7 +23,7 @@ import TeacherGraph from "../pages/TeacherGraph";
 import TeacherRequests from "../pages/TeacherRequests";
 import NotFoundPage from "../pages/NotFoundPage";
 import ClassDetailsForm from "../components/appointment-class/ClassDetailsForm";
-import  ClassModelSelection  from "../components/appointment-class/ClassModelSelection";
+import ClassModelSelection from "../components/appointment-class/ClassModelSelection";
 import AddMaterialModal from "../components/appointment-class/AddMaterialModal";
 import ChooseProfessor from "../pages/ChooseProfessor";
 import Scheduling from "../pages/Scheduling";
@@ -57,17 +57,17 @@ export const AppRouter = () => {
           <Route path="/dashboard/configuracoes" element={<Configuracoes />} />
           <Route path="/dashboard/relatorios" element={<Relatorios />} />
 
-          
+
           <Route path="/aluno/formulario" element={<ClassDetailsForm />} />
           <Route path="/aluno/modelo-aula" element={<ClassModelSelection />} />
           <Route path="/aluno/escolher-professor" element={<ChooseProfessor />} />
           <Route path="/aluno/agendar-aula" element={<Scheduling />} />
           <Route path="/aluno/pagamento" element={<Payment />} />
-          <Route path="/aluno/concluido" element={<ConfirmedPayment />} />
+          <Route path="/aluno/concluido/:appointmentId"element={<ConfirmedPayment />}/>
           <Route path="/aluno/agendamento/criar" element={<MultiStepFlowContainer />} />
 
           <Route path="/aluno/inicio" element={<StudentInitialPage />} />
-          
+
           {/*
             Aqui incluímos DUAS rotas para “/agendamentos/gerenciar”:
             1) Sem parâmetro → carrega sempre a aba padrão (Upcoming)  

@@ -2,7 +2,7 @@ import React from 'react';
 import { Laptop, MapPin } from 'lucide-react';
 
 export default function ClassModelSelection({ data, onUpdate, onNext }) {
-  const choice = data.classModel;
+const choice = data.location;
 
   const base =
     "w-full sm:w-105 border rounded-lg px-8 py-10 transition-colors cursor-pointer flex flex-col items-center text-center";
@@ -17,7 +17,7 @@ export default function ClassModelSelection({ data, onUpdate, onNext }) {
     }`;
 
   const select = model => {
-    onUpdate({ classModel: model });
+    onUpdate({ location: model });
   };
 
   const enabled = Boolean(choice);
