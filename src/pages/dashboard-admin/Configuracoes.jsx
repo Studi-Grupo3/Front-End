@@ -21,7 +21,7 @@ export function Configuracoes() {
         {/* <Tabs /> */}
         <div className="space-y-8 mx-6 my-3">
           <SecuritySettings />
-          <NotificationSettings />
+          {/* <NotificationSettings /> */}
         </div>
       </main>
     </div>

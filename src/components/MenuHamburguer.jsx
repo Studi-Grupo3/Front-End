@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import UserAvatar from "./UserAvatar";
+import { useNavigate } from 'react-router-dom';
 
 const MenuHamburguer = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+   const handleClick = () => {
+    navigate('/aluno/agendamento/criar');
+  };
 
   return (
     <>
@@ -32,7 +37,7 @@ const MenuHamburguer = () => {
           <h2 className="font-semibold cursor-pointer">Calendário</h2>
           <h2 className="font-semibold cursor-pointer">Contato</h2>
 
-          <button className="text-[#FECB0A] text-sm font-semibold hover:text-yellow-400 transition">
+          <button onClick={handleClick} className="text-[#FECB0A] text-sm font-semibold hover:text-yellow-400 transition">
             Agendar Nova Aula
           </button>
         </div>

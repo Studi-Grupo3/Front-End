@@ -124,7 +124,7 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
       </div>
 
       {/* Material de Aula */}
-      <div>
+      {/* <div>
         <label className="block text-sm text-gray-700 mb-2">
           Material de Aula
         </label>
@@ -145,7 +145,7 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
           <Upload size={16} className="mr-2" />
           Adicionar Material
         </button>
-      </div>
+      </div> */}
 
       {/* Botão Continuar */}
       <button
@@ -162,11 +162,11 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
       </button>
 
       {/* Modal de adição de material */}
-      <AddMaterialModal
+      {/* <AddMaterialModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddMaterial={handleAddMaterial}
-      />
+      /> */}
     </div>
   );
 }

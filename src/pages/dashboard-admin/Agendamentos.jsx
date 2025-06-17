@@ -70,7 +70,7 @@ export function Agendamentos() {
               icon={<Timer className="w-5 h-5 text-yellow-500" />}
             />
             <StatCard
-              title={`${stats.averageDuration} min`}
+              title={`${stats.averageDuration.toFixed(0)} min`}
               subtitle="Duração Média das Aulas"
               icon={<AlertTriangle className="w-5 h-5 text-red-500" />}
             />
