@@ -17,10 +17,14 @@ import {
 import { authService } from "../services/authService";
 import React from "react";
 import { FiBell } from "react-icons/fi";
+import { useUserName } from "../hooks/useUserName";
 
 const NavbarPanel = ({ role }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const userId = sessionStorage.getItem("userId");
+  const userRole = sessionStorage.getItem("userRole");
+  const { name, loading } = useUserName(userId, userRole);
 
   // Simulação do status de verificação
   const emailVerificado = true;
@@ -93,19 +97,13 @@ const NavbarPanel = ({ role }) => {
           >
             Calendário
           </h2>
-          <h2
-            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
-            onClick={() => navigate("/contato")}
-          >
-            Contato
-          </h2>
         </div>
 
         {/* Botão e Avatar */}
         <div className="flex items-center gap-10">
           <ScheduleButton />
           <UserAvatar
-            name="João Carminatti"
+            name={loading ? "" : name}
             hasNotification={true}
             isComplete={!hasPendencias}
             onClick={handleUserAvatarClick}
@@ -117,9 +115,7 @@ const NavbarPanel = ({ role }) => {
       {isDropdownOpen && (
         <div className="absolute top-full right-55 mt-2 w-72 bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-sm font-medium text-gray-800">
-              João Carminatti
-            </p>
+            <p className="text-sm font-medium text-gray-800"></p>
             <div className="flex justify-between text-xs text-gray-500">
               <strong>Status do perfil</strong>
               <span className={hasPendencias ? "text-red-500" : "text-green-600"}>

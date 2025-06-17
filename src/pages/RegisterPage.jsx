@@ -44,7 +44,7 @@ const RegisterPage = () => {
       });
 
       setTimeout(() => {
-        navigate('/logar');
+        navigate('/entrar');
       }, 2000);
     } catch (err) {
       console.error("Erro ao tentar cadastrar:", err);
@@ -165,7 +165,7 @@ const RegisterPage = () => {
               Já tem uma conta?{' '}
               <button
                 type="button"
-                onClick={() => navigate('/logar')}
+                onClick={() => navigate('/entrar')}
                 className="font-bold text-[#FECB0A] hover:underline cursor-pointer"
               >
                 Clique aqui

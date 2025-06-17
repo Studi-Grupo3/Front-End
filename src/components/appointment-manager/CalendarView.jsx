@@ -104,113 +104,115 @@ export const CalendarView = ({ filter, setActiveTab }) => {
   };
 
   return (
-    <div className="w-full flex flex-col md:flex-row gap-6 px-4 py-8">
-      <div className="w-full lg:w-2/3">
-        <div className="bg-white shadow-md rounded-xl p-4">
-          <Calendar
-            onChange={setValue}
-            value={value}
-            onClickDay={handleClickDay}
-            className="w-full react-calendar-custom"
-            tileContent={({ date }) => {
-              const status = getStatusForDate(date);
-              if (!status) return null;
-              const rawColor = statusStyles[status]?.rawColor;
-              if (!rawColor) return null;
-              return (
-                <div className="flex justify-center mt-1">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: rawColor }} />
-                </div>
-              );
-            }}
-          />
-          <div className="mt-4 bg-gray-100 rounded-lg p-3">
-            <h4 className="font-semibold mb-2 text-base sm:text-lg">Legenda</h4>
-            <div className="flex flex-wrap gap-4 text-xs sm:text-sm md:text-base">
-              {Object.entries(statusStyles).map(([key, { rawColor, text }]) => (
-                <div key={key} className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: rawColor }} />{text}
-                </div>
-              ))}
+    <div className="w-full h-full">
+      <div className="w-full flex flex-col md:flex-row gap-6 px-4 py-2">
+        <div className="w-full lg:w-2/3">
+          <div className="bg-white shadow-md rounded-xl p-4">
+            <Calendar
+              onChange={setValue}
+              value={value}
+              onClickDay={handleClickDay}
+              className="w-full react-calendar-custom"
+              tileContent={({ date }) => {
+                const status = getStatusForDate(date);
+                if (!status) return null;
+                const rawColor = statusStyles[status]?.rawColor;
+                if (!rawColor) return null;
+                return (
+                  <div className="flex justify-center mt-1">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: rawColor }} />
+                  </div>
+                );
+              }}
+            />
+            <div className="mt-4 bg-gray-100 rounded-lg p-3">
+              <h4 className="font-semibold mb-2 text-base sm:text-lg">Legenda</h4>
+              <div className="flex flex-wrap gap-4 text-xs sm:text-sm md:text-base">
+                {Object.entries(statusStyles).map(([key, { rawColor, text }]) => (
+                  <div key={key} className="flex items-center gap-1">
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: rawColor }} />{text}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="w-full lg:w-1/3">
-        <div className="bg-white shadow-md rounded-xl p-4">
-          <h3 className="text-lg font-bold mb-4">Próximas aulas</h3>
+        <div className="w-full lg:w-1/3">
+          <div className="bg-white shadow-md rounded-xl p-4">
+            <h3 className="text-lg font-bold mb-4">Próximas aulas</h3>
 
-          {loading ? (
-            <div className="space-y-4">
-              {[0, 1].map(i => (
-                <SkeletonAppointmentCard key={i} />
-              ))}
-            </div>
-          ) : paginated.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">Nenhuma aula agendada.</div>
-          ) : (
-            paginated.map((a, i) => (
-              <div
-                key={i}
-                onClick={() => openAppointmentModal(a)}
-                className="p-3 rounded mb-3 cursor-pointer"
-                style={{ backgroundColor: statusStyles[a.status]?.rawColor + "33" }}
-              >
-                <p className="font-semibold">{a.displaySubject}</p>
-                <p className="text-sm text-gray-600">{a.displayDate}</p>
+            {loading ? (
+              <div className="space-y-4">
+                {[0, 1].map(i => (
+                  <SkeletonAppointmentCard key={i} />
+                ))}
               </div>
-            ))
-          )}
+            ) : paginated.length === 0 ? (
+              <div className="p-6 text-center text-gray-500">Nenhuma aula agendada.</div>
+            ) : (
+              paginated.map((a, i) => (
+                <div
+                  key={i}
+                  onClick={() => openAppointmentModal(a)}
+                  className="p-3 rounded mb-3 cursor-pointer"
+                  style={{ backgroundColor: statusStyles[a.status]?.rawColor + "33" }}
+                >
+                  <p className="font-semibold">{a.displaySubject}</p>
+                  <p className="text-sm text-gray-600">{a.displayDate}</p>
+                </div>
+              ))
+            )}
 
-          {!loading && (
-            <>
-              <div className="flex justify-between items-center mt-2">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                  className="px-3 py-1 bg-gray-200 rounded cursor-pointer disabled:opacity-50"
-                >Anterior</button>
-                <span className="text-sm">{currentPage} de {totalPages}</span>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                  className="px-3 py-1 bg-gray-200 rounded cursor-pointer disabled:opacity-50"
-                >Próxima</button>
-              </div>
+            {!loading && (
+              <>
+                <div className="flex justify-between items-center mt-2">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                    className="px-3 py-1 bg-gray-200 rounded cursor-pointer disabled:opacity-50"
+                  >Anterior</button>
+                  <span className="text-sm">{currentPage} de {totalPages}</span>
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                    className="px-3 py-1 bg-gray-200 rounded cursor-pointer disabled:opacity-50"
+                  >Próxima</button>
+                </div>
 
-              <button
-                onClick={handleViewFullList}
-                className="mt-2 w-full bg-gray-200 hover:bg-gray-300 transition text-sm rounded px-4 py-2 cursor-pointer"
-              >Ver lista completa</button>
-            </>
-          )}
+                <button
+                  onClick={handleViewFullList}
+                  className="mt-2 w-full bg-gray-200 hover:bg-gray-300 transition text-sm rounded px-4 py-2 cursor-pointer"
+                >Ver lista completa</button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
 
-      <DayAppointmentsModal
-        isOpen={dayModalOpen}
-        onClose={() => setDayModalOpen(false)}
-        appointments={dayApps}
-        onUpdate={() => {
-          appointmentService.list()
-            .then(data => setRawAulas(mapAppointments(data)))
-            .catch(err => console.error(err));
-        }}
-      />
-
-      {selectedApp && (
-        <AppointmentModal
-          isOpen={appModalOpen}
-          onClose={() => setAppModalOpen(false)}
-          appointment={selectedApp}
+        <DayAppointmentsModal
+          isOpen={dayModalOpen}
+          onClose={() => setDayModalOpen(false)}
+          appointments={dayApps}
           onUpdate={() => {
             appointmentService.list()
               .then(data => setRawAulas(mapAppointments(data)))
               .catch(err => console.error(err));
           }}
         />
-      )}
+
+        {selectedApp && (
+          <AppointmentModal
+            isOpen={appModalOpen}
+            onClose={() => setAppModalOpen(false)}
+            appointment={selectedApp}
+            onUpdate={() => {
+              appointmentService.list()
+                .then(data => setRawAulas(mapAppointments(data)))
+                .catch(err => console.error(err));
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };

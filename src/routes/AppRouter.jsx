@@ -35,7 +35,7 @@ export const AppRouter = () => {
     <Router>
       <Routes>
         {/* ROTAS PÚBLICAS */}
-        <Route path="/logar" element={<LoginPage />} />
+        <Route path="/entrar" element={<LoginPage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/cadastrar" element={<RegisterPage />} />
         <Route path="/redefinir-senha" element={<EmailVerificationPage />} />
