@@ -13,13 +13,12 @@ export default function CompleteTeacherRegistrationPage() {
         id: professorId,
         name: "",
         email: "",
-        telefone: "",
-        dataNascimento: "",
-        sobre: "",
-        formacao: "",
-        experiencia: "",
-        materias: "",
-        novaSenha: ""
+        cellphoneNumber: "",
+        dateBirth: "",
+        resumeTeacher: "",
+        academicFormation: "",
+        yearsExperience: "",
+        subject: "",
     });
 
     useEffect(() => {
@@ -27,14 +26,18 @@ export default function CompleteTeacherRegistrationPage() {
         if (professorId) {
             try {
                 const data = await teacherService.getById(professorId);
-                setFormData({
+                setFormData(prev => ({
+                    ...prev,
                     id: data.id,
                     name: data.name || "",
                     email: data.email || "",
-                    telefone: data.telefone || "",
-                    dataNascimento: data.dataNascimento || "",
-                    sobre: data.sobre || "",
-                });
+                    cellphoneNumber: data.cellphoneNumber || "",
+                    dateBirth: data.dateBirth || "",
+                    resumeTeacher: data.resumeTeacher || "",
+                    academicFormation: data.academicFormation || "",
+                    yearsExperience: data.yearsExperience || "",
+                    subject: data.subject || "",
+                }));
             } catch (err) {
                 showAlert({
                     title: 'Erro!',
@@ -53,6 +56,7 @@ export default function CompleteTeacherRegistrationPage() {
 
     const handleUpdate = async () => {
         try {
+            console.log("Dados enviados:", formData);
             await teacherService.update( formData.id,formData);
             showAlert({
             title: 'Perfil atualizado com sucesso',
@@ -72,7 +76,7 @@ export default function CompleteTeacherRegistrationPage() {
         { id: "Informacoes Pessoais", label: "Informações Pessoais", icon: User },
         { id: "Qualificacoes", label: "Qualificações", icon: GraduationCap },
         { id: "Foto e Documentos", label: "Foto e Documentos", icon: Image },
-        { id: "Seguranca", label: "Segurança", icon: Lock },
+        // { id: "Seguranca", label: "Segurança", icon: Lock },
     ];
 
     return (
@@ -84,7 +88,7 @@ export default function CompleteTeacherRegistrationPage() {
 
                 <div className="bg-white rounded-xl shadow p-6 max-w-4xl mx-auto w-full">
                     <div className="flex flex-col justify-between text-center md:text-start mb-4">
-                        {/* Progresso */}
+
                         <div className="flex justify-end items-center mb-2 gap-2">
                             <span className="text-sm font-light text-gray-600">
                                 Completar Perfil: {percentComplete}%
@@ -102,7 +106,6 @@ export default function CompleteTeacherRegistrationPage() {
                         </p>
                     </div>
 
-                    {/* Tabs */}
                     <div className="flex justify-between md:justify-start mb-6">
                         {tabs.map(({ id, label, icon: Icon }) => {
                             const isActive = active === id;
