@@ -165,7 +165,7 @@ const RegisterPage = () => {
               Já tem uma conta?{' '}
               <button
                 type="button"
-                onClick={() => navigate('/logar')}
+                onClick={() => navigate('/entrar')}
                 className="font-bold text-[#FECB0A] hover:underline cursor-pointer"
               >
                 Clique aqui
