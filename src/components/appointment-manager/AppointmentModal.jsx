@@ -1,6 +1,5 @@
-// components/AppointmentModal.jsx
 import React, { useEffect, useRef, useState } from "react";
-import { X, Calendar, Clock, MapPin, FileText } from "lucide-react";
+import { X, Calendar, Clock, MapPin, FileText, DollarSign } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
 import { appointmentService } from "../../services/appointmentService";
@@ -15,10 +14,12 @@ export const AppointmentModal = ({
   isOpen,
   onClose,
   appointment,
-  onUpdate  
+  onUpdate
 }) => {
   const modalRef = useRef();
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+  const [confirmCompleteOpen, setConfirmCompleteOpen] = useState(false);
+  const [loadingAction, setLoadingAction] = useState(false);
 
   useEffect(() => {
     const handleEsc = (e) => e.key === "Escape" && onClose();
@@ -32,34 +33,56 @@ export const AppointmentModal = ({
     }
   };
 
-  const handleCancelClick = () => setConfirmOpen(true);
+  const handleCancelClick = () => setConfirmCancelOpen(true);
+  const handleCompleteClick = () => setConfirmCompleteOpen(true);
 
-  const handleConfirm = async () => {
-    setConfirmOpen(false);
+  const performUpdateStatus = async (newStatus) => {
+    setLoadingAction(true);
     try {
-      await appointmentService.patch(appointment.id, { status: "CANCELLED" });
+      await appointmentService.patch(appointment.id, { status: newStatus });
       if (onUpdate) await onUpdate();
       onClose();
     } catch (error) {
-      console.error("Erro ao cancelar a aula:", error);
-      alert("Não foi possível cancelar a aula. Tente novamente.");
+      console.error(`Erro ao atualizar status para ${newStatus}:`, error);
+      alert("Não foi possível atualizar o status. Tente novamente.");
+    } finally {
+      setLoadingAction(false);
     }
   };
 
-  const handleCancelModal = () => setConfirmOpen(false);
+  const handleConfirmCancel = async () => {
+    setConfirmCancelOpen(false);
+    await performUpdateStatus("CANCELLED");
+  };
+
+  const handleConfirmComplete = async () => {
+    setConfirmCompleteOpen(false);
+    await performUpdateStatus("COMPLETED");
+  };
 
   if (!isOpen || !appointment) return null;
 
   // formatação de data e hora
   const dt = new Date(appointment.dateTime);
   const weekdayPt = translateWeekday(dt.toLocaleDateString("en-US", { weekday: "long" }));
-  const monthPt   = translateMonth(dt.toLocaleDateString("en-US",   { month:   "long" }));
+  const monthPt = translateMonth(dt.toLocaleDateString("en-US", { month: "long" }));
   const formattedDate = `${weekdayPt}, ${dt.getDate()} de ${monthPt}`;
   const formattedTime = dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
-  // traduções de subject e title
-  const subjectPt        = translateSubject(appointment.subject);
+  const subjectPt = translateSubject(appointment.subject);
   const professorTitlePt = translateProfessorTitle(appointment.professorTitle);
+
+  const cancelMessage = `
+Tem certeza de que deseja CANCELAR esta aula?
+
+Ao cancelar, você não poderá marcar essa aula como concluída posteriormente. Se tiver qualquer dúvida, entre em contato com o professor correspondente ou envie um email para studi@gmail.com antes de prosseguir.
+  `.trim();
+
+  const completeMessage = `
+Tenha certeza de marcar a aula como CONCLUÍDA apenas se você realmente realizou a aula com o professor correspondente.
+
+Caso tenha qualquer dúvida sobre o que registrar, consulte o professor correspondente ou envie um email para studi@gmail.com antes de confirmar a conclusão.
+  `.trim();
 
   return (
     <>
@@ -71,7 +94,7 @@ export const AppointmentModal = ({
       >
         <div
           ref={modalRef}
-          className="bg-white rounded-xl shadow-2xl w-[95%] max-w-xl p-6"
+          className="bg-white rounded-xl shadow-2xl w-[90%] max-w-2xl p-6"
         >
           {/* Header */}
           <div className="flex justify-between items-start border-b pb-4">
@@ -79,7 +102,6 @@ export const AppointmentModal = ({
               {subjectPt}
             </h2>
             <div className="flex items-center gap-2">
-              {/* Aqui passamos o status "bruto" para a badge */}
               <StatusBadge status={appointment.status} />
               <button
                 onClick={onClose}
@@ -121,6 +143,10 @@ export const AppointmentModal = ({
               <MapPin className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
               <span>{appointment.online ? "Online" : appointment.location}</span>
             </div>
+            <div className="flex items-center text-gray-600">
+              <DollarSign className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
+              <span>Valor da aula: R$ {appointment.totalValue.toFixed(2)}</span>
+            </div>
           </div>
 
           {/* Material de apoio */}
@@ -130,33 +156,68 @@ export const AppointmentModal = ({
               Material de apoio
             </div>
             <ul className="list-disc list-inside text-blue-600 text-sm space-y-1">
-              <li><a href="#" className="hover:underline">Documento de referência.pdf</a></li>
-              <li><a href="#" className="hover:underline">Exercícios sugeridos.pdf</a></li>
+              {appointment.materials?.map((mat, idx) => (
+                <li key={idx}>
+                  <a href={mat.url} className="hover:underline cursor-pointer" target="_blank" rel="noreferrer">
+                    {mat.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Botão de cancelar aula (só se não estiver CANCELLED) */}
+          {/* Botões de ação */}
           {appointment.status !== "CANCELLED" && appointment.status !== "COMPLETED" && (
             <div className="mt-6 flex justify-end gap-2 border-t pt-4">
               <button
                 onClick={handleCancelClick}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition cursor-pointer"
+                disabled={loadingAction}
+                className={`px-4 py-2 rounded-lg font-semibold transition ${loadingAction ? 'bg-red-300 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600 text-white cursor-pointer'}`}>
+                Cancelar Aula
+              </button>
+              <button
+                onClick={handleCompleteClick}
+                disabled={loadingAction}
+                className={`px-4 py-2 rounded-lg font-semibold transition ${loadingAction ? 'bg-green-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'}`}>
+                Concluir Aula
+              </button>
+            </div>
+          )}
+          {appointment.status === "COMPLETED" && (
+            <div className="mt-6 flex justify-end border-t pt-4">
+              <button
+                disabled
+                className="px-4 py-2 rounded-lg font-semibold bg-green-500 text-white cursor-not-allowed"
               >
-                Cancelar aula
+                Aula Concluída
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Modal de confirmação */}
+      {/* Modal de confirmação Cancelamento */}
       <ConfirmationModal
-        isOpen={confirmOpen}
-        title="Confirmação de cancelamento"
-        message="Deseja realmente cancelar esta aula?"
-        confirmLabel="Cancelar"
-        onConfirm={handleConfirm}
-        onCancel={handleCancelModal}
+        isOpen={confirmCancelOpen}
+        title="Confirmação de Cancelamento"
+        message={cancelMessage}
+        checkboxLabel="Estou ciente que ao cancelar esta aula, ela não poderá ser marcada como concluída posteriormente."
+        confirmLabel="Cancelar Aula"
+        confirmColor="red"
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setConfirmCancelOpen(false)}
+      />
+
+      {/* Modal de confirmação Conclusão */}
+      <ConfirmationModal
+        isOpen={confirmCompleteOpen}
+        title="Confirmação de Conclusão"
+        message={completeMessage}
+        checkboxLabel="Estou certo de que a aula foi realizada com o professor correspondente e desejo marcá-la como concluída."
+        confirmLabel="Marcar Como Concluída"
+        confirmColor="green"
+        onConfirm={handleConfirmComplete}
+        onCancel={() => setConfirmCompleteOpen(false)}
       />
     </>
   );

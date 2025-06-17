@@ -12,7 +12,7 @@ export const overviewDashService = {
     return {
       totalRevenue: data.stats.totalRevenue,
       totalTeachers: data.stats.totalTeachers,
-      totalHours: data.stats.totalHours,
+      pendingAmount: data.stats.pendingAmount,
       totalAppointments: data.stats.totalAppointments
     };
   },

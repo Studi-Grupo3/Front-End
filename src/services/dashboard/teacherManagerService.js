@@ -17,7 +17,8 @@ export const teacherManagerService = {
     return resp.data;
   },
 
-  async remove(cpf) {
-    await api.delete(`/teachers/${cpf}`);
-  },
+  async softDelete(id) {
+    const response = await api.delete(`/teachers/${id}`);
+    return response.data;
+  }
 };

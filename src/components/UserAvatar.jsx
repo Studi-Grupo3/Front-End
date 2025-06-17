@@ -1,20 +1,24 @@
 import React from "react";
 
 const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, onClick }) => {
-  const getInitials = (name) => {
-    const names = name.trim().split(" ");
-    const initials =
-      names.length === 1
-        ? names[0][0]
-        : names[0][0] + names[names.length - 1][0];
-    return initials.toUpperCase();
-  };
+  // Função para pegar as iniciais do nome
+  function getInitials(name) {
+    if (!name) return "";
+    return name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(word => word[0].toUpperCase())
+      .join("");
+  }
+
+  const initials = getInitials(name);
 
   return (
     <div className="relative cursor-pointer" onClick={onClick}>
       {/* Avatar */}
       <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-sm border border-gray-500">
-        {getInitials(name)}
+        {initials}
       </div>
 
       {/* Notificação */}

@@ -45,7 +45,7 @@ const LoginPage = () => {
       }, 2000);
 
     } catch (err) {
-      console.error("Erro ao tentar logar:", err);
+      console.error("Erro ao tentar entrar:", err);
       showAlert({
         title: 'Erro!',
         text: 'Erro ao realizar login. Verifique suas credenciais.',

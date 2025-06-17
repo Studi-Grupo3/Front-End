@@ -1,62 +1,93 @@
-import localizacao from "../assets/localização.png";
-import telefoneIcon from "../assets/telefone.png";
-import email from "../assets/email.png";
+import { 
+  MapPin, 
+  Phone, 
+  Mail 
+} from "lucide-react";
 import logo2 from "../assets/logo2.png";
 
-
 const Footer = () => {
-    return (
-        <footer>
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-[17px] text-center">
-                
-                <div className="flex flex-col items-center mt-6">
-                    <div className="flex items-center gap-2 mb-4">
-                        <img src={logo2} alt="Logo" className="h-35" />
-                    </div>
-                </div>
+  return (
+    <footer className="bg-[#3970B7] border-t-2 border-yellow-300 text-white py-8 px-4 md:px-0">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 gap-y-8 md:grid-cols-4 md:gap-x-8">
+        
+        {/* Coluna 1: Logo + redes sociais */}
+        <div className="flex flex-col items-center text-center md:items-start md:text-left">
+          
+          {/* Aqui: contêiner full-width, que centraliza no mobile e alinha à esquerda no md */}
+          <div className="w-full flex justify-end md:justify-start mb-4 px-7">
+            {/* Logo com altura h-32 (128px) */}
+            <img src={logo2} alt="Logo" className="h-32 w-auto" />
+          </div>
+        </div>
 
-                
-                <div className="flex flex-col items-center mt-6">
-                    <h4 className="text-lg font-bold mb-2 border-b border-yellow-300 inline-block">Links Rápidos</h4>
-                    <ul className="space-y-2 mt-3">
-                        <li><a href="#historia" className="hover:text-yellow-300">Sobre Nós</a></li>
-                        <li><a href="#planos" className="hover:text-yellow-300">Planos</a></li>
-                        <li><a href="#professores" className="hover:text-yellow-300">Professores</a></li>
-                        <li><a href="#contato" className="hover:text-yellow-300">Fale Conosco</a></li>
-                    </ul>
-                </div>
+        {/* Coluna 2: Links Rápidos */}
+        <div className="flex flex-col items-center text-center md:items-start md:text-left">
+          <h4 className="text-lg font-bold mb-2 border-b border-yellow-300 inline-block">
+            Links Rápidos
+          </h4>
+          <ul className="space-y-2 mt-3">
+            <li>
+              <a href="#historia" className="hover:text-yellow-300">
+                Sobre Nós
+              </a>
+            </li>
+            <li>
+              <a href="#planos" className="hover:text-yellow-300">
+                Planos
+              </a>
+            </li>
+            <li>
+              <a href="#professores" className="hover:text-yellow-300">
+                Professores
+              </a>
+            </li>
+            <li>
+              <a href="#cadastre-se" className="hover:text-yellow-300">
+                Cadastre-se
+              </a>
+            </li>
+          </ul>
+        </div>
 
-                
-                <div className="flex flex-col items-center mt-6">
-                    <h4 className="text-lg font-bold mb-2 border-b border-yellow-300 inline-block">Áreas De Ensino</h4>
-                    <ul className="space-y-2 mt-3">
-                        <li className="hover:text-yellow-300 cursor-pointer">E. Fundamental</li>
-                        <li className="hover:text-yellow-300 cursor-pointer">E. Fundamental 2</li>
-                        <li className="hover:text-yellow-300 cursor-pointer">E. Médio</li>
-                        <li className="hover:text-yellow-300 cursor-pointer">Vestibulares</li>
-                    </ul>
-                </div>
+        {/* Coluna 3: Áreas de Ensino */}
+        <div className="flex flex-col items-center text-center md:items-start md:text-left">
+          <h4 className="text-lg font-bold mb-2 border-b border-yellow-300 inline-block">
+            Áreas De Ensino
+          </h4>
+          <ul className="space-y-2 mt-3">
+            <li className="hover:text-yellow-300 cursor-pointer">E. Fundamental</li>
+            <li className="hover:text-yellow-300 cursor-pointer">E. Fundamental 2</li>
+            <li className="hover:text-yellow-300 cursor-pointer">E. Médio</li>
+            <li className="hover:text-yellow-300 cursor-pointer">Vestibulares</li>
+          </ul>
+        </div>
 
-                
-                <div className="flex flex-col items-center mt-6">
-                    <h4 className="text-lg font-bold mb-2 border-b border-yellow-300 inline-block">Contato</h4>
-                    <ul className="space-y-3 mt-3">
-                        <li className="flex items-center justify-center gap-2 hover:text-yellow-300 cursor-pointer">
-                            <img src={localizacao} alt="Localização" className="w-5 h-5" />
-                            <span>6391 Elgin St. Celina, Delaware 10299</span>
-                        </li>
-                        <li className="flex items-center justify-center gap-2 hover:text-yellow-300 cursor-pointer">
-                            <img src={telefoneIcon} alt="Telefone" className="w-5 h-5" />
-                            <span>(303) 555-0105</span>
-                        </li>
-                        <li className="flex items-center justify-center gap-2 hover:text-yellow-300 cursor-pointer">
-                            <img src={email} alt="Email" className="w-5 h-5" />
-                            <span>michael.mitc@example.com</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </footer>
-    );
+        {/* Coluna 4: Contato */}
+        <div className="flex flex-col items-center text-center md:items-start md:text-left">
+          <h4 className="text-lg font-bold mb-2 border-b border-yellow-300 inline-block">
+            Contato
+          </h4>
+          <ul className="space-y-3 mt-3">
+            <li className="flex flex-col items-center sm:flex-row sm:items-center gap-1 sm:gap-2 hover:text-yellow-300 cursor-pointer">
+              <MapPin size={20} />
+              <span className="text-sm">
+                6391 Elgin St. Celina, Delaware 10299
+              </span>
+            </li>
+            <li className="flex flex-col items-center sm:flex-row sm:items-center gap-1 sm:gap-2 hover:text-yellow-300 cursor-pointer">
+              <Phone size={20} />
+              <span className="text-sm">(303) 555-0105</span>
+            </li>
+            <li className="flex flex-col items-center sm:flex-row sm:items-center gap-1 sm:gap-2 hover:text-yellow-300 cursor-pointer">
+              <Mail size={20} />
+              <span className="text-sm">michael.mitc@example.com</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </footer>
+  );
 };
+
 export default Footer;

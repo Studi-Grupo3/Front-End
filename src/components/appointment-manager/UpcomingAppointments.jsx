@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { appointmentService } from "../../services/appointmentService";
 import { AppointmentCard } from "./AppointmentCard";
 import { AppointmentModal } from "./AppointmentModal";
+import { SkeletonAppointmentCard } from "../../components/common/SkeletonAppointmentCard";
 import {
   translateSubject,
   translateProfessorTitle
@@ -14,7 +15,6 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
   const [selected, setSelected] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
-  // função de refetch
   const fetchAppointments = useCallback(() => {
     setLoading(true);
     appointmentService
@@ -23,7 +23,7 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
         setAppointments(data);
         setError(null);
       })
-      .catch(() => setError("Não foi possível carregar."))
+      .catch(() => setError("Não foi possível carregar agendamentos."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -31,10 +31,24 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  if (loading) return <div>Carregando agendamentos...</div>;
-  if (error)   return <div>{error}</div>;
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {Array(6).fill().map((_, i) => (
+          <SkeletonAppointmentCard key={i} />
+        ))}
+      </div>
+    );
+  }
 
-  // prepara cada item com strings exibíveis
+  if (error) {
+    return (
+      <div className="p-6 text-red-600 text-center">
+        {error}
+      </div>
+    );
+  }
+
   const items = appointments.map(appt => {
     const dt = new Date(appt.dateTime);
     return {
@@ -50,7 +64,6 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
     };
   });
 
-  // filtro conforme tab ativa
   const visible = items.filter(app => {
     if (filter === "COMPLETED") return false;
     switch (filter) {
@@ -67,9 +80,17 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
       case "OFFLINE":
         return !app.online;
       default:
-        return ["SCHEDULED", "CANCELLED"].includes(app.status);
+        return app.status === "SCHEDULED";
     }
   });
+
+  if (visible.length === 0) {
+    return (
+      <div className="p-6 text-center text-gray-500">
+        Nenhum agendamento encontrado.
+      </div>
+    );
+  }
 
   return (
     <>
@@ -99,7 +120,7 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
         appointment={selected}
-        onUpdate={fetchAppointments}  // refetch após cancelamento
+        onUpdate={fetchAppointments}
       />
     </>
   );
