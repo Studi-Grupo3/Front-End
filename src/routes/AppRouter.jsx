@@ -16,6 +16,8 @@ import EmailVerificationPage from "../pages/EmailVerificationPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import StudentInitialPage from "../pages/StudentInitialPage";
+import CompleteTeacherRegistrationPage from "../pages/CompleteTeacherRegistrationPage";
+import CompleteStudentRegistrationPage from "../pages/CompleteStudentRegistrationPage";
 import TeacherInitialPage from "../pages/TeacherInitialPage";
 import TeacherChartClassesPage from "../pages/TeacherChartClassesPage";
 import TeacherLessonsHistoryPage from "../pages/TeacherLessonsHistoryPage";
@@ -78,9 +80,13 @@ export const AppRouter = () => {
 
           <Route path="/pagamento" element={<CheckoutPage />} />
 
-          <Route path="/students" element={<h1>Students (Substituir depois)</h1>} />
-          <Route path="/teachers" element={<h1>Teachers (Substituir depois)</h1>} />
+          <Route path="/aluno" element={<h1>Students (Substituir depois)</h1>} />
+          <Route path="/professor" element={<h1>Teachers (Substituir depois)</h1>} />
           <Route path="/appointments" element={<h1>Appointments (Substituir depois)</h1>} />
+
+          <Route path="/aluno/completar-cadastro" element={<CompleteStudentRegistrationPage />} />
+          <Route path="/professor/completar-cadastro" element={<CompleteTeacherRegistrationPage />} />
+
         </Route>
 
         {/* CATCH-ALL (404) */}
