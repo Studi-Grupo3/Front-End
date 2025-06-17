@@ -1,184 +1,167 @@
 import React, { useState } from 'react';
 import { ChevronDown, Upload } from 'lucide-react';
-import { useIsMobile } from '../../hooks/useIsMobile';
 import AddMaterialModal from './AddMaterialModal';
-import { useNavigate } from 'react-router-dom';
-import NavbarPanel from '../NavbarPanel';
 
-import { contentService } from '../../services/contentService';
-
-
-const ClassDetailsForm = () => {
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [selectedPhase, setSelectedPhase] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedDuration, setSelectedDuration] = useState('');
-  const [materials, setMaterials] = useState([]);
+export default function ClassDetailsForm({ data, onUpdate, onNext }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const phaseOptions = ['Ensino Fundamental I', 'Ensino Fundamental II', 'Ensino Médio', 'Ensino Superior'];
-  const subjectOptions = ['Matemática', 'Português', 'História', 'Geografia', 'Ciências', 'Física', 'Química'];
-  const durationOptions = ['30 minutos', '45 minutos', '1 hora', '1 hora e 30 minutos', '2 horas'];
+  const phaseOptions = [
+    'Ensino Fundamental I',
+    'Ensino Fundamental II',
+    'Ensino Médio',
+    'Ensino Superior'
+  ];
+  const subjectOptions = [
+    'Matemática',
+    'Português',
+    'História',
+    'Geografia',
+    'Ciências',
+    'Física',
+    'Química'
+  ];
+  const durationOptions = [
+    '30 minutos',
+    '45 minutos',
+    '1 hora',
+    '1 hora e 30 minutos',
+    '2 horas'
+  ];
 
-  const handleAddMaterial = (newMaterial) => {
-    setMaterials(prev => [
-      ...prev,
+  const handleAddMaterial = newMaterial => {
+    const updated = [
+      ...(data.materials || []),
       { id: Date.now(), name: newMaterial.name, file: newMaterial.file }
-    ]);
+    ];
+    onUpdate({ materials: updated });
+    setIsModalOpen(false);
   };
 
-const handleSubmit = async () => {
-  if (!selectedPhase || !selectedSubject || !selectedDuration) {
-    alert('Por favor, preencha todos os campos antes de continuar.');
-    return;
-  }
-
-  if (materials.length === 0) {
-    alert('Adicione pelo menos um material.');
-    return;
-  }
-
-  setIsSubmitting(true);
-
-  try {
-    await contentService.createClass({
-      phase: selectedPhase,
-      subject: selectedSubject,
-      duration: selectedDuration,
-      materials
-    });
-
-    alert('Aula agendada com sucesso!');
-    navigate('/class-model');
-
-  } catch (error) {
-  console.error('Erro ao enviar:', error);
-  if (error.response) {
-    console.error('Detalhes do erro:', error.response.data);
-    alert(`Erro ao enviar dados: ${error.response.data.message || 'Tente novamente.'}`);
-  } else if (error.request) {
-    console.error('Nenhuma resposta recebida:', error.request);
-    alert('Erro ao enviar dados: Nenhuma resposta recebida.');
-  } else {
-    console.error('Erro genérico:', error.message);
-    alert(`Erro: ${error.message}`);
-  }
-}
-};
+  // Não exige material de aula para avançar
+  const allFilled =
+    data.phase &&
+    data.subject &&
+    data.duration;
 
   return (
-    <div className="min-h-screen bg-gray-100 overflow-hidden">
-      {/* Navbar fixed full width */}
-      <header className="w-full fixed top-0 left-0 z-50">
-        <div className="w-full bg-white shadow">
-          <NavbarPanel />
-        </div>
-      </header>
-
-      {/* Main content starts below navbar; adjust mt to header height (~5rem) */}
-      <main className={`mx-auto max-w-4xl ${isMobile ? 'p-4 mt-20' : 'p-6 mt-20'} bg-white rounded-lg shadow-sm`}>
-        <header className={`${isMobile ? 'mb-4' : 'mb-6'} ${!isMobile ? 'border-b pb-3' : ''}`}>
-          <h2 className={`text-blue-600 font-medium ${isMobile ? 'text-base' : 'text-lg'}`}>Detalhes</h2>
-        </header>
-
-        <section className={`text-center ${isMobile ? 'mb-5' : 'mb-7'}`}>
-          <h1 className={`text-blue-600 font-semibold ${isMobile ? 'text-xl' : 'text-2xl'} mb-2`}>Detalhes da Aula</h1>
-          <p className="text-gray-600 text-sm">Preencha os detalhes para agendar sua próxima aula.</p>
-        </section>
-
-        <section className="space-y-6 mb-6">
-          {/* Phase selection */}
-          <div>
-            <p className="text-sm mb-3 mt-6">Escolha a fase escolar</p>
-            <div className="relative mb-3">
-              <select
-                className="w-full p-3 border border-gray-300 rounded appearance-none text-center text-gray-500"
-                value={selectedPhase}
-                onChange={e => setSelectedPhase(e.target.value)}
-              >
-                <option value="">Selecione a fase escolar</option>
-                {phaseOptions.map(phase => (
-                  <option key={phase} value={phase}>{phase}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            </div>
-          </div>
-
-          {/* Subject selection */}
-          <div>
-            <p className="text-sm mb-3 mt-6">Escolha uma matéria</p>
-            <div className="relative mb-3">
-              <select
-                className="w-full p-3 border border-gray-300 rounded appearance-none text-center text-gray-500"
-                value={selectedSubject}
-                onChange={e => setSelectedSubject(e.target.value)}
-              >
-                <option value="">Selecione uma matéria</option>
-                {subjectOptions.map(subject => (
-                  <option key={subject} value={subject}>{subject}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            </div>
-          </div>
-
-          {/* Duration selection */}
-          <div>
-            <p className="text-sm mb-3 mt-6">Selecione a duração da aula</p>
-            <div className="relative mb-3">
-              <select
-                className="w-full p-3 border border-gray-300 rounded appearance-none text-center text-gray-500"
-                value={selectedDuration}
-                onChange={e => setSelectedDuration(e.target.value)}
-              >
-                <option value="">Selecione a duração da aula</option>
-                {durationOptions.map(duration => (
-                  <option key={duration} value={duration}>{duration}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            </div>
-          </div>
-
-          {/* Materials section */}
-          <div>
-            <p className="text-sm mb-3 mt-6">{isMobile ? 'Material de Aula' : 'Material de Aula Atual'}</p>
-            {!isMobile && (
-              <div className="border border-gray-200 rounded p-4 mb-3 min-h-12">
-                {materials.length > 0 ? (
-                  materials.map(mat => (
-                    <div key={mat.id} className="text-sm text-gray-600 mb-1">{mat.name}</div>
-                  ))
-                ) : (
-                  <div className="text-sm text-gray-400 text-center">Nenhum material adicionado</div>
-                )}
-              </div>
-            )}
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center justify-center w-full py-3 text-blue-600 hover:bg-blue-50 rounded transition-colors border border-gray-200"
-              disabled={isSubmitting}
-            >
-              <Upload size={16} className="mr-2" />
-              <span>Adicionar Material</span>
-            </button>
-          </div>
-        </section>
-
-        <div>
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded transition-colors disabled:opacity-50"
+    <div className="space-y-4.5">
+      {/* Fase escolar */}
+      <div>
+        <label className="block text-sm text-gray-700 mb-2">
+          Escolha a fase escolar
+        </label>
+        <div className="relative">
+          <select
+            className="w-full p-2.5 pr-8 border border-gray-300 rounded text-sm appearance-none"
+            value={data.phase || ''}
+            onChange={e => onUpdate({ phase: e.target.value })}
           >
-            {isSubmitting ? 'Enviando...' : 'Continuar'}
-          </button>
+            <option value="">Selecione a fase escolar</option>
+            {phaseOptions.map(phase => (
+              <option key={phase} value={phase}>
+                {phase}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={16}
+          />
         </div>
-      </main>
+      </div>
 
+      {/* Matéria */}
+      <div>
+        <label className="block text-sm text-gray-700 mb-2">
+          Escolha uma matéria
+        </label>
+        <div className="relative">
+          <select
+            className="w-full p-2.5 pr-8 border border-gray-300 rounded text-sm appearance-none"
+            value={data.subject || ''}
+            onChange={e => onUpdate({ subject: e.target.value })}
+          >
+            <option value="">Selecione uma matéria</option>
+            {subjectOptions.map(subject => (
+              <option key={subject} value={subject}>
+                {subject}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={16}
+          />
+        </div>
+      </div>
+
+      {/* Duração */}
+      <div>
+        <label className="block text-sm text-gray-700 mb-2">
+          Selecione a duração da aula
+        </label>
+        <div className="relative">
+          <select
+            className="w-full p-2.5 pr-8 border border-gray-300 rounded text-sm appearance-none"
+            value={data.duration || ''}
+             onChange={e => {
+             console.log('ClassDetailsForm — nova duration:', e.target.value);
+             onUpdate({ duration: e.target.value });
+           }}
+          >
+            <option value="">Selecione a duração da aula</option>
+            {durationOptions.map(duration => (
+              <option key={duration} value={duration}>
+                {duration}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={16}
+          />
+        </div>
+      </div>
+
+      {/* Material de Aula */}
+      <div>
+        <label className="block text-sm text-gray-700 mb-2">
+          Material de Aula
+        </label>
+        {data.materials && data.materials.length > 0 && (
+          <div className="border border-gray-200 rounded p-2.5 mb-2 text-sm text-gray-600">
+            {data.materials.map(mat => (
+              <div key={mat.id} className="mb-1">
+                {mat.name}
+              </div>
+            ))}
+          </div>
+        )}
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center justify-center w-full py-2.5 text-[#3970B7] hover:bg-[#3970B7]/10 rounded border border-gray-200 text-sm"
+          type="button"
+        >
+          <Upload size={16} className="mr-2" />
+          Adicionar Material
+        </button>
+      </div>
+
+      {/* Botão Continuar */}
+      <button
+        onClick={onNext}
+        disabled={!allFilled}
+        className={
+          allFilled
+            ? 'w-full cursor-pointer py-2.5 bg-[#3970B7] text-white rounded hover:bg-[#2e5a94]'
+            : 'w-full py-2.5 bg-gray-300 text-gray-500 rounded cursor-not-allowed'
+        }
+        type="button"
+      >
+        Continuar
+      </button>
+
+      {/* Modal de adição de material */}
       <AddMaterialModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -186,6 +169,4 @@ const handleSubmit = async () => {
       />
     </div>
   );
-};
-
-export default ClassDetailsForm;
+}

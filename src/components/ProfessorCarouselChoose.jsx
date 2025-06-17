@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "../hooks/useIsMobile";
+import { useIsMobile}  from "../hooks/useIsMobile";
 
 import prof1 from "../assets/professorFabio.png";
 import prof2 from "../assets/professoraJuliana.png";
@@ -17,150 +17,154 @@ const professors = [
 
 const ProfessorCarouselChoose = () => {
   const nav = useNavigate();
-  const [currentSlide, setCurrentSlide] = useState(0);
   const isMobile = useIsMobile();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const primary = "#3970B7";
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === professors.length - 1 ? 0 : prev + 1));
+    setCurrentSlide((prev) => (prev + 1) % professors.length);
   };
-
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? professors.length - 1 : prev - 1));
+    setCurrentSlide((prev) => (prev - 1 + professors.length) % professors.length);
   };
 
-  const currentProfessor = professors[currentSlide];
+  // Para desktop: pega 3 professores a partir do currentSlide, com wrap
+  const getThree = () => {
+    return [0, 1, 2].map((offset) => {
+      const idx = (currentSlide + offset) % professors.length;
+      return professors[idx];
+    });
+  };
 
   return (
-    <main className="flex min-h-screen bg-gray-50 overflow-y-auto p-4">
-      <section className="flex-grow flex items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-full sm:max-w-[1280px] bg-white border border-gray-200 rounded-xl p-6 sm:p-10 shadow-sm">
-
-          <nav className="text-[13px] sm:text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-            <button onClick={() => nav("/aluno/formulario")} className="hover:underline">Detalhes</button>
+    <main
+      className="h-[calc(100vh-80px)] bg-gray-50 flex flex-col overflow-hidden"
+    >
+      <section
+        className="flex-1 flex items-start justify-center pt-2 px-4"
+      >
+        <div
+          className="w-full max-w-[1280px] bg-white border rounded-xl p-4 sm:p-6 shadow-sm"
+          style={{ borderColor: primary }}
+        >
+          {/* Breadcrumb */}
+          <nav className="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+            <button onClick={() => nav("/aluno/formulario")} className="hover:underline cursor-pointer">Detalhes</button>
             <span className="mx-1">›</span>
-            <button onClick={() => nav("/aluno/modelo-aula")} className="hover:underline">Modelo de Aula</button>
+            <button onClick={() => nav("/aluno/modelo-aula")} className="hover:underline cursor-pointer">Modelo de Aula</button>
             <span className="mx-1">›</span>
-            <span className="text-blue-600 font-medium">Professor</span>
+            <span className="font-medium" style={{ color: primary }}>Professor</span>
           </nav>
 
-          <h1 className="text-xl sm:text-2xl font-semibold text-blue-600 text-center mb-4">
+          {/* Título */}
+          <h1 className="text-2xl font-semibold text-center mb-4" style={{ color: primary }}>
             Escolha um professor
           </h1>
 
+          {/* “Não quero escolher” */}
           <div className="flex justify-center mb-6">
             <button
-              type="button"
               onClick={() => nav("/aluno/agendar-aula")}
-              className="px-4 sm:px-6 py-2 border border-blue-600 text-blue-600 rounded-full text-sm hover:bg-blue-50"
+              className="px-5 py-2 rounded-full text-sm cursor-pointer transition"
+              style={{
+                border: `1px solid ${primary}`,
+                color: primary,
+                backgroundColor: `${primary}10`,
+              }}
             >
               Não quero escolher um professor
             </button>
           </div>
 
           {isMobile ? (
+            /* ==== MOBILE ==== */
             <div className="relative">
-              <div className="relative w-full">
-                <img
-                  src={currentProfessor.image}
-                  alt={currentProfessor.name}
-                  className="w-full h-64 object-cover rounded-t-xl"
-                />
+              <img
+                src={professors[currentSlide].image}
+                alt={professors[currentSlide].name}
+                className="w-full h-40 object-cover rounded-t-xl"
+              />
 
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-1 top-1/2 -translate-y-1/2"
-                >
-                  <span className="sr-only">Anterior</span>
-                  <img src={botaoAnterior} alt="Anterior" className="w-9 h-9" />
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-1 top-1/2 -translate-y-1/2"
-                >
-                  <span className="sr-only">Próximo</span>
-                  <img src={botaoProximo} alt="Próximo" className="w-9 h-9" />
-                </button>
-              </div>
+              <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer">
+                <img src={botaoAnterior} alt="Anterior" className="w-9 h-9" />
+              </button>
+              <button onClick={nextSlide} className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer">
+                <img src={botaoProximo} alt="Próximo" className="w-9 h-9" />
+              </button>
 
-              <div className="bg-white rounded-b-xl border border-gray-200 border-t-0 p-4">
-                <h2 className="text-lg font-bold">{currentProfessor.name}</h2>
+              <div className="bg-white rounded-b-xl border-t p-4" style={{ borderColor: primary }}>
+                <h2 className="text-lg font-bold">{professors[currentSlide].name}</h2>
                 <p className="text-gray-500 text-sm flex items-center mt-1">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  {currentProfessor.location}
+                  {professors[currentSlide].location}
                 </p>
-                <p className="text-[#3A6FD8] font-semibold mt-2">{currentProfessor.subject}</p>
-                <p className="text-gray-600 text-sm mt-2">{currentProfessor.description}</p>
+                <p className="font-semibold mt-2" style={{ color: primary }}>
+                  {professors[currentSlide].subject}
+                </p>
+                <p className="text-gray-600 text-sm mt-2">{professors[currentSlide].description}</p>
 
-                <div className="mt-4">
-                  <button
-                    onClick={() => {
-                      localStorage.setItem('selectedProfessorId', currentProfessor.id);
-                      nav("/aluno/agendar-aula");
-                    }}
-                    className="w-full py-2 bg-[#3A6FD8] text-white font-bold rounded-lg hover:bg-blue-600 transition"
-                  >
-                    📅 Agendar aula →
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    localStorage.setItem("selectedProfessorId", professors[currentSlide].id);
+                    nav("/aluno/agendar-aula");
+                  }}
+                  className="w-full py-2 font-bold rounded-lg mt-4 cursor-pointer transition"
+                  style={{ backgroundColor: primary, color: "#fff" }}
+                >
+                  📅 Agendar aula →
+                </button>
               </div>
             </div>
           ) : (
-            <div className="flex justify-between items-center w-full max-w-7xl px-4">
-              <button onClick={prevSlide} className="mx-4 md:mx-6">
+            /* ==== DESKTOP – 3 CARDS ==== */
+            <div className="flex items-center justify-between">
+              <button onClick={prevSlide} className="cursor-pointer">
                 <img src={botaoAnterior} alt="Anterior" className="w-12 h-10" />
               </button>
 
-              <div className="overflow-hidden w-full flex justify-center">
-                <div className="flex gap-4 w-full justify-center">
-                  {professors.map((professor, index) => {
-                    if (
-                      Math.abs(currentSlide - index) > 1 &&
-                      !(currentSlide === 0 && index === professors.length - 1) &&
-                      !(currentSlide === professors.length - 1 && index === 0)
-                    ) {
-                      return null;
-                    }
-
-                    return (
-                      <div
-                        key={professor.id}
-                        className={`bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col ${currentSlide === index ? "w-full max-w-sm" : "w-full max-w-xs"
-                          }`}
+              <div className="flex gap-6 overflow-hidden">
+                {getThree().map((prof) => (
+                  <div
+                    key={prof.id}
+                    className="bg-white border rounded-2xl shadow-lg flex flex-col w-[280px] cursor-pointer"
+                    style={{ borderColor: "#e5e7eb" }}
+                  >
+                    <img
+                      src={prof.image}
+                      alt={prof.name}
+                      className="w-full h-40 object-cover rounded-t-2xl"
+                    />
+                    <div className="p-4 flex-grow flex flex-col">
+                      <h2 className="text-lg font-bold">{prof.name}</h2>
+                      <p className="text-gray-500 text-sm flex items-center mt-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        {prof.location}
+                      </p>
+                      <p className="font-semibold mt-2" style={{ color: primary }}>
+                        {prof.subject}
+                      </p>
+                      <p className="text-gray-600 text-sm mt-2">{prof.description}</p>
+                    </div>
+                    <div
+                      onClick={() => {
+                        localStorage.setItem("selectedProfessorId", prof.id);
+                        nav("/aluno/agendar-aula");
+                      }}
+                      className="p-4 border-t"
+                      style={{ borderColor: "#e5e7eb" }}
+                    >
+                      <button
+                        className="w-full py-2 font-bold rounded-lg transition"
+                        style={{ backgroundColor: primary, color: "#fff" }}
                       >
-                        <div className="w-full mx-auto flex flex-col h-full">
-                          <img
-                            src={professor.image}
-                            alt={professor.name}
-                            className="w-full h-48 object-cover rounded-t-2xl"
-                          />
-                          <div className="p-4 flex-grow">
-                            <h2 className="text-lg font-bold">{professor.name}</h2>
-                            <p className="text-gray-500 text-sm flex items-center mt-1">
-                              <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                              {professor.location}
-                            </p>
-                            <p className="text-[#3A6FD8] font-semibold mt-2">{professor.subject}</p>
-                            <p className="text-gray-600 text-sm mt-2">{professor.description}</p>
-                          </div>
-                          <div
-                            onClick={() => {
-                              localStorage.setItem('selectedProfessorId', professor.id);
-                              nav("/aluno/agendar-aula");
-                            }}
-                            className="p-4 border-t border-gray-200 mt-auto cursor-pointer"
-                          >
-                            <button className="w-full py-2 bg-[#3A6FD8] text-white font-bold rounded-lg hover:bg-blue-600 transition">
-                              📅 Agendar aula →
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                        📅 Agendar aula →
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <button onClick={nextSlide} className="mx-4 md:mx-6">
+              <button onClick={nextSlide} className="cursor-pointer">
                 <img src={botaoProximo} alt="Próximo" className="w-12 h-10" />
               </button>
             </div>

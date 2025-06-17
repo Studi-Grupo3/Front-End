@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay } from "date-fns";
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+} from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import NavbarPanel from "../components/NavbarPanel";
@@ -42,7 +51,11 @@ const Scheduling = () => {
   const prevMonthDays =
     startDay > 0
       ? eachDayOfInterval({
-          start: new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, monthStart.getDay() || 7),
+          start: new Date(
+            currentMonth.getFullYear(),
+            currentMonth.getMonth() - 1,
+            monthStart.getDay() || 7
+          ),
           end: new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 0),
         }).slice(-startDay)
       : [];
@@ -51,7 +64,11 @@ const Scheduling = () => {
     endDay > 0
       ? eachDayOfInterval({
           start: new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1),
-          end: new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, endDay),
+          end: new Date(
+            currentMonth.getFullYear(),
+            currentMonth.getMonth() + 1,
+            endDay
+          ),
         })
       : [];
 
@@ -119,28 +136,37 @@ const Scheduling = () => {
           <nav className="text-xs sm:text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
             <ol className="inline-flex items-center space-x-2">
               <li>
-                <button onClick={() => nav("/aluno/formulario")} className="hover:underline">
+                <button
+                  onClick={() => nav("/aluno/formulario")}
+                  className="hover:underline cursor-pointer"
+                >
                   Detalhes
                 </button>
               </li>
               <li>›</li>
               <li>
-                <button onClick={() => nav("/aluno/modelo-aula")} className="hover:underline">
+                <button
+                  onClick={() => nav("/aluno/modelo-aula")}
+                  className="hover:underline cursor-pointer"
+                >
                   Modelo de Aula
                 </button>
               </li>
               <li>›</li>
               <li>
-                <button onClick={() => nav("/aluno/escolher-professor")} className="hover:underline">
+                <button
+                  onClick={() => nav("/aluno/escolher-professor")}
+                  className="hover:underline cursor-pointer"
+                >
                   Professor
                 </button>
               </li>
               <li>›</li>
-              <li className="text-blue-600 font-medium">Agendamento</li>
+              <li className="text-[#3970B7] font-medium">Agendamento</li>
             </ol>
           </nav>
 
-          <h1 className="text-2xl sm:text-3xl font-medium text-blue-600 text-center mb-8">
+          <h1 className="text-xl sm:text-2xl font-medium text-[#3970B7] text-center mb-8">
             Escolha uma data e horário
           </h1>
 
@@ -150,7 +176,10 @@ const Scheduling = () => {
 
               <div className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
-                  <button onClick={handlePreviousMonth} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                  <button
+                    onClick={handlePreviousMonth}
+                    className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 cursor-pointer"
+                  >
                     <ChevronLeft className="h-4 w-4 text-gray-600" />
                   </button>
 
@@ -158,7 +187,10 @@ const Scheduling = () => {
                     {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
                   </h3>
 
-                  <button onClick={handleNextMonth} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                  <button
+                    onClick={handleNextMonth}
+                    className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 cursor-pointer"
+                  >
                     <ChevronRight className="h-4 w-4 text-gray-600" />
                   </button>
                 </div>
@@ -174,11 +206,11 @@ const Scheduling = () => {
                     <button
                       key={idx}
                       onClick={() => handleDateSelect(day)}
-                      className={`h-8 w-8 flex items-center justify-center text-sm mx-auto rounded-full transition-colors
+                      className={`h-8 w-8 flex items-center justify-center text-sm mx-auto rounded-full transition-colors cursor-pointer
                         ${!isSameMonth(day, currentMonth) ? "text-gray-400" : "text-gray-800"}
                         ${
                           selectedDate && isSameDay(day, selectedDate)
-                            ? "bg-blue-600 text-white"
+                            ? "bg-[#3970B7] text-white"
                             : "hover:bg-gray-100"
                         }
                       `}
@@ -190,41 +222,45 @@ const Scheduling = () => {
               </div>
             </div>
 
-            <div className="flex flex-col">
-              <h2 className="text-base text-gray-700 font-medium mb-4">Selecione um horário:</h2>
+            <div className="flex flex-col h-full justify-between">
+              <div>
+                <h2 className="text-base text-gray-700 font-medium mb-4">Selecione um horário:</h2>
 
-              {!selectedDate ? (
-                <div className="bg-gray-50 rounded-lg p-8 flex items-center justify-center h-64">
-                  <p className="text-gray-500 text-center">Selecione uma data para ver os horários disponíveis</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  {timeSlots.map((time) => (
-                    <button
-                      key={time}
-                      onClick={() => handleTimeSelect(time)}
-                      className={`py-3 px-4 rounded-lg text-base font-medium text-center transition-colors
-                        ${
-                          selectedTime === time
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-50 text-gray-800 hover:bg-gray-100"
-                        }
-                      `}
-                    >
-                      {time}
-                    </button>
-                  ))}
-                </div>
-              )}
+                {!selectedDate ? (
+                  <div className="bg-gray-50 rounded-lg p-8 flex items-center justify-center h-64">
+                    <p className="text-gray-500 text-center">Selecione uma data para ver os horários disponíveis</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-4">
+                    {timeSlots.map((time) => (
+                      <button
+                        key={time}
+                        onClick={() => handleTimeSelect(time)}
+                        className={`py-3 px-4 rounded-lg text-base font-medium text-center transition-colors cursor-pointer
+                          ${
+                            selectedTime === time
+                              ? "bg-[#3970B7] text-white"
+                              : "bg-gray-50 text-gray-800 hover:bg-gray-100"
+                          }
+                        `}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <button
                 onClick={handleSchedule}
                 disabled={!(selectedDate && selectedTime && selectedProfessorId && selectedClassModel) || loading}
-                className={`mt-6 w-full py-4 text-lg font-medium rounded-lg transition-colors ${
-                  selectedDate && selectedTime && !loading
-                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
+                className={`w-full py-4 text-lg font-medium rounded-lg transition-colors cursor-pointer
+                  ${
+                    selectedDate && selectedTime && !loading
+                      ? "bg-[#3970B7] hover:bg-[#3970B7] text-white"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }
+                `}
               >
                 {loading
                   ? "Agendando..."
