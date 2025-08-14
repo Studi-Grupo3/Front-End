@@ -69,9 +69,10 @@ export const subjectNamesPt = {
     LITERACY: 'Alfabetização',
 };
 
-export function translateSubject(subjectEn) {
-    return subjectNamesPt[subjectEn.toUpperCase()] || subjectEn;
+export function translateSubject(subjectEn = '') {
+  return subjectNamesPt[subjectEn.toUpperCase()] || subjectEn;
 }
+
 
 export function translateProfessorTitle(titleEn) {
   const parts = titleEn.split(/ de /i);

@@ -9,12 +9,20 @@ import { appointmentCreateService } from '../../services/appointmentCreateServic
 import { parseDurationToMinutes } from '../../utils/date';
 import { useNavigate } from 'react-router-dom';
 
+const couponDiscounts = {
+  'CUPOM20': 0.20,
+  'CUPOM50': 0.50,
+  'CUPOM75': 0.75
+};
+
 export default function Pagamento({ data, onUpdate, onNext }) {
   const [step, setStep] = useState('endereco');
   const [paymentMethod, setPaymentMethod] = useState(data.pagamento.method || 'credito');
   const [cep, setCep] = useState(data.endereco.cep || '');
   const [endereco, setEndereco] = useState({ ...data.endereco });
   const [loading, setLoading] = useState(false);
+const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
+ const [discountPercent, setDiscountPercent] = useState(data.pagamento.descontoPercent || 0);
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
 
