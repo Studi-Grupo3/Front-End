@@ -18,7 +18,7 @@ import RegisterPage from "../pages/RegisterPage";
 import StudentInitialPage from "../pages/StudentInitialPage";
 import CompleteTeacherRegistrationPage from "../pages/CompleteTeacherRegistrationPage";
 import CompleteStudentRegistrationPage from "../pages/CompleteStudentRegistrationPage";
-import TeacherInitialPage from "../pages/TeacherInitialPage";
+import TeacherInitialPage from "../pages/TeacherClassesPage";
 import TeacherChartClassesPage from "../pages/TeacherChartClassesPage";
 import TeacherLessonsHistoryPage from "../pages/TeacherLessonsHistoryPage";
 import TeacherGraph from "../pages/TeacherGraph";
@@ -32,6 +32,8 @@ import Scheduling from "../pages/Scheduling";
 import Payment from "../pages/Payment";
 import ConfirmedPayment from "../pages/ConfirmedPayment";
 import MultiStepFlowContainer from "../pages/AppointmentCreate";
+import TeacherInitial from "../pages/TeacherInitialPage";
+import TeacherClassesPage from "../pages/TeacherClassesPage";
 
 export const AppRouter = () => {
   return (
@@ -42,11 +44,12 @@ export const AppRouter = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/cadastrar" element={<RegisterPage />} />
         <Route path="/redefinir-senha" element={<EmailVerificationPage />} />
-        <Route path="/professor/inicio" element={<TeacherInitialPage />} />
+        <Route path="/professor/inicio" element={<TeacherInitial />} />
         <Route path="/professor/tabela-aula" element={<TeacherChartClassesPage />} />
         <Route path="/professor/historico-aulas" element={<TeacherLessonsHistoryPage />} />
         <Route path="/professor/metricas-aula" element={<TeacherGraph />} />
         <Route path="/professor/solicitacoes" element={<TeacherRequests />} />
+        <Route path="/professor/aulas" element={<TeacherClassesPage />} />
 
 
         {/* ROTAS PROTEGIDAS */}

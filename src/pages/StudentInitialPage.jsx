@@ -11,7 +11,7 @@ const StudentInitial = () => {
   useEffect(() => {
     const fetchCadastroStatus = async () => {
       const mockResponse = await new Promise((resolve) =>
-        setTimeout(() => resolve({ completo: true }), 5000)
+        setTimeout(() => resolve({ completo: true }))
       );
       setIsCadastroCompleto(mockResponse.completo);
     };
@@ -40,9 +40,10 @@ const StudentInitial = () => {
             button: "text-[#FF7200]",
           },
       // Rota específica para completar/verificar cadastro
-      route: isCadastroCompleto
-        ? "/rota-verificar-cadastro"
-        : "/rota-completar-cadastro",
+      route: "/aluno/completar-cadastro",
+        //     isCadastroCompleto
+        // ? "/rota-verificar-cadastro"
+        // : "/rota-completar-cadastro",
     },
     {
       title: "Agendamentos",
