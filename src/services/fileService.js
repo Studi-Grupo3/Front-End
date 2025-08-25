@@ -1,47 +1,23 @@
-import { apiFetch, BASE_URL } from "./api";
+import { api } from './provider/api';
 
 export const fileService = {
-  async uploadFile(file) {
+  upload: (file) => {
     const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch(`${BASE_URL}/files`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Erro ${response.status}: ${response.statusText}`);
-    }
-
-    return response.json();
+    formData.append('file', file);
+    return api.post('/files', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(res => res.data);
   },
-
-  async getFileMetadata(id) {
-    return apiFetch(`/files/${id}/info`);
-  },
-
-  async downloadFile(id) {
-    const response = await fetch(`${BASE_URL}/files/${id}`);
-    if (!response.ok) {
-      throw new Error(`Erro ${response.status}: ${response.statusText}`);
-    }
-
-    const blob = await response.blob();
+  getInfo: (id) => api.get(`/files/${id}/info`).then(res => res.data),
+  download: async (id) => {
+    const response = await api.get(`/files/${id}`, { responseType: 'blob' });
+    const blob = await response.data;
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    
-    const contentDisposition = response.headers.get("Content-Disposition");
-    let filename = `downloaded-file`;
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="(.+)"/);
-      if (match) {
-        filename = match[1];
-      }
-    }
-
-    a.download = filename;
+    const cd = response.headers['content-disposition'];
+    const match = cd && cd.match(/filename="(.+)"/);
+    a.download = (match && match[1]) || 'downloaded-file';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

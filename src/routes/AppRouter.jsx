@@ -1,23 +1,100 @@
+// src/AppRouter.jsx  (ou onde você tenha o AppRouter)
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute";
+import { ProtectedRoute } from "./ProtectedRoute"; // ajuste o caminho conforme necessário
 
-const AppRouter = () => {
+import { VisaoGeral } from "../pages/dashboard-admin/VisaoGeral";
+import { Agendamentos } from "../pages/dashboard-admin/Agendamentos";
+import { Professores } from "../pages/dashboard-admin/Professores";
+import { GerenciamentoProfessores } from "../pages/dashboard-admin/GerenciamentoProfessores";
+import { Pagamentos } from "../pages/dashboard-admin/Pagamentos";
+import { Configuracoes } from "../pages/dashboard-admin/Configuracoes";
+import { Relatorios } from "../pages/dashboard-admin/Relatorios";
+import HomePage from "../pages/HomePage";
+import { AppointmentManager } from "../pages/AppointmentManager";
+import { CheckoutPage } from "../pages/CheckoutPage";
+import EmailVerificationPage from "../pages/EmailVerificationPage";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
+import StudentInitialPage from "../pages/StudentInitialPage";
+import CompleteTeacherRegistrationPage from "../pages/CompleteTeacherRegistrationPage";
+import CompleteStudentRegistrationPage from "../pages/CompleteStudentRegistrationPage";
+import TeacherInitialPage from "../pages/TeacherClassesPage";
+import TeacherChartClassesPage from "../pages/TeacherChartClassesPage";
+import TeacherLessonsHistoryPage from "../pages/TeacherLessonsHistoryPage";
+import TeacherGraph from "../pages/TeacherGraph";
+import TeacherRequests from "../pages/TeacherRequests";
+import NotFoundPage from "../pages/NotFoundPage";
+import ClassDetailsForm from "../components/appointment-class/ClassDetailsForm";
+import ClassModelSelection from "../components/appointment-class/ClassModelSelection";
+import AddMaterialModal from "../components/appointment-class/AddMaterialModal";
+import ChooseProfessor from "../pages/ChooseProfessor";
+import Scheduling from "../pages/Scheduling";
+import Payment from "../pages/Payment";
+import ConfirmedPayment from "../pages/ConfirmedPayment";
+import MultiStepFlowContainer from "../pages/AppointmentCreate";
+import TeacherInitial from "../pages/TeacherInitialPage";
+import TeacherClassesPage from "../pages/TeacherClassesPage";
+
+export const AppRouter = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<h1>Página de Login (Substituir depois)</h1>} />
+        {/* ROTAS PÚBLICAS */}
+        <Route path="/entrar" element={<LoginPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/cadastrar" element={<RegisterPage />} />
+        <Route path="/redefinir-senha" element={<EmailVerificationPage />} />
+        <Route path="/professor/inicio" element={<TeacherInitial />} />
+        <Route path="/professor/tabela-aula" element={<TeacherChartClassesPage />} />
+        <Route path="/professor/historico-aulas" element={<TeacherLessonsHistoryPage />} />
+        <Route path="/professor/metricas-aula" element={<TeacherGraph />} />
+        <Route path="/professor/solicitacoes" element={<TeacherRequests />} />
+        <Route path="/professor/aulas" element={<TeacherClassesPage />} />
 
+
+        {/* ROTAS PROTEGIDAS */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<h1>Dashboard (Substituir depois)</h1>} />
-          <Route path="/students" element={<h1>Students (Substituir depois)</h1>} />
-          <Route path="/teachers" element={<h1>Teachers (Substituir depois)</h1>} />
+          <Route path="/dashboard" element={<VisaoGeral />} />
+          <Route path="/dashboard/gerenciamento" element={<GerenciamentoProfessores />} />
+          <Route path="/dashboard/professores" element={<Professores />} />
+          <Route path="/dashboard/agendamentos" element={<Agendamentos />} />
+          <Route path="/dashboard/pagamentos" element={<Pagamentos />} />
+          <Route path="/dashboard/configuracoes" element={<Configuracoes />} />
+          <Route path="/dashboard/relatorios" element={<Relatorios />} />
+
+
+          <Route path="/aluno/formulario" element={<ClassDetailsForm />} />
+          <Route path="/aluno/modelo-aula" element={<ClassModelSelection />} />
+          <Route path="/aluno/escolher-professor" element={<ChooseProfessor />} />
+          <Route path="/aluno/agendar-aula" element={<Scheduling />} />
+          <Route path="/aluno/pagamento" element={<Payment />} />
+          <Route path="/aluno/concluido/:appointmentId"element={<ConfirmedPayment />}/>
+          <Route path="/aluno/agendamento/criar" element={<MultiStepFlowContainer />} />
+
+          <Route path="/aluno/inicio" element={<StudentInitialPage />} />
+
+          {/*
+            Aqui incluímos DUAS rotas para “/agendamentos/gerenciar”:
+            1) Sem parâmetro → carrega sempre a aba padrão (Upcoming)  
+            2) Com parâmetro → :tab (upcoming, past, calendar, etc.)
+          */}
+          <Route path="/agendamentos/gerenciar" element={<AppointmentManager />} />
+          <Route path="/agendamentos/gerenciar/:tab" element={<AppointmentManager />} />
+
+          <Route path="/pagamento" element={<CheckoutPage />} />
+
+          <Route path="/aluno" element={<h1>Students (Substituir depois)</h1>} />
+          <Route path="/professor" element={<h1>Teachers (Substituir depois)</h1>} />
           <Route path="/appointments" element={<h1>Appointments (Substituir depois)</h1>} />
+
+          <Route path="/aluno/completar-cadastro" element={<CompleteStudentRegistrationPage />} />
+          <Route path="/professor/completar-cadastro" element={<CompleteTeacherRegistrationPage />} />
+
         </Route>
-        
-        <Route path="*" element={<h1>Página não encontrada</h1>} />
+
+        {/* CATCH-ALL (404) */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );
 };
-
-export default AppRouter;

@@ -1,10 +1,6 @@
-import { apiFetch } from "./api";
+import { api } from './provider/api';
 
 export const preferenceService = {
-  async createPreference(amount, payerEmail) {
-    return apiFetch("/payments/preference", {
-      method: "POST",
-      body: JSON.stringify({ amount, payer_email: payerEmail }),
-    });
-  },
+  create: (amount, payerEmail) =>
+    api.post('/payments/preference', { amount, payer_email: payerEmail }).then(res => res.data),
 };

@@ -1,31 +1,16 @@
-import { apiFetch } from "./api";
+import { api } from './provider/api';
 
 export const appointmentService = {
-  async createAppointment(data) {
-    return apiFetch("/appointments", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  },
-
-  async getAppointmentById(id) {
-    return apiFetch(`/appointments/${id}`);
-  },
-
-  async listAppointments() {
-    return apiFetch("/appointments");
-  },
-
-  async updateAppointment(id, data) {
-    return apiFetch(`/appointments/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-  },
-
-  async deleteAppointment(id) {
-    return apiFetch(`/appointments/${id}`, {
-      method: "DELETE",
-    });
-  },
+  create: (data) =>
+    api.post('/appointments', data).then(res => res.data),
+  getById: (id) =>
+    api.get(`/appointments/${id}`).then(res => res.data),
+  list: () =>
+    api.get('/appointments').then(res => res.data),
+  update: (id, data) =>
+    api.put(`/appointments/${id}`, data).then(res => res.data),
+  remove: (id) =>
+    api.delete(`/appointments/${id}`).then(res => res.data),
+  patch: (id, data) =>
+    api.patch(`/appointments/${id}`, data).then(res => res.data),
 };

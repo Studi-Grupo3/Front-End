@@ -2,7 +2,7 @@ import { useState } from "react";
 import PaymentBrick from "../components/PaymentBrick";
 import { usePreferenceId } from "../hooks/payments/usePreferenceId";
 
-const CheckoutPage = () => {
+export const CheckoutPage = () => {
   const [paymentStatus, setPaymentStatus] = useState(null);
   const publicKey = import.meta.env.VITE_PUBLIC_KEY;
   const { preferenceId, loading, error } = usePreferenceId(100, "cliente@teste.com");
@@ -14,7 +14,7 @@ const CheckoutPage = () => {
       {error && <p style={{ color: "red" }}>Erro ao obter preferência: {error}</p>}
       {preferenceId && (
         <PaymentBrick
-          publicKey={publicKey}
+          publicKey={publicKey} 
           preferenceId={preferenceId}
           onPaymentSuccess={(response) => setPaymentStatus(`✅ Pagamento aprovado! ID: ${response.id}`)}
           onPaymentError={(error) => setPaymentStatus(`❌ Erro no pagamento: ${error}`)}
@@ -24,5 +24,3 @@ const CheckoutPage = () => {
     </div>
   );
 };
-
-export default CheckoutPage;

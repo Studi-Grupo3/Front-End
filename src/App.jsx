@@ -1,11 +1,13 @@
-import "./App.css";
-import CheckoutPage from "./pages/CheckoutPage"
+import "./index.css";
+
+import { AppRouter } from "./routes/AppRouter";
+import { AuthProvider } from "./context/authContext";
 
 function App() {
   return (
-    <>
-      <CheckoutPage/>
-    </>
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
   );
 }
 
