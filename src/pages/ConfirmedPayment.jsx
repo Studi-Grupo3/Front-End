@@ -3,6 +3,7 @@ import NavbarPanel from "../components/NavbarPanel";
 import { useNavigate, useParams } from "react-router-dom";
 import { appointmentService } from "../services/appointmentService";
 import { translateSubject  } from "../utils/tradutionUtils";
+import { ScheduleButton } from "../components/appointment-manager/ScheduleButton"; // importação adicionada
 
 const ConfirmedPayment = () => {
   const { appointmentId } = useParams();
@@ -83,12 +84,7 @@ const ConfirmedPayment = () => {
             </dl>
           </div>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button
-              onClick={() => navigate("/aluno/agendamento/criar")}
-              className="px-6 py-2 text-sm bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 transition cursor-pointer"
-            >
-              Agendar Nova Aula
-            </button>
+            <ScheduleButton />
             <button
               onClick={() => navigate("/agendamentos/gerenciar/proximas-aulas")}
               className="px-6 py-2 text-sm bg-[#3970B7] rounded-lg text-white hover:bg-[#2e5a94] transition cursor-pointer"
