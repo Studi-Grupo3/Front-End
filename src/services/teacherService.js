@@ -87,4 +87,13 @@ export const teacherService = {
       return Promise.reject(err);
     }
   },
+
+  // getAvailability: async (id) => {
+  //   const { data } = await api.get(`/teachers/${id}/availability`);
+  //   return data;
+  // },
+
+  // saveAvailability: async (id, availability) => {
+  //   return api.post(`/teachers/${id}/availability`, availability);
+  // }
 };

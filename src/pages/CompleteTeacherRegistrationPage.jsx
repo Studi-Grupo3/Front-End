@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, GraduationCap, Image, Lock } from "lucide-react";
+import { User, GraduationCap, Image, CalendarClock, Lock } from "lucide-react";
 import NavbarPanel from "../components/NavbarPanel";
 import { showAlert } from "../components/ShowAlert";
 import { teacherService } from "../services/teacherService";
@@ -76,6 +76,7 @@ export default function CompleteTeacherRegistrationPage() {
         { id: "Informacoes Pessoais", label: "Informações Pessoais", icon: User },
         { id: "Qualificacoes", label: "Qualificações", icon: GraduationCap },
         { id: "Foto e Documentos", label: "Foto e Documentos", icon: Image },
+        { id: "Disponibilidade", label: "Disponibilidade", icon: CalendarClock },
         // { id: "Seguranca", label: "Segurança", icon: Lock },
     ];
 
@@ -84,7 +85,7 @@ export default function CompleteTeacherRegistrationPage() {
 
             <NavbarPanel />
             
-            <div className="bg-gray-100 flex items-center justify-center p-3 min-h-[88vh]">
+            <div className="bg-gray-100 flex items-center justify-center flex-1 py-auto overflow-auto">
 
                 <div className="bg-white rounded-xl shadow p-6 max-w-4xl mx-auto w-full">
                     <div className="flex flex-col justify-between text-center md:text-start mb-4">
