@@ -70,7 +70,8 @@ export const subjectNamesPt = {
 };
 
 export function translateSubject(subjectEn = '') {
-  return subjectNamesPt[subjectEn.toUpperCase()] || subjectEn;
+    if (!subjectEn || typeof subjectEn !== 'string') return '';
+    return subjectNamesPt[subjectEn.toUpperCase()] || subjectEn;
 }
 
 

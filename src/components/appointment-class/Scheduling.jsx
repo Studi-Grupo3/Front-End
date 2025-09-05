@@ -8,6 +8,7 @@ import {
   eachDayOfInterval,
   isSameMonth,
   isSameDay,
+  isBefore,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -69,17 +70,22 @@ export default function Scheduling({ data, onUpdate, onNext }) {
               {days.map(d => <div key={d}>{d}</div>)}
             </div>
             <div className="grid grid-cols-7 gap-1 text-center">
-              {allDays.map((day, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => selectDate(day)}
-                  className={`h-8 w-8 mx-auto flex items-center justify-center rounded-full transition-colors cursor-pointer
-                    ${!isSameMonth(day, currentMonth) ? 'text-gray-400' : 'text-gray-800'}
-                    ${data.date && isSameDay(day, data.date) ? 'bg-[#3970B7] text-white' : 'hover:bg-gray-100'}`}
-                >
-                  {day.getDate()}
-                </button>
-              ))}
+              {allDays.map((day, idx) => {
+                const isPast = isBefore(day, startOfMonth(new Date())) || (isBefore(day, new Date()) && isSameMonth(day, new Date()));
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => !isPast && selectDate(day)}
+                    disabled={isPast}
+                    className={`h-8 w-8 mx-auto flex items-center justify-center rounded-full transition-colors cursor-pointer
+                      ${!isSameMonth(day, currentMonth) ? 'text-gray-400' : 'text-gray-800'}
+                      ${data.date && isSameDay(day, data.date) ? 'bg-[#3970B7] text-white' : 'hover:bg-gray-100'}
+                      ${isPast ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {day.getDate()}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
