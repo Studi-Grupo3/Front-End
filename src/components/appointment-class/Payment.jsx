@@ -124,7 +124,7 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
               className={`px-3 py-1 ${
                 step === item
                   ? 'border-b-2 border-[#3970B7] text-[#3970B7] font-semibold'
-                  : 'text-gray-500'
+                  : 'text-gray-500 cursor-pointer'
               }`}
             >
               {item === 'endereco' ? 'Endereço' : 'Pagamento'}
@@ -205,7 +205,7 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
             <button
               type="button"
               onClick={() => setStep('pagamento')}
-              className="w-full py-2 bg-[#3970B7] text-white rounded text-sm"
+              className="w-full py-2 bg-[#3970B7] hover:bg-[#2e5a94] text-white rounded text-sm cursor-pointer"
             >
               Continuar
             </button>
@@ -227,7 +227,7 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
                   className={`flex-1 p-1 border rounded text-xs ${
                     paymentMethod === method
                       ? 'border-[#3970B7] text-[#3970B7] font-semibold'
-                      : 'border-gray-300 text-gray-500'
+                      : 'border-gray-300 text-gray-500 cursor-pointer'
                   }`}
                 >
                   {method === 'credito' ? 'Cartão de Crédito' : 'Cartão de Débito'}
@@ -278,7 +278,7 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
                 type="button"
                 onClick={handleFinalize}
                 disabled={loading}
-                className="w-full py-2 bg-[#3970B7] text-white rounded text-sm"
+                className="w-full py-2 bg-[#3970B7] hover:bg-[#2e5a94] text-white rounded text-sm cursor-pointer"
               >
                 {loading ? 'Processando...' : 'Confirmar e Agendar'}
               </button>
