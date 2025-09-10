@@ -21,6 +21,7 @@ const LoginPage = () => {
       const response = await authService.login(credentials);
 
       localStorage.setItem('userId', response.id);
+      sessionStorage.setItem('token', response.token);
 
       showAlert({
         title: 'Login realizado!',

@@ -2,120 +2,97 @@ import { useState, useEffect } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
-import professorFabio from "../assets/professorFabio.png";
-import professoraJuliana from "../assets/professoraJuliana.png";
 import botaoAnterior from "../assets/botaoAnterior.png";
 import botaoProximo from "../assets/botaoProximo.png";
+import { teacherService } from "../services/teacherService";
 
 const ProfessorsSectionHome = () => {
-    const cards = [
-        {
-            name: "Fábio",
-            location: "São Paulo (disponível online)",
-            subject: "Professor(a) de Inglês",
-            description: "Professor certificado por Cambridge e ex-cast member da Disney",
-            image: professorFabio,
-        },
-        {
-            name: "Mariana Silva",
-            location: "São Paulo (disponível online)",
-            subject: "Professor(a) de História",
-            description: "Mestrado em História",
-            image: professorFabio,
-        },
-        {
-            name: "Juliana Costa",
-            location: "São Paulo (disponível online)",
-            subject: "Professor(a) de Matemática",
-            description: "Doutorado em Matemática",
-            image: professoraJuliana,
-        },
-        {
-            name: "Fábio",
-            location: "São Paulo (disponível online)",
-            subject: "Professor(a) de Inglês",
-            description: "Professor certificado por Cambridge e ex-cast member da Disney",
-            image: professorFabio,
-        },
-        {
-            name: "Mariana Silva",
-            location: "São Paulo (disponível online)",
-            subject: "Professor(a) de História",
-            description: "Mestrado em História",
-            image: professorFabio,
-        },
-    ];
+  const [professors, setProfessors] = useState([]);
 
-  // Quantas “páginas” existem (cada página exibe `perView` cards)
+  useEffect(() => {
+    const fetchProfessors = async () => {
+      try {
+        const data = await teacherService.listPublic();
+
+        const allowedSubjects = [
+          "PORTUGUESE",
+          "MATHEMATICS",
+          "HISTORY",
+          "GEOGRAPHY",
+          "SCIENCE",
+          "PHYSICS",
+          "CHEMISTRY",
+        ];
+
+        const filtered = data.map(prof => ({
+          ...prof,
+          subjects: prof.subjects?.filter(s => allowedSubjects.includes(s)) || []
+        }));
+
+        console.log("Professores carregados na Home (filtrados):", filtered);
+        setProfessors(filtered);
+      } catch (err) {
+        console.error("Erro ao carregar professores na Home:", err);
+      }
+    };
+    fetchProfessors();
+  }, []);
+
   const [pageCount, setPageCount] = useState(0);
-  // Qual página (index) está ativa agora (= 0, 1, 2, …)
   const [currentPage, setCurrentPage] = useState(0);
 
+  const subjectTranslations = {
+    PORTUGUESE: "Português",
+    MATHEMATICS: "Matemática",
+    GEOGRAPHY: "Geografia",
+    HISTORY: "História",
+    SCIENCE: "Ciências",
+    CHEMISTRY: "Química",
+    PHYSICS: "Física",
+  };
+
   const [sliderRef, instanceRef] = useKeenSlider(
-    {
-      loop: true,
-      renderMode: "performance",
-      slides: {
-        perView: 3,
-        spacing: 24,
-      },
-      breakpoints: {
-        "(max-width: 1024px)": {
+    professors.length > 0
+      ? {
+          loop: true,
+          renderMode: "performance",
           slides: {
-            perView: 2,
-            spacing: 16,
+            perView: 3,
+            spacing: 24,
           },
-        },
-        "(max-width: 768px)": {
-          slides: {
-            perView: 1,
-            spacing: 12,
+          breakpoints: {
+            "(max-width: 1024px)": {
+              slides: { perView: 2, spacing: 16 },
+            },
+            "(max-width: 768px)": {
+              slides: { perView: 1, spacing: 12 },
+            },
           },
-        },
-      },
-      created(s) {
-        const details = s.track.details;
-        const totalSlides = details.slides.length;
-        const perView = (s.options.slides && s.options.slides.perView) || 3;
-        setPageCount(Math.ceil(totalSlides / perView));
-        
-        // + Após todas as imagens carregarem, força um re-cálculo do slider:
-        const imgs = document.querySelectorAll('.keen-slider__slide img');
-        let loaded = 0;
-        imgs.forEach(img => {
-          img.addEventListener('load', () => {
-            loaded += 1;
-            if (loaded === imgs.length) {
-              s.update();      // <— aqui é o “refresh” do Keen
-            }
-          });
-        });
-     },
-      slideChanged(s) {
-        // A cada mudança de slide (scroll), atualizamos currentPage.
-        const details = s.track.details;
-        const perView = (s.options.slides && s.options.slides.perView) || 3;
-        // “rel” é o índice do slide ativo, então dividimos por perView
-        const newPage = Math.floor(details.rel / perView);
-        setCurrentPage(newPage);
-      },
-    },
-    []
+          created(s) {
+            const details = s.track.details;
+            const totalSlides = details.slides.length;
+            const perView = (s.options.slides && s.options.slides.perView) || 3;
+            setPageCount(Math.ceil(totalSlides / perView));
+          },
+          slideChanged(s) {
+            const details = s.track.details;
+            const perView = (s.options.slides && s.options.slides.perView) || 3;
+            const newPage = Math.floor(details.rel / perView);
+            setCurrentPage(newPage);
+          },
+        }
+      : null
   );
 
-  // seta para anterior
   const handlePrev = () => {
     instanceRef.current && instanceRef.current.prev();
   };
-
-  // seta para próximo
   const handleNext = () => {
     instanceRef.current && instanceRef.current.next();
   };
 
   return (
     <div className="bg-[#3970B7] px-4 pt-12 pb-12 flex flex-col items-center">
-      {/* Título e subtítulo */}
       <div className="text-center mb-8 max-w-2xl">
         <p className="text-yellow-400 font-semibold">Encontre seu professor ideal</p>
         <h2 className="text-white text-4xl font-bold">Conheça Nossos Professores</h2>
@@ -125,65 +102,70 @@ const ProfessorsSectionHome = () => {
         </p>
       </div>
 
-      {/* Container do carrossel + setas */}
       <div className="flex flex-col items-center w-full max-w-7xl">
         <div className="flex justify-between items-center w-full px-4">
-          {/* Botão “Anterior” */}
           <button onClick={handlePrev} className="mx-2 md:mx-4">
             <img src={botaoAnterior} alt="Anterior" />
           </button>
 
-          {/* Carrossel em si */}
           <div className="overflow-hidden w-full">
             <div ref={sliderRef} className="keen-slider">
-              {cards.map((card, idx) => (
-                <div
-                  key={idx}
-                  className="keen-slider__slide bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col"
-                >
-                  <div className="w-full max-w-sm mx-auto flex flex-col h-full">
-                    <img
-                      src={card.image}
-                      alt={card.name}
-                      className="w-full h-48 object-cover rounded-t-2xl"
-                    />
-                    <div className="p-4 flex-grow">
-                      <h2 className="text-lg font-bold">{card.name}</h2>
+              {professors.length > 0 ? (
+                professors.map((prof) => (
+                  <div
+                    key={prof.id}
+                    className="keen-slider__slide bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col overflow-hidden"
+                  >
+                    
+                    <div className="w-full h-52 bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-500 text-sm">Sem foto</span>
+                    </div>
+
+                    <div className="p-4 flex flex-col flex-grow">
+                      <h2 className="text-lg font-bold text-gray-800">{prof.name}</h2>
                       <p className="text-gray-500 text-sm flex items-center mt-1">
                         <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                        {card.location}
+                        São Paulo (disponível online)
                       </p>
-                      <p className="text-[#3970B7] font-semibold mt-2">{card.subject}</p>
-                      <p className="text-gray-600 text-sm mt-2">{card.description}</p>
-                    </div>
-                    <div className="p-4 border-t border-gray-200 mt-auto">
-                      <button className="w-full py-2 bg-[#3970B7] text-white font-bold rounded-lg hover:bg-blue-600 transition">
-                        📅 Agendar aula →
-                      </button>
+                      <p className="text-[#3970B7] font-semibold mt-2 flex items-center">
+                        <span className="mr-2">🎓</span>
+                        Professor(a) de{" "}
+                        {prof.subjects?.length
+                          ? subjectTranslations[prof.subjects[0]] || "Matéria não informada"
+                          : "Matéria não informada"}
+                      </p>
+                      <p className="text-gray-600 text-sm mt-2">
+                        {prof.resumeTeacher || "Professor ainda não adicionou um resumo."}
+                      </p>
+                      <div className="mt-auto pt-4">
+                        <button className="w-full flex items-center justify-center gap-2 py-2 bg-[#3970B7] text-white font-bold rounded-lg hover:bg-blue-600 transition">
+                          📅 Agendar aula →
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-white text-center p-6">
+                  Nenhum professor disponível no momento.
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Botão “Próximo” */}
           <button onClick={handleNext} className="mx-2 md:mx-4">
             <img src={botaoProximo} alt="Próximo" />
           </button>
         </div>
 
-        {/* Bolinhas de paginação */}
         <div className="flex mt-6">
           {Array.from({ length: pageCount }).map((_, pageIdx) => (
             <button
               key={pageIdx}
               onClick={() => {
-                // Cada “página” começa em (pageIdx * perView)
                 const perView =
                   (instanceRef.current?.options.slides &&
-                    instanceRef.current.options.slides.perView) ||
-                  3;
+                    instanceRef.current.options.slides.perView) || 3;
                 const targetSlide = pageIdx * perView;
                 instanceRef.current && instanceRef.current.moveToIdx(targetSlide);
               }}
