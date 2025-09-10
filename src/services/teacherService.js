@@ -1,91 +1,68 @@
+import axios from "axios";
 import { api } from './provider/api';
 
-/**
- * Extrai o teacherId armazenado em sessionStorage.
- * Ajuste a chave "userId" se você usar outra.
- * Retorna null se não encontrar ou ID inválido.
- */
+const API_URL = "http://localhost:8080";
+
 function getTeacherIdFromSession() {
   const idStr = sessionStorage.getItem("userId");
-  if (!idStr) {
-    console.error("teacherService: userId não encontrado em sessionStorage");
-    return null;
-  }
+  if (!idStr) return null;
   const id = Number(idStr);
-  if (isNaN(id)) {
-    console.error("teacherService: userId em sessionStorage não é um número válido:", idStr);
-    return null;
-  }
+  if (isNaN(id)) return null;
   return id;
 }
 
-/**
- * Monta URL substituindo teacherId, ou rejeita se não tiver ID.
- */
+function authHeader() {
+  const token = sessionStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 function buildTeacherUrl(pathSuffix) {
   const teacherId = getTeacherIdFromSession();
   if (teacherId == null) {
     throw new Error("Usuário não autenticado ou teacherId indisponível");
   }
-  // Garante que haja barra separando se necessário
-  // Por ex: pathSuffix = "stats" -> "/teacher/{id}/stats"
   return `/teachers/${teacherId}/${pathSuffix}`;
 }
 
 export const teacherService = {
-  create:  (data) => api.post('/teachers', data).then(res => res.data),
-  getById: (id)   => api.get(`/teachers/${id}`).then(res => res.data),
-  update:  (id, data) => api.put(`/teachers/${id}`, data).then(res => res.data),
-  remove:  (id)   => api.delete(`/teachers/${id}`).then(res => res.data),
-  list:    ()     => api.get('/teachers').then(res => res.data),
+  create:  (data) => api.post('/teachers', data, { headers: authHeader() }).then(res => res.data),
+  getById: (id)   => api.get(`/teachers/${id}`, { headers: authHeader() }).then(res => res.data),
+  update:  (id, data) => api.put(`/teachers/${id}`, data, { headers: authHeader() }).then(res => res.data),
+  remove:  (id)   => api.delete(`/teachers/${id}`, { headers: authHeader() }).then(res => res.data),
+  list:    ()     => api.get('/teachers', { headers: authHeader() }).then(res => res.data),
+
+  listPublic: async () => {
+    const res = await axios.get(`${API_URL}/teachers`);
+    return res.data;
+  },
 
   getStats: () => {
-    try {
-      const url = buildTeacherUrl("stats");
-      return api.get(url).then(res => res.data);
-    } catch (err) {
-      return Promise.reject(err);
-    }
+    const url = buildTeacherUrl("stats");
+    return api.get(url, { headers: authHeader() }).then(res => res.data);
   },
 
   getDashboard: () => {
-    try {
-      const url = buildTeacherUrl("dashboard");
-      return api.get(url).then(res => res.data);
-    } catch (err) {
-      return Promise.reject(err);
-    }
+    const url = buildTeacherUrl("dashboard");
+    return api.get(url, { headers: authHeader() }).then(res => res.data);
   },
 
   getProximasAulas: () => {
-    try {
-      const url = buildTeacherUrl("lessons/upcoming");
-      return api.get(url).then(res => res.data);
-    } catch (err) {
-      return Promise.reject(err);
-    }
+    const url = buildTeacherUrl("lessons/upcoming");
+    return api.get(url, { headers: authHeader() }).then(res => res.data);
   },
 
   getMateriaisAlunos: () => {
-    try {
-      const url = buildTeacherUrl("materiais-alunos");
-      return api.get(url).then(res => res.data);
-    } catch (err) {
-      return Promise.reject(err);
-    }
+    const url = buildTeacherUrl("materiais-alunos");
+    return api.get(url, { headers: authHeader() }).then(res => res.data);
   },
 
   getLessonsHistory: ({ search = "" } = {}) => {
-    try {
-      const url = buildTeacherUrl("lessons-history");
-      const config = {};
-      if (search && search.trim() !== "") {
-        config.params = { search: search.trim() };
-      }
-      return api.get(url, config).then(res => res.data);
-    } catch (err) {
-      return Promise.reject(err);
+    const url = buildTeacherUrl("lessons-history");
+    const config = { headers: authHeader() };
+    if (search && search.trim() !== "") {
+      config.params = { search: search.trim() };
     }
+    return api.get(url, config).then(res => res.data);
   },
 
   // getAvailability: async (id) => {
