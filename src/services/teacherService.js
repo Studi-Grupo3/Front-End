@@ -64,4 +64,13 @@ export const teacherService = {
     }
     return api.get(url, config).then(res => res.data);
   },
+
+  // getAvailability: async (id) => {
+  //   const { data } = await api.get(`/teachers/${id}/availability`);
+  //   return data;
+  // },
+
+  // saveAvailability: async (id, availability) => {
+  //   return api.post(`/teachers/${id}/availability`, availability);
+  // }
 };

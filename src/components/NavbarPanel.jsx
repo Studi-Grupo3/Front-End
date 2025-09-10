@@ -167,7 +167,10 @@ const NavbarPanel = ({ role }) => {
             </li>
 
             {/* Editar Perfil */}
-            <li className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+            <li
+              className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition"
+              onClick={() => navigate("/aluno/completar-cadastro")}
+            >
               <div className="flex items-center gap-2">
                 <UserIcon className="h-5 w-5 text-gray-700" />
                 <span className="text-sm text-gray-800">Editar Perfil</span>

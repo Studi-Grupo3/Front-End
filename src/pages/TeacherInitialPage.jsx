@@ -111,7 +111,7 @@ const TeacherInitial = () => {
             {/* Cabeçalho “Painel do Aluno” */}
             <div className="flex justify-center items-center w-full h-[100px] text-center px-4">
                 <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">
-                    Painel do Aluno
+                    Painel do Professor
                 </h1>
             </div>
 
@@ -119,12 +119,11 @@ const TeacherInitial = () => {
             <div className="flex justify-center w-full px-4">
                 <div className="bg-white rounded-lg shadow-md p-5 w-full max-w-6xl">
                     <h1 className="text-xl md:text-2xl font-bold text-black mb-4">
-                        Bem-vindo(a) ao Painel do Aluno
+                        Bem-vindo(a) ao Painel do Professor
                     </h1>
 
                     <p className="text-sm md:text-base text-black mb-6">
-                        Aqui você pode gerenciar suas aulas, verificar agendamentos e
-                        realizar pagamentos.
+                        Aqui você pode completar seu cadastro, gerenciar suas aulas e verificar solicitações.
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

@@ -9,8 +9,8 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
     'Ensino Fundamental I',
     'Ensino Fundamental II',
     'Ensino Médio',
-    'Ensino Superior'
   ];
+
   const subjectOptions = [
     'Matemática',
     'Português',
@@ -18,11 +18,16 @@ export default function ClassDetailsForm({ data, onUpdate, onNext }) {
     'Geografia',
     'Ciências',
     'Física',
-    'Química'
+    'Química',
+    'Sociologia',
+    'Filosofia',
+    'Inglês',
+    'Espanhol',
+    'Biologia',
+    'Literatura'
   ];
+
   const durationOptions = [
-    '30 minutos',
-    '45 minutos',
     '1 hora',
     '1 hora e 30 minutos',
     '2 horas'

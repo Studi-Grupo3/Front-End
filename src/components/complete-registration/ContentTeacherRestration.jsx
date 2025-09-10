@@ -44,6 +44,60 @@ export default function ContentTeacherRegistration({ current, formData, onChange
         });
     };
 
+    const diasSemana = [
+        "Segunda-feira", "Terça-feira", "Quarta-feira",
+        "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"
+    ];
+
+    const [disponibilidade, setDisponibilidade] = useState({});
+
+    useEffect(() => {
+        async function fetchDisponibilidade() {
+            try {
+                const resp = await teacherService.getAvailability(professorId);
+                setDisponibilidade(resp || {});
+            } catch (err) {
+                console.error("Erro ao carregar disponibilidade", err);
+            }
+        }
+        fetchDisponibilidade();
+    }, [professorId]);
+
+    const handleHorarioChange = (dia, idx, campo, valor) => {
+        const horarios = disponibilidade[dia] ? [...disponibilidade[dia]] : [];
+        horarios[idx][campo] = valor;
+        setDisponibilidade(prev => ({ ...prev, [dia]: horarios }));
+    };
+
+    const adicionarHorario = (dia) => {
+        const horarios = disponibilidade[dia] ? [...disponibilidade[dia]] : [];
+        horarios.push({ inicio: "", fim: "" });
+        setDisponibilidade(prev => ({ ...prev, [dia]: horarios }));
+    };
+
+    const removerHorario = (dia, idx) => {
+        const horarios = disponibilidade[dia] ? [...disponibilidade[dia]] : [];
+        horarios.splice(idx, 1);
+        setDisponibilidade(prev => ({ ...prev, [dia]: horarios }));
+    };
+
+    const salvarDisponibilidade = async () => {
+        try {
+            await teacherService.saveAvailability(professorId, disponibilidade);
+            showAlert({
+                title: "Disponibilidade salva",
+                text: "Seus horários foram atualizados com sucesso!",
+                icon: "success",
+            });
+        } catch (err) {
+            showAlert({
+                title: "Erro!",
+                text: "Erro ao salvar disponibilidade: " + err.message,
+                icon: "error",
+            });
+        }
+    };
+
     switch (current) {
         case "Informacoes Pessoais":
             return (
@@ -245,6 +299,69 @@ export default function ContentTeacherRegistration({ current, formData, onChange
 
                 </div>
             );
+
+        case "Disponibilidade":
+
+    return (
+        <form className="space-y-4" onSubmit={e => { e.preventDefault(); salvarDisponibilidade(); }}>
+            <h2 className="text-lg font-semibold mb-2">Disponibilidade Semanal</h2>
+            <p className="text-gray-600 mb-4 text-sm">Informe os dias e horários em que você pode dar aulas.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-64 overflow-y-auto">
+                {diasSemana.map(dia => (
+                    <div key={dia} className="bg-gray-50 border border-gray-200 rounded-md p-3 flex flex-col">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium">{dia}</span>
+                            <button
+                                type="button"
+                                className="text-xs px-2 py-1 bg-[#3970B7] text-white rounded hover:bg-blue-700"
+                                onClick={() => adicionarHorario(dia)}
+                            >
+                                + Adicionar horário
+                            </button>
+                        </div>
+                        <div
+                            className={
+                                "flex-1 pr-1 " +
+                                ((disponibilidade[dia] || []).length > 1 ? "max-h-40 overflow-y-auto" : "")
+                            }
+                        >
+                            {(disponibilidade[dia] || []).length === 0 && (
+                                <span className="text-gray-400 text-xs">Nenhum horário adicionado</span>
+                            )}
+                            {(disponibilidade[dia] || []).map((horario, idx) => (
+                                <div key={idx} className="flex items-center gap-2 mb-2 flex-wrap">
+                                    <label className="text-xs">Início:</label>
+                                    <input
+                                        type="time"
+                                        className="border rounded px-2 py-1 text-xs"
+                                        value={horario.inicio}
+                                        onChange={e => handleHorarioChange(dia, idx, "inicio", e.target.value)}
+                                        required
+                                    />
+                                    <label className="text-xs">Fim:</label>
+                                    <input
+                                        type="time"
+                                        className="border rounded px-2 py-1 text-xs"
+                                        value={horario.fim}
+                                        onChange={e => handleHorarioChange(dia, idx, "fim", e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="text-xs text-red-600 hover:underline"
+                                        onClick={() => removerHorario(dia, idx)}
+                                    >
+                                        Remover
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <ActionButtons onSave={salvarDisponibilidade} />
+        </form>
+    );
         // case "Seguranca":
 
         //     const handleSaveSenha = (e) => {
