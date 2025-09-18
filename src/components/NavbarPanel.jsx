@@ -1,5 +1,5 @@
 // src/components/NavbarPanel.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Imagem from "../assets/logo.svg";
 import { Plus } from "lucide-react";
@@ -18,20 +18,50 @@ import { authService } from "../services/authService";
 import React from "react";
 import { FiBell } from "react-icons/fi";
 import { useUserName } from "../hooks/useUserName";
+import { studentService } from "../services/studentService";
 
-const NavbarPanel = ({ role }) => {
+function isPersonalInfoComplete(student) {
+  if (!student) return false;
+  // Adapte os campos conforme sua regra de negócio
+  const requiredFields = [
+    student.name,
+    student.email,
+    student.dateBirth,
+    student.schoolGrade,
+    student.schoolName,
+    student.cellphoneNumber,
+    student.responsible?.responsibleName,
+    student.responsible?.kinship,
+    student.responsible?.responsibleCpf,
+    student.responsible?.responsibleCellphoneNumber,
+  ];
+  return requiredFields.every(
+    (field) => field && String(field).trim().length > 0
+  );
+}
+
+const NavbarPanel = ({ role, percentComplete = 0 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [infoPessoaisCompletas, setInfoPessoaisCompletas] = useState(false);
   const navigate = useNavigate();
   const userId = sessionStorage.getItem("userId");
   const userRole = sessionStorage.getItem("userRole");
   const { name, loading } = useUserName(userId, userRole);
 
+  useEffect(() => {
+    async function getStatus() {
+      try {
+        const student = await studentService.getById(userId);
+        setInfoPessoaisCompletas(isPersonalInfoComplete(student));
+      } catch (err) {
+        setInfoPessoaisCompletas(false);
+      }
+    }
+    if (userId) getStatus();
+  }, [userId]);
+
   // Simulação do status de verificação
-  const emailVerificado = true;
-  const infoPessoaisCompletas = true;
-  const documentosCompletos = true;
-  const hasPendencias =
-    !emailVerificado || !infoPessoaisCompletas || !documentosCompletos;
+  const hasPendencias = !infoPessoaisCompletas;
 
   const handleUserAvatarClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -118,26 +148,17 @@ const NavbarPanel = ({ role }) => {
             <p className="text-sm font-medium text-gray-800"></p>
             <div className="flex justify-between text-xs text-gray-500">
               <strong>Status do perfil</strong>
-              <span className={hasPendencias ? "text-red-500" : "text-green-600"}>
+              <span
+                className={
+                  hasPendencias ? "text-red-500" : "text-green-600"
+                }
+              >
                 {hasPendencias ? "Incompleto" : "Completo"}
               </span>
             </div>
           </div>
 
           <ul className="divide-y divide-gray-100">
-            {/* Email Verificado */}
-            <li className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-2">
-                <EnvelopeIcon className="h-5 w-5 text-blue-500" />
-                <span className="text-sm text-gray-800">Email Verificado</span>
-              </div>
-              {emailVerificado ? (
-                <CheckIcon className="h-5 w-5 text-green-500" />
-              ) : (
-                <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
-              )}
-            </li>
-
             {/* Informações Pessoais */}
             <li className="flex items-center justify-between px-4 py-3">
               <div className="flex items-center gap-2">
@@ -152,20 +173,6 @@ const NavbarPanel = ({ role }) => {
                 <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
               )}
             </li>
-
-            {/* Documentos */}
-            <li className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-2">
-                <DocumentTextIcon className="h-5 w-5 text-blue-500" />
-                <span className="text-sm text-gray-800">Documentos</span>
-              </div>
-              {documentosCompletos ? (
-                <CheckIcon className="h-5 w-5 text-green-500" />
-              ) : (
-                <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
-              )}
-            </li>
-
             {/* Editar Perfil */}
             <li
               className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition"
