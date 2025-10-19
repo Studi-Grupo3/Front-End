@@ -18,6 +18,13 @@ function validarConfirmacaoSenha(senha, confirmacaoSenha) {
     return senha === confirmacaoSenha;
 }
 
+ function mascararDataNascimento(value) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0,2)}/${digits.slice(2)}`;
+  return `${digits.slice(0,2)}/${digits.slice(2,4)}/${digits.slice(4)}`;
+}
+
 function mascararCpf(cpf) {
     return cpf
         .replace(/\D/g, '')
@@ -32,7 +39,7 @@ function mascararCelular(telefone) {
         .replace(/\D/g, '')
         .replace(/^(\d{2})(\d)/, '($1) $2')
         .replace(/(\d{5})(\d)/, '$1-$2')
-        .slice(0, 15);
+        .slice(0, 15); // Garante o tamanho máximo do formato (11 dígitos + máscara)
 }
 
 export { 
@@ -41,6 +48,7 @@ export {
     validarEmail, 
     validarSenha, 
     validarConfirmacaoSenha, 
+    mascararDataNascimento,
     mascararCpf, 
-    mascararCelular 
+    mascararCelular
 };
