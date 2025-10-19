@@ -6,7 +6,7 @@ import { mascararCelular, validarConfirmacaoSenha } from "../../utils/formUtils"
 import { showAlert } from "../ShowAlert";
 import { teacherService } from "../../services/teacherService";
 
-export default function ContentTeacherRegistration({ current, formData, onChange, onSave }) {
+export default function ContentTeacherRegistration({ current, formData, onChange, onSave, onAvailabilityChange }) {
 
     const [showModal, setShowModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -56,6 +56,9 @@ export default function ContentTeacherRegistration({ current, formData, onChange
             try {
                 const resp = await teacherService.getAvailability(professorId);
                 setDisponibilidade(resp || {});
+                // Notifica o pai se já existe alguma disponibilidade
+                const hasAny = Object.values(resp || {}).some(arr => Array.isArray(arr) && arr.length > 0);
+                if (onAvailabilityChange) onAvailabilityChange(hasAny);
             } catch (err) {
                 console.error("Erro ao carregar disponibilidade", err);
             }
@@ -67,23 +70,33 @@ export default function ContentTeacherRegistration({ current, formData, onChange
         const horarios = disponibilidade[dia] ? [...disponibilidade[dia]] : [];
         horarios[idx][campo] = valor;
         setDisponibilidade(prev => ({ ...prev, [dia]: horarios }));
+        if (onAvailabilityChange) {
+            const hasAny = Object.values({ ...disponibilidade, [dia]: horarios }).some(arr => Array.isArray(arr) && arr.length > 0);
+            onAvailabilityChange(hasAny);
+        }
     };
 
     const adicionarHorario = (dia) => {
         const horarios = disponibilidade[dia] ? [...disponibilidade[dia]] : [];
         horarios.push({ inicio: "", fim: "" });
         setDisponibilidade(prev => ({ ...prev, [dia]: horarios }));
+        if (onAvailabilityChange) onAvailabilityChange(true);
     };
 
     const removerHorario = (dia, idx) => {
         const horarios = disponibilidade[dia] ? [...disponibilidade[dia]] : [];
         horarios.splice(idx, 1);
         setDisponibilidade(prev => ({ ...prev, [dia]: horarios }));
+        if (onAvailabilityChange) {
+            const hasAny = Object.values({ ...disponibilidade, [dia]: horarios }).some(arr => Array.isArray(arr) && arr.length > 0);
+            onAvailabilityChange(hasAny);
+        }
     };
 
     const salvarDisponibilidade = async () => {
         try {
             await teacherService.saveAvailability(professorId, disponibilidade);
+            if (onAvailabilityChange) onAvailabilityChange(Object.values(disponibilidade).some(arr => Array.isArray(arr) && arr.length > 0));
             showAlert({
                 title: "Disponibilidade salva",
                 text: "Seus horários foram atualizados com sucesso!",

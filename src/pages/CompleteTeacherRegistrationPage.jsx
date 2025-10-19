@@ -9,6 +9,7 @@ export default function CompleteTeacherRegistrationPage() {
     const [percentComplete, setPercentComplete] = useState(0);
     const [active, setActive] = useState("Informacoes Pessoais");
     const professorId = localStorage.getItem("userId");
+    const [hasAvailability, setHasAvailability] = useState(false);
     const [formData, setFormData] = useState({
         id: professorId,
         name: "",
@@ -20,6 +21,25 @@ export default function CompleteTeacherRegistrationPage() {
         yearsExperience: "",
         subject: "",
     });
+
+    // Calcula percentual de preenchimento com base nos campos importantes
+    useEffect(() => {
+        const fields = [
+            formData.name,
+            formData.email,
+            formData.cellphoneNumber,
+            formData.dateBirth,
+            formData.resumeTeacher,
+            formData.academicFormation,
+            formData.yearsExperience,
+            formData.subject,
+            hasAvailability,
+        ];
+        const filled = fields.filter(val => val && val.toString().trim() !== "").length;
+        // Cada campo representa uma parte igual do total
+        const percent = Math.min(100, Math.round((filled / fields.length) * 100));
+        setPercentComplete(percent);
+    }, [formData, hasAvailability]);
 
     useEffect(() => {
     async function fetchTeacher() {
@@ -141,7 +161,8 @@ export default function CompleteTeacherRegistrationPage() {
                         current={active}
                         formData={formData}
                         onChange={handleChange}
-                        onSave={handleUpdate} />
+                        onSave={handleUpdate}
+                        onAvailabilityChange={setHasAvailability} />
                     </main>
                 </div>
             </div>
