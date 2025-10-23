@@ -9,9 +9,4 @@ on:
 
 jobs:
   analysis:
-    uses: Studi-Grupo3/Front-End/.github/workflows/reusable-ci.yml@develop
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_URL: ${{ secrets.SONAR_URL }}
-      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+    uses: Studi-Grupo3/reuseble-workflows/.github/workflows/node-build.yml@main
