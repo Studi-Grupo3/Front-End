@@ -9,4 +9,4 @@ on:
 
 jobs:
   analysis:
-    uses: Studi-Grupo3/reuseble-workflows/.github/workflows/node-build.yml@main
+    uses: Studi-Grupo3/reusable-workflows/.github/workflows/node-build.yml@main
