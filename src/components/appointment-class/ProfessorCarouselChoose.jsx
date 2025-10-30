@@ -22,49 +22,53 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
 
   const primary = '#3970B7';
 
-  useEffect(() => {
-    setLoading(true);
-    teacherService.list()
-      .then(data => {
-        const allowedSubjects = [
-          "PORTUGUESE",
-          "MATHEMATICS",
-          "HISTORY",
-          "GEOGRAPHY",
-          "SCIENCE",
-          "PHYSICS",
-          "CHEMISTRY",
-        ];
+useEffect(() => {
+  setLoading(true);
+  teacherService.list()
+    .then((professorsData) => {
+      // professorsData pode ser Page<T> ({ content, totalPages, ... }) ou array
+      const list = Array.isArray(professorsData)
+        ? professorsData
+        : (Array.isArray(professorsData?.content) ? professorsData.content : []);
 
-        const enriched = data.map((prof) => {
-          const translatedSubjects = prof.subjects
-            ?.filter((s) => allowedSubjects.includes(s))
-            .map((s) => subjectMap[s]);
+      const allowedSubjects = [
+        "PORTUGUESE",
+        "MATHEMATICS",
+        "HISTORY",
+        "GEOGRAPHY",
+        "SCIENCE",
+        "PHYSICS",
+        "CHEMISTRY",
+      ];
 
-          return {
-            ...prof,
-            location: "São Paulo (online)",
-            subjectsTranslated: translatedSubjects,
-            description:
-              prof.resumeTeacher ||
-              `Professor experiente em ${translatedSubjects?.join(", ") || "sua área"}`,
-          };
-        });
+      const enriched = list.map((prof) => {
+        const subjectsArray = Array.isArray(prof.subjects) ? prof.subjects : [];
+        const translatedSubjects = subjectsArray
+          .filter((s) => allowedSubjects.includes(s))
+          .map((s) => subjectMap[s]);
 
-        const unique = enriched.filter(
-          (prof, index, self) =>
-            index === self.findIndex((p) => p.id === prof.id)
-        );
-
-        setProfessors(unique);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Erro ao carregar professores:", err);
-        setError("Erro ao buscar professores");
-        setLoading(false);
+        return {
+          ...prof,
+          location: "São Paulo (online)",
+          subjectsTranslated: translatedSubjects,
+          description:
+            prof.resumeTeacher ||
+            `Professor experiente em ${translatedSubjects.length ? translatedSubjects.join(", ") : "sua área"}`,
+        };
       });
-  }, []);
+
+      const unique = enriched.filter(
+        (prof, index, self) => index === self.findIndex((p) => p.id === prof.id)
+      );
+
+      setProfessors(unique);
+    })
+    .catch((err) => {
+      console.error("Erro ao carregar professores:", err);
+      setError("Erro ao buscar professores");
+    })
+    .finally(() => setLoading(false));
+}, [data?.subject]);
 
   const filtered = useMemo(() => {
     if (!data.subject) return professors;
