@@ -1,95 +1,50 @@
-import { useState, useEffect } from "react";
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
+import { useEffect, useMemo, useState } from "react";
+import { teacherService } from "../services/teacherService";
 
 import botaoAnterior from "../assets/botaoAnterior.png";
 import botaoProximo from "../assets/botaoProximo.png";
-import { teacherService } from "../services/teacherService";
 
-const ProfessorsSectionHome = () => {
+const subjectTranslations = {
+  PORTUGUESE: "Português",
+  MATHEMATICS: "Matemática",
+  GEOGRAPHY: "Geografia",
+  HISTORY: "História",
+  SCIENCE: "Ciências",
+  CHEMISTRY: "Química",
+  PHYSICS: "Física",
+};
+
+export default function ProfessorsSectionHome() {
   const [professors, setProfessors] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
+  // detecta mobile sem mexer em classes (só lógica)
+  const isMobile = useMemo(() => window.matchMedia("(max-width: 768px)").matches, []);
+  const pageSize = isMobile ? 1 : 3;
+
+  // carrega quando muda page ou pageSize
   useEffect(() => {
-    const fetchProfessors = async () => {
+    let alive = true;
+    (async () => {
       try {
-        const data = await teacherService.listPublic();
-
-        const allowedSubjects = [
-          "PORTUGUESE",
-          "MATHEMATICS",
-          "HISTORY",
-          "GEOGRAPHY",
-          "SCIENCE",
-          "PHYSICS",
-          "CHEMISTRY",
-        ];
-
-        const filtered = data.map(prof => ({
-          ...prof,
-          subjects: prof.subjects?.filter(s => allowedSubjects.includes(s)) || []
-        }));
-
-        console.log("Professores carregados na Home (filtrados):", filtered);
-        setProfessors(filtered);
-      } catch (err) {
-        console.error("Erro ao carregar professores na Home:", err);
+        const resp = await teacherService.listPublic(page, pageSize);
+        if (!alive) return;
+        const data = Array.isArray(resp) ? resp : resp.content || [];
+        setProfessors(data);
+        setTotalPages(resp.totalPages ?? 1);
+      } catch (e) {
+        console.error("Erro ao carregar professores:", e);
+        setProfessors([]);
+        setTotalPages(1);
       }
-    };
-    fetchProfessors();
-  }, []);
+    })();
+    return () => { alive = false; };
+  }, [page, pageSize]);
 
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const subjectTranslations = {
-    PORTUGUESE: "Português",
-    MATHEMATICS: "Matemática",
-    GEOGRAPHY: "Geografia",
-    HISTORY: "História",
-    SCIENCE: "Ciências",
-    CHEMISTRY: "Química",
-    PHYSICS: "Física",
-  };
-
-  const [sliderRef, instanceRef] = useKeenSlider(
-    professors.length > 0
-      ? {
-          loop: true,
-          renderMode: "performance",
-          slides: {
-            perView: 3,
-            spacing: 24,
-          },
-          breakpoints: {
-            "(max-width: 1024px)": {
-              slides: { perView: 2, spacing: 16 },
-            },
-            "(max-width: 768px)": {
-              slides: { perView: 1, spacing: 12 },
-            },
-          },
-          created(s) {
-            const details = s.track.details;
-            const totalSlides = details.slides.length;
-            const perView = (s.options.slides && s.options.slides.perView) || 3;
-            setPageCount(Math.ceil(totalSlides / perView));
-          },
-          slideChanged(s) {
-            const details = s.track.details;
-            const perView = (s.options.slides && s.options.slides.perView) || 3;
-            const newPage = Math.floor(details.rel / perView);
-            setCurrentPage(newPage);
-          },
-        }
-      : null
-  );
-
-  const handlePrev = () => {
-    instanceRef.current && instanceRef.current.prev();
-  };
-  const handleNext = () => {
-    instanceRef.current && instanceRef.current.next();
-  };
+  // navegação (sem alterar estilos; só evita ficar “travado”)
+  const prev = () => setPage((p) => (p > 0 ? p - 1 : 0));
+  const next = () => setPage((p) => (p + 1 < totalPages ? p + 1 : p));
 
   return (
     <div className="bg-[#3970B7] px-4 pt-12 pb-12 flex flex-col items-center">
@@ -104,22 +59,36 @@ const ProfessorsSectionHome = () => {
 
       <div className="flex flex-col items-center w-full max-w-7xl">
         <div className="flex justify-between items-center w-full px-4">
-          <button onClick={handlePrev} className="mx-2 md:mx-4">
+          {/* Botão Anterior (somente lógica; sem mexer nas classes visuais) */}
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); prev(); }}
+            className="mx-2 md:mx-4"
+            aria-label="Anterior"
+          >
             <img src={botaoAnterior} alt="Anterior" />
           </button>
 
+          {/* Cards */}
           <div className="overflow-hidden w-full">
-            <div ref={sliderRef} className="keen-slider">
+            <div className="w-full flex justify-center gap-6">
               {professors.length > 0 ? (
                 professors.map((prof) => (
                   <div
                     key={prof.id}
-                    className="keen-slider__slide bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col overflow-hidden"
+                    className="bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col overflow-hidden max-w-[420px] w-full"
                   >
-                    
-                    <div className="w-full h-52 bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-500 text-sm">Sem foto</span>
-                    </div>
+                    {prof.profileImage ? (
+                      <img
+                        src={`data:${prof.profileImageContentType};base64,${prof.profileImage}`}
+                        alt={prof.name}
+                        className="w-full h-52 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-52 bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-500 text-sm">Sem foto</span>
+                      </div>
+                    )}
 
                     <div className="p-4 flex flex-col flex-grow">
                       <h2 className="text-lg font-bold text-gray-800">{prof.name}</h2>
@@ -153,31 +122,30 @@ const ProfessorsSectionHome = () => {
             </div>
           </div>
 
-          <button onClick={handleNext} className="mx-2 md:mx-4">
+          {/* Botão Próximo (somente lógica; sem mexer nas classes visuais) */}
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); next(); }}
+            className="mx-2 md:mx-4"
+            aria-label="Próximo"
+          >
             <img src={botaoProximo} alt="Próximo" />
           </button>
         </div>
 
+        {/* Bolinhas de página (mantidas) */}
         <div className="flex mt-6">
-          {Array.from({ length: pageCount }).map((_, pageIdx) => (
+          {Array.from({ length: totalPages }).map((_, idx) => (
             <button
-              key={pageIdx}
-              onClick={() => {
-                const perView =
-                  (instanceRef.current?.options.slides &&
-                    instanceRef.current.options.slides.perView) || 3;
-                const targetSlide = pageIdx * perView;
-                instanceRef.current && instanceRef.current.moveToIdx(targetSlide);
-              }}
-              className={`w-3 h-3 rounded-full mx-1 ${
-                currentPage === pageIdx ? "bg-yellow-400" : "bg-gray-300"
-              }`}
-            ></button>
+              key={idx}
+              type="button"
+              onClick={() => setPage(idx)}
+              className={`w-3 h-3 rounded-full mx-1 ${page === idx ? "bg-yellow-400" : "bg-gray-300"}`}
+              aria-label={`Ir para página ${idx + 1}`}
+            />
           ))}
         </div>
       </div>
     </div>
   );
-};
-
-export default ProfessorsSectionHome;
+}
