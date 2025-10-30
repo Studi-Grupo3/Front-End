@@ -13,6 +13,7 @@ const subjectMap = {
   PHYSICS: "Física",
 };
 
+
 export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
   const isMobile = useIsMobile();
   const [currentSlide, setCurrentSlide] = useState(0);
