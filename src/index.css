@@ -1,21 +1,5 @@
-@import "tailwindcss";
-
-:root {
-  --azul-custom: #3970B7;
-}
-
-.body {
-  background-color: #fff;
-}
-
-* {
-  font-family: "Poppins";
-}
-
-.custom-swal-popup {
-  border: 2px solid #FECB0A; 
-  border-radius: 8px;
-  padding: 10px;
-  width: 300px; /* menor */
-  box-shadow: 0 0 10px #fecb0a66; 
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
 }
