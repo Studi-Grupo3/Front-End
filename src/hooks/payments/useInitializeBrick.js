@@ -58,21 +58,35 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
                 throw new Error("❌ ERRO: Token do cartão não foi gerado!");
               }
 
-              const payload = {
-                transactionAmount: formData.transaction_amount,
-                description: "Compra via Brick",
-                installments: formData.installments,
-                paymentMethodId: formData.payment_method_id,
-                payer: {
-                  email: formData.payer.email,
-                  firstName: formData.payer.first_name || "Cliente",
-                  identification: formData.payer.identification || { type: "CPF", number: "12345678909" },
+              // Map Brick formData to the backend DTO shape (PaymentRequestDTO)
+              const payer = {
+                email: formData.payer?.email || (formData.payer && formData.payer.email),
+                firstName: formData.payer?.first_name || formData.payer?.firstName || "Cliente",
+                identification:
+                  formData.payer?.identification || formData.payer?.identification || { type: "CPF", number: "12345678909" },
+                // Map address fields (backend requires address: streetName, streetNumber, zipCode)
+                address: {
+                  streetName:
+                    formData.payer?.address?.street_name || formData.payer?.address?.streetName || "Rua Exemplo",
+                  streetNumber:
+                    formData.payer?.address?.street_number || formData.payer?.address?.streetNumber || "0",
+                  zipCode:
+                    formData.payer?.address?.zip_code || formData.payer?.address?.zipCode || "00000000",
                 },
+              };
+
+              const payload = {
+                transactionAmount: formData.transaction_amount || formData.transactionAmount,
+                description: formData.description || "Compra via Brick",
+                installments: formData.installments || formData.installments_count || 1,
+                paymentMethodId: formData.payment_method_id || formData.paymentMethodId,
+                payer,
               };
 
               // 📌 Apenas cartão precisa de token
               if (!isBoleto && !isPix) {
-                payload.token = formData.token;
+                // cartão precisa de token
+                payload.token = formData.token || formData.card?.token || formData.token_id;
               }
 
               console.log("📤 Enviando pagamento ao backend...", payload);
