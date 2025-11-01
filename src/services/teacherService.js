@@ -1,7 +1,5 @@
-import axios from "axios";
 import { api } from './provider/api';
 
-const API_URL = "http://localhost:8080";
 
 function getTeacherIdFromSession() {
   const idStr = sessionStorage.getItem("userId");
@@ -25,14 +23,31 @@ function buildTeacherUrl(pathSuffix) {
 }
 
 export const teacherService = {
-  create:  (data) => api.post('/teachers', data, { headers: authHeader() }).then(res => res.data),
-  getById: (id)   => api.get(`/teachers/${id}`, { headers: authHeader() }).then(res => res.data),
-  update:  (id, data) => api.put(`/teachers/${id}`, data, { headers: authHeader() }).then(res => res.data),
-  remove:  (id)   => api.delete(`/teachers/${id}`, { headers: authHeader() }).then(res => res.data),
-  list:    ()     => api.get('/teachers', { headers: authHeader() }).then(res => res.data),
+  create: (data) =>
+    api.post('/teachers', data, { headers: authHeader() }).then(res => res.data),
 
-  listPublic: async () => {
-    const res = await axios.get(`${API_URL}/teachers`);
+  getById: (id) =>
+    api.get(`/teachers/${id}`, { headers: authHeader() }).then(res => res.data),
+
+  update: (id, data) =>
+    api.put(`/teachers/${id}`, data, { headers: authHeader() }).then(res => res.data),
+
+  remove: (id) =>
+    api.delete(`/teachers/${id}`, { headers: authHeader() }).then(res => res.data),
+
+  list: () =>
+    api.get('/teachers', { headers: authHeader() }).then(res => res.data),
+
+  // ✅ Busca paginada e autenticada (usa o token armazenado)
+  listPublic: async (page = 0, size = 3) => {
+    const token = sessionStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const res = await api.get('/teachers', {
+      params: { page, size },
+      headers
+    });
+
     return res.data;
   },
 
@@ -64,13 +79,4 @@ export const teacherService = {
     }
     return api.get(url, config).then(res => res.data);
   },
-
-  // getAvailability: async (id) => {
-  //   const { data } = await api.get(`/teachers/${id}/availability`);
-  //   return data;
-  // },
-
-  // saveAvailability: async (id, availability) => {
-  //   return api.post(`/teachers/${id}/availability`, availability);
-  // }
 };
