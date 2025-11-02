@@ -6,7 +6,15 @@ on:
       - main
       - develop
   workflow_dispatch:
+    inputs:
+      frontend_api_url:
+        description: 'URL da API para o frontend (ex: http://34.224.86.136/api)'
+        required: false
+        type: string
+        default: 'http://localhost:8080/api'
 
 jobs:
   analysis:
     uses: Studi-Grupo3/reusable-workflows/.github/workflows/node-build.yml@main
+    with:
+      frontend_api_url: ${{ inputs.frontend_api_url || 'http://localhost:8080/api' }}
