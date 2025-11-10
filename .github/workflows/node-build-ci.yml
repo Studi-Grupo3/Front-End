@@ -9,6 +9,9 @@ on:
         type: string
         default: 'http://localhost:8080/api'
 
+permissions:
+  contents: write
+
 jobs:
   call-build:
     uses: Studi-Grupo3/reusable-workflows/.github/workflows/node-build.yml@main
