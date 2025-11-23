@@ -1,6 +1,6 @@
 import { useRef, useCallback, useState } from "react";
 
-export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onPaymentSuccess, onPaymentError }) => {
+export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onPaymentSuccess, onPaymentError, payerAddress }) => {
   const brickInstance = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -11,26 +11,24 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
     }
 
     const container = document.getElementById("paymentBrick_container");
+    console.log("📦 Container encontrado:", !!container);
 
     if (brickInstance.current || (container && container.childNodes.length > 0) || isInitialized) {
       console.log("🛑 Brick já foi inicializado. Ignorando...");
       return;
     }
 
+    console.log("🚀 Iniciando setup do Brick...");
     const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
     const bricksBuilder = mp.bricks();
 
     try {
-      console.log("🛠️ Inicializando Brick...");
+      console.log("🛠️ Criando Brick com preferenceId:", preferenceId);
       brickInstance.current = await bricksBuilder.create("payment", "paymentBrick_container", {
         initialization: {
           amount: 100.0,
           preferenceId,
-          payer: {
-            firstName: "Cliente",
-            lastName: "Teste",
-            email: "cliente@email.com",
-          },
+
         },
         customization: {
           visual: { style: { theme: "default" } },
@@ -59,14 +57,22 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
               }
 
               const payload = {
-                transactionAmount: formData.transaction_amount,
+                transaction_amount: formData.transaction_amount,
                 description: "Compra via Brick",
                 installments: formData.installments,
-                paymentMethodId: formData.payment_method_id,
+                payment_method_id: formData.payment_method_id,
                 payer: {
-                  email: formData.payer.email,
-                  firstName: formData.payer.first_name || "Cliente",
-                  identification: formData.payer.identification || { type: "CPF", number: "12345678909" },
+                  email: formData.payer?.email,
+                  first_name: formData.payer?.first_name || "Cliente",
+                  identification: formData.payer?.identification || { type: "CPF", number: "12345678909" },
+                  address: payerAddress || {
+                    zip_code: "01001000",
+                    street_name: "Av. Paulista",
+                    street_number: "123",
+                    neighborhood: "Bela Vista",
+                    city: "São Paulo",
+                    federal_unit: "SP"
+                  }
                 },
               };
 
@@ -93,7 +99,7 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
     } catch (error) {
       console.error("❌ Erro ao inicializar o Brick:", error);
     }
-  }, [publicKey, preferenceId, createPayment, onPaymentSuccess, onPaymentError, isInitialized]);
+  }, [publicKey, preferenceId, createPayment, onPaymentSuccess, onPaymentError, isInitialized, payerAddress]);
 
   return { initializeBrick };
 };

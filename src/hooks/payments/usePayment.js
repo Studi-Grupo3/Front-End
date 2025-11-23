@@ -6,8 +6,8 @@ export const usePayments = () => {
   const [error, setError] = useState(null);
 
   const createPayment = async (paymentData) => {
-    const isBoleto = paymentData.paymentMethodId === "bolbradesco";
-    const isPix = paymentData.paymentMethodId === "pix";
+    const isBoleto = paymentData.payment_method_id === "bolbradesco";
+    const isPix = paymentData.payment_method_id === "pix";
 
     // 📌 Apenas cartão de crédito precisa do token
     if (!isBoleto && !isPix && !paymentData.token) {
@@ -19,7 +19,7 @@ export const usePayments = () => {
     setError(null);
 
     try {
-      return await paymentService.createPayment(paymentData);
+      return await paymentService.create(paymentData);
     } catch (err) {
       setError(err);
       throw err;
