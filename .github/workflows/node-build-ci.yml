@@ -1,0 +1,29 @@
+name: Build and Publish Node 
+
+on:
+  workflow_dispatch:
+    inputs:
+      frontend_api_url:
+        description: 'URL da API para o frontend (ex: http://34.224.86.136/api)'
+        required: false
+        type: string
+        default: 'http://localhost:8080/api'
+
+permissions:
+  contents: write
+
+jobs:
+  call-build:
+    uses: Studi-Grupo3/reusable-workflows/.github/workflows/node-build.yml@main
+    with:
+      frontend_api_url: ${{ inputs.frontend_api_url || 'http://localhost:8080/api' }}
+
+  call-publish-release:
+    needs: call-build
+    uses: Studi-Grupo3/reusable-workflows/.github/workflows/upload-gh-release.yml@main
+    with:
+      artifact_name: app-build
+      target_owner_repo: "Studi-Grupo3/aws-infrastructure-setup"
+      tag: "V1"
+    secrets:
+      RELEASE_PAT: ${{ secrets.RELEASE_PAT }}

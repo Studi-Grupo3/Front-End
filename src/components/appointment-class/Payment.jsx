@@ -8,6 +8,8 @@ import {
 import { appointmentCreateService } from '../../services/appointmentCreateService';
 import { parseDurationToMinutes } from '../../utils/date';
 import { useNavigate } from 'react-router-dom';
+import PaymentBrick from '../PaymentBrick';
+import { usePreferenceId } from '../../hooks/payments/usePreferenceId';
 
 const couponDiscounts = {
   'CUPOM20': 0.20,
@@ -21,21 +23,41 @@ export default function Pagamento({ data, onUpdate, onNext }) {
   const [cep, setCep] = useState(data.endereco.cep || '');
   const [endereco, setEndereco] = useState({ ...data.endereco });
   const [loading, setLoading] = useState(false);
-const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
- const [discountPercent, setDiscountPercent] = useState(data.pagamento.descontoPercent || 0);
+  const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
+  const [discountPercent, setDiscountPercent] = useState(data.pagamento.descontoPercent || 0);
   const [errorMsg, setErrorMsg] = useState('');
+  const [couponFeedback, setCouponFeedback] = useState({ type: '', message: '' });
   const navigate = useNavigate();
 
   // Cálculo local para exibir no resumo imediatamente
   const lessonDurationLocal = parseDurationToMinutes(data.duration || '');
-  const totalValueLocal     = lessonDurationLocal * 1; // tarifa por minuto
+  const totalValueLocal = lessonDurationLocal * 1; // tarifa por minuto
+
+  // Calcula o valor final com desconto
+  const discountAmount = data.pagamento.descontoAplicado ? (data.pagamento.desconto || 0) : 0;
+  const finalValue = Math.max(0, totalValueLocal - discountAmount);
+
+  // Integração Mercado Pago
+  const publicKey = import.meta.env.VITE_PUBLIC_KEY;
+  // TODO: Usar email real do usuário
+  // Passamos o valor final com desconto para a preferência
+  const { preferenceId, loading: loadingPreference, error: errorPreference } = usePreferenceId(finalValue, "cliente@teste.com");
+
+  const payerAddress = {
+    zip_code: data.endereco.cep,
+    street_name: data.endereco.rua,
+    street_number: data.endereco.numero,
+    neighborhood: data.endereco.bairro,
+    city: data.endereco.cidade,
+    federal_unit: data.endereco.estado
+  };
 
   const dateStr = data.date
     ? new Date(data.date).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      })
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
     : '';
   const timeStr = data.time || '';
 
@@ -83,7 +105,38 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
   };
 
   const handleApplyCoupon = () => {
-    onUpdate({ pagamento: { ...data.pagamento, descontoAplicado: true } });
+    const code = data.pagamento.cupom?.trim().toUpperCase();
+
+    if (!code) {
+      setCouponFeedback({ type: 'error', message: 'Digite um código de cupom.' });
+      return;
+    }
+
+    if (couponDiscounts.hasOwnProperty(code)) {
+      const discountRate = couponDiscounts[code];
+      const discountValue = totalValueLocal * discountRate;
+
+      onUpdate({
+        pagamento: {
+          ...data.pagamento,
+          descontoAplicado: true,
+          desconto: discountValue,
+          descontoPercent: discountRate
+        }
+      });
+      setCouponFeedback({ type: 'success', message: 'Cupom aplicado com sucesso!' });
+    } else {
+      // Cupom inválido
+      onUpdate({
+        pagamento: {
+          ...data.pagamento,
+          descontoAplicado: false,
+          desconto: 0,
+          descontoPercent: 0
+        }
+      });
+      setCouponFeedback({ type: 'error', message: 'Coloque um cupom válido.' });
+    }
   };
 
   const handleFinalize = async () => {
@@ -91,15 +144,19 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
     setLoading(true);
     try {
       const lessonDuration = parseDurationToMinutes(data.duration || '');
-      const ratePerMinute  = 1;
-      const totalValue     = lessonDuration * ratePerMinute;
+      const ratePerMinute = 1;
+      const totalValue = lessonDuration * ratePerMinute;
+      // Recalcula ou usa o valor já no estado
+      const discountVal = data.pagamento.descontoAplicado ? (data.pagamento.desconto || 0) : 0;
+      const finalTotal = Math.max(0, totalValue - discountVal);
 
       const created = await appointmentCreateService.create({
         ...data,
         pagamento: {
           ...data.pagamento,
           lessonDuration,
-          totalValue,
+          totalValue: finalTotal, // Envia o valor final com desconto
+          originalValue: totalValue, // Opcional: manter o valor original
           method: paymentMethod
         }
       });
@@ -112,6 +169,16 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
     }
   };
 
+  const handlePaymentSuccess = (response) => {
+    console.log("✅ Pagamento concluído:", response);
+    handleFinalize();
+  };
+
+  const handlePaymentError = (error) => {
+    console.error("❌ Erro no pagamento:", error);
+    setErrorMsg("Erro ao processar pagamento via Mercado Pago.");
+  };
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 pt-4">
       <div className="flex-1 bg-white rounded-md shadow p-4 space-y-4">
@@ -121,11 +188,10 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
             <button
               key={item}
               onClick={() => setStep(item)}
-              className={`px-3 py-1 ${
-                step === item
-                  ? 'border-b-2 border-[#3970B7] text-[#3970B7] font-semibold'
-                  : 'text-gray-500 cursor-pointer'
-              }`}
+              className={`px-3 py-1 ${step === item
+                ? 'border-b-2 border-[#3970B7] text-[#3970B7] font-semibold'
+                : 'text-gray-500 cursor-pointer'
+                }`}
             >
               {item === 'endereco' ? 'Endereço' : 'Pagamento'}
             </button>
@@ -139,7 +205,7 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
               <label className="text-xs text-gray-600">CEP</label>
               <input
                 type="text"
-                value={cep.length > 5 ? `${cep.slice(0,5)}-${cep.slice(5)}` : cep}
+                value={cep.length > 5 ? `${cep.slice(0, 5)}-${cep.slice(5)}` : cep}
                 onChange={handleCepChange}
                 className="w-full p-1 border rounded text-xs"
               />
@@ -214,76 +280,19 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
 
         {/* Formulário de Pagamento */}
         {step === 'pagamento' && (
-          <form className="space-y-3">
-            <div className="flex gap-3 text-xs">
-              {['credito', 'debito'].map(method => (
-                <button
-                  key={method}
-                  type="button"
-                  onClick={() => {
-                    setPaymentMethod(method);
-                    handleFieldChange('method', method);
-                  }}
-                  className={`flex-1 p-1 border rounded text-xs ${
-                    paymentMethod === method
-                      ? 'border-[#3970B7] text-[#3970B7] font-semibold'
-                      : 'border-gray-300 text-gray-500 cursor-pointer'
-                  }`}
-                >
-                  {method === 'credito' ? 'Cartão de Crédito' : 'Cartão de Débito'}
-                </button>
-              ))}
-            </div>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-gray-600">Número do Cartão</label>
-                <input
-                  type="text"
-                  value={data.pagamento.numero || ''}
-                  onChange={e => handleFieldChange('numero', e.target.value)}
-                  className="w-full p-1 border rounded text-xs"
-                />
-              </div>
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="text-xs text-gray-600">Validade</label>
-                  <input
-                    type="text"
-                    value={data.pagamento.validade || ''}
-                    onChange={e => handleFieldChange('validade', e.target.value)}
-                    className="w-full p-1 border rounded text-xs"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="text-xs text-gray-600">CVV</label>
-                  <input
-                    type="text"
-                    value={data.pagamento.cvv || ''}
-                    onChange={e => handleFieldChange('cvv', e.target.value)}
-                    className="w-full p-1 border rounded text-xs"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs text-gray-600">Nome no Cartão</label>
-                <input
-                  type="text"
-                  value={data.pagamento.nomeCartao || ''}
-                  onChange={e => handleFieldChange('nomeCartao', e.target.value)}
-                  className="w-full p-1 border rounded text-xs"
-                />
-              </div>
-              {errorMsg && <p className="text-red-500 text-xs">{errorMsg}</p>}
-              <button
-                type="button"
-                onClick={handleFinalize}
-                disabled={loading}
-                className="w-full py-2 bg-[#3970B7] hover:bg-[#2e5a94] text-white rounded text-sm cursor-pointer"
-              >
-                {loading ? 'Processando...' : 'Confirmar e Agendar'}
-              </button>
-            </div>
-          </form>
+          <div className="space-y-3">
+            {preferenceId && (
+              <PaymentBrick
+                publicKey={publicKey}
+                preferenceId={preferenceId}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentError={handlePaymentError}
+                payerAddress={payerAddress}
+              />
+            )}
+
+            {errorMsg && <p className="text-red-500 text-xs">{errorMsg}</p>}
+          </div>
         )}
       </div>
 
@@ -303,7 +312,10 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
               placeholder="Digite o código"
               className="flex-1 p-1 border rounded text-sm"
               value={data.pagamento.cupom || ''}
-              onChange={e => handleFieldChange('cupom', e.target.value)}
+              onChange={e => {
+                handleFieldChange('cupom', e.target.value);
+                setCouponFeedback({ type: '', message: '' }); // Limpa feedback ao digitar
+              }}
             />
             <button
               type="button"
@@ -313,6 +325,11 @@ const [couponCode, setCouponCode] = useState(data.pagamento.cupom || '');
               Aplicar
             </button>
           </div>
+          {couponFeedback.message && (
+            <p className={`text-xs mt-1 ${couponFeedback.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+              {couponFeedback.message}
+            </p>
+          )}
         </div>
 
         {/* Detalhes da aula */}

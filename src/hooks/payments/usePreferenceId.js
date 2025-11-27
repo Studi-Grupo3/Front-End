@@ -9,8 +9,9 @@ export function usePreferenceId(amount, payerEmail) {
   useEffect(() => {
     async function fetchPreference() {
       try {
-        const response = await preferenceService.createPreference(amount, payerEmail);
-        setPreferenceId(response.preferenceId);
+        const response = await preferenceService.create(amount, payerEmail);
+        console.log("📦 Resposta da preferência:", response);
+        setPreferenceId(response.preferenceId || response.id); // Tenta ambos
       } catch (err) {
         setError(err.message);
       } finally {

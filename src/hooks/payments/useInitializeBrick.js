@@ -1,6 +1,6 @@
 import { useRef, useCallback, useState } from "react";
 
-export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onPaymentSuccess, onPaymentError }) => {
+export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onPaymentSuccess, onPaymentError, payerAddress }) => {
   const brickInstance = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -11,26 +11,23 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
     }
 
     const container = document.getElementById("paymentBrick_container");
+    console.log("📦 Container encontrado:", !!container);
 
     if (brickInstance.current || (container && container.childNodes.length > 0) || isInitialized) {
       console.log("🛑 Brick já foi inicializado. Ignorando...");
       return;
     }
 
+    console.log("🚀 Iniciando setup do Brick...");
     const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
     const bricksBuilder = mp.bricks();
 
     try {
-      console.log("🛠️ Inicializando Brick...");
+      console.log("🛠️ Criando Brick com preferenceId:", preferenceId);
       brickInstance.current = await bricksBuilder.create("payment", "paymentBrick_container", {
         initialization: {
           amount: 100.0,
           preferenceId,
-          payer: {
-            firstName: "Cliente",
-            lastName: "Teste",
-            email: "cliente@email.com",
-          },
         },
         customization: {
           visual: { style: { theme: "default" } },
@@ -58,21 +55,16 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
                 throw new Error("❌ ERRO: Token do cartão não foi gerado!");
               }
 
-              // Map Brick formData to the backend DTO shape (PaymentRequestDTO)
+              // Build payer object mapping from Brick to backend shape
               const payer = {
-                email: formData.payer?.email || (formData.payer && formData.payer.email),
+                email: formData.payer?.email || (formData.payer && formData.payer.email) || undefined,
                 firstName: formData.payer?.first_name || formData.payer?.firstName || "Cliente",
-                identification:
-                  formData.payer?.identification || formData.payer?.identification || { type: "CPF", number: "12345678909" },
-                // Map address fields (backend requires address: streetName, streetNumber, zipCode)
+                identification: formData.payer?.identification || { type: "CPF", number: "12345678909" },
                 address: {
-                  streetName:
-                    formData.payer?.address?.street_name || formData.payer?.address?.streetName || "Rua Exemplo",
-                  streetNumber:
-                    formData.payer?.address?.street_number || formData.payer?.address?.streetNumber || "0",
-                  zipCode:
-                    formData.payer?.address?.zip_code || formData.payer?.address?.zipCode || "00000000",
-                },
+                  streetName: formData.payer?.address?.street_name || formData.payer?.address?.streetName || (payerAddress && payerAddress.streetName) || "Rua Exemplo",
+                  streetNumber: formData.payer?.address?.street_number || formData.payer?.address?.streetNumber || (payerAddress && payerAddress.streetNumber) || "0",
+                  zipCode: formData.payer?.address?.zip_code || formData.payer?.address?.zipCode || (payerAddress && payerAddress.zipCode) || "00000000",
+                }
               };
 
               const payload = {
@@ -85,7 +77,6 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
 
               // 📌 Apenas cartão precisa de token
               if (!isBoleto && !isPix) {
-                // cartão precisa de token
                 payload.token = formData.token || formData.card?.token || formData.token_id;
               }
 
@@ -107,7 +98,7 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
     } catch (error) {
       console.error("❌ Erro ao inicializar o Brick:", error);
     }
-  }, [publicKey, preferenceId, createPayment, onPaymentSuccess, onPaymentError, isInitialized]);
+  }, [publicKey, preferenceId, createPayment, onPaymentSuccess, onPaymentError, isInitialized, payerAddress]);
 
   return { initializeBrick };
 };
