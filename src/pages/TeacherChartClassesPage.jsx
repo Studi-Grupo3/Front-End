@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import NavbarPanel from '../components/NavbarTeacher';
+import NavbarPanel from '../components/NavbarPanel';
 import TabelaAulas from '../components/TabelaAulas';
 import { teacherService } from '../services/teacherService';
 

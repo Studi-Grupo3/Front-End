@@ -32,6 +32,7 @@ export default function ContentTeacherRegistration({ current, formData, onChange
     };
 
     const handleFotoMock = async (e) => {
+        // kept as a fallback (stores base64 locally)
         const file = e.target.files[0];
         if (!file) return;
         const base64 = await fileToBase64(file);
@@ -42,6 +43,68 @@ export default function ContentTeacherRegistration({ current, formData, onChange
             text: `Sua foto foi selecionada com sucesso!\nArquivo: ${file.name}\nTamanho: ${(file.size / 1024).toFixed(2)} KB`,
             icon: "success"
         });
+    };
+
+    const handleFotoUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            const resp = await teacherService.uploadFoto(professorId, file);
+
+            // If backend returns a URL for the saved photo, use it. Fallback to base64 preview.
+            const photoUrl = resp && (resp.photoUrl || resp.url || resp.data || resp.path);
+            if (photoUrl) {
+                setPreviewUrl(photoUrl);
+                try { localStorage.setItem("fotoPerfilProfessor", photoUrl); } catch (err) { /* ignore */ }
+            } else {
+                const base64 = await fileToBase64(file);
+                setPreviewUrl(base64);
+                try { localStorage.setItem("fotoPerfilProfessor", base64); } catch (err) { /* ignore */ }
+            }
+
+            showAlert({
+                title: "Upload realizado!",
+                text: `Sua foto foi enviada com sucesso.\nArquivo: ${file.name}`,
+                icon: "success"
+            });
+            // Notify the rest of the app (e.g., navbar) that profile photo changed.
+            // Prefer fetching the canonical image from backend and persist it as base64 in localStorage.
+            try {
+                const blob = await teacherService.getProfilePhoto(professorId);
+                if (blob) {
+                    const dataUrl = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                    setPreviewUrl(dataUrl);
+                    try { localStorage.setItem("fotoPerfilProfessor", dataUrl); } catch (err) { /* ignore */ }
+                    window.dispatchEvent(new CustomEvent('profile-photo-updated', { detail: { url: dataUrl } }));
+                } else {
+                    const newUrl = photoUrl || (await fileToBase64(file));
+                    window.dispatchEvent(new CustomEvent('profile-photo-updated', { detail: { url: newUrl } }));
+                }
+            } catch (e) {
+                // fallback: use base64 preview and notify
+                try {
+                    const newUrl = photoUrl || (await fileToBase64(file));
+                    window.dispatchEvent(new CustomEvent('profile-photo-updated', { detail: { url: newUrl } }));
+                } catch (_) { /* ignore */ }
+            }
+        } catch (err) {
+            console.error("Erro ao enviar foto do professor", err);
+            showAlert({
+                title: "Erro no upload",
+                text: "Não foi possível enviar a foto para o servidor. Salvando localmente como fallback.",
+                icon: "error"
+            });
+            // fallback to local behavior
+            const base64 = await fileToBase64(file);
+            setPreviewUrl(base64);
+            try { localStorage.setItem("fotoPerfilProfessor", base64); } catch (e) { /* ignore */ }
+        }
     };
 
     const diasSemana = [
@@ -304,7 +367,7 @@ export default function ContentTeacherRegistration({ current, formData, onChange
                             accept="image/*"
                             ref={fileInputRef}
                             style={{ display: 'none' }}
-                            onChange={handleFotoMock}
+                            onChange={handleFotoUpload}
                         />
                     </div>
 

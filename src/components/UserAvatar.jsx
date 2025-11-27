@@ -1,6 +1,61 @@
 import React from "react";
 
+import { useEffect, useState } from "react";
+import { teacherService } from "../services/teacherService";
+import { studentService } from "../services/studentService";
+
 const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, onClick }) => {
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
+  useEffect(() => {
+    // Initialize from localStorage if available
+    const stored = localStorage.getItem("fotoPerfilProfessor");
+    if (stored) setAvatarUrl(stored);
+
+    // If nothing stored, try fetching from backend (authenticated)
+    const tryFetch = async () => {
+      if (stored) return;
+      const userId = sessionStorage.getItem('userId');
+      const userRole = (sessionStorage.getItem('userRole') || '').toLowerCase();
+      if (!userId) return;
+
+      try {
+        let blob = null;
+        if (userRole.includes('teach') || userRole.includes('prof')) {
+          blob = await teacherService.getProfilePhoto(userId);
+        } else {
+          blob = await studentService.getProfilePhoto(userId);
+        }
+
+        if (blob) {
+          const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          setAvatarUrl(dataUrl);
+          try { localStorage.setItem('fotoPerfilProfessor', dataUrl); } catch (e) { /* ignore */ }
+        }
+      } catch (err) {
+        // ignore fetch errors - keep initials
+        // console.debug('no profile photo available', err);
+      }
+    };
+    tryFetch();
+
+    const handler = (e) => {
+      if (e && e.detail && e.detail.url) setAvatarUrl(e.detail.url);
+      else {
+        const cur = localStorage.getItem("fotoPerfilProfessor");
+        setAvatarUrl(cur);
+      }
+    };
+
+    window.addEventListener('profile-photo-updated', handler);
+    return () => window.removeEventListener('profile-photo-updated', handler);
+  }, []);
+
   // Função para pegar as iniciais do nome
   function getInitials(name) {
     if (!name) return "";
@@ -16,10 +71,16 @@ const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, on
 
   return (
     <div className="relative cursor-pointer" onClick={onClick}>
-      {/* Avatar */}
-      <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-sm border border-gray-500">
-        {initials}
-      </div>
+      {/* Avatar: show image when available, otherwise initials */}
+      {avatarUrl ? (
+        <div className="h-10 w-10 rounded-full overflow-hidden border border-gray-500">
+          <img src={avatarUrl} alt="avatar" className="object-cover w-full h-full" />
+        </div>
+      ) : (
+        <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-sm border border-gray-500">
+          {initials}
+        </div>
+      )}
 
       {/* Notificação */}
       {hasNotification && (

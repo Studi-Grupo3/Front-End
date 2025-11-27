@@ -1,5 +1,4 @@
 import { api } from './provider/api';
-import { createPaymentMock } from '../mocks/paymentsMock';
 
 const isMock = import.meta.env.VITE_PAYMENT_MOCK === 'true';
 

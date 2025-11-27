@@ -79,4 +79,22 @@ export const teacherService = {
     }
     return api.get(url, config).then(res => res.data);
   },
+  uploadFoto: (id, file) => {
+    const formData = new FormData();
+    // backend expects part name 'file' according to ProfilePhotoController
+    formData.append('file', file);
+    return api.post('/profile-photos', formData, {
+      params: { id: Number(id), role: 'teacher' },
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }).then(res => res.data);
+  },
+  getProfilePhoto: (id) => {
+    const token = sessionStorage.getItem('authToken') || sessionStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return api.get('/profile-photos', {
+      params: { id: Number(id), role: 'teacher' },
+      headers,
+      responseType: 'blob'
+    }).then(res => res.data);
+  },
 };

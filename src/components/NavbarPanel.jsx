@@ -46,13 +46,21 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
   const navigate = useNavigate();
   const userId = sessionStorage.getItem("userId");
   const userRole = sessionStorage.getItem("userRole");
+  // normalize role detection: accept prop `role` or sessionStorage
+  const effectiveRole = (role || userRole || "").toLowerCase();
+  const isTeacher = effectiveRole.includes("prof") || effectiveRole.includes("teach");
   const { name, loading } = useUserName(userId, userRole);
 
   useEffect(() => {
     async function getStatus() {
       try {
-        const student = await studentService.getById(userId);
-        setInfoPessoaisCompletas(isPersonalInfoComplete(student));
+        if (!isTeacher) {
+          const student = await studentService.getById(userId);
+          setInfoPessoaisCompletas(isPersonalInfoComplete(student));
+        } else {
+          // for teachers we don't use the student completeness check
+          setInfoPessoaisCompletas(true);
+        }
       } catch (err) {
         setInfoPessoaisCompletas(false);
       }
@@ -85,8 +93,8 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
     <nav className="h-[12vh] w-full bg-[#3970B7] border-b-4 border-b-[#FECB0A] text-white px-4 md:px-10 flex items-center justify-between text-sm relative">
       {/* Navegação Mobile */}
       <div className="md:hidden flex items-center justify-between w-full">
-        <div className="flex-1 flex justify-center pl-10">
-          <img src={Imagem} className="h-20" alt="Logo" />
+          {/* Links de Navegação (variam conforme role) */}
+          <div className="flex justify-center gap-8 w-full max-w-4xl mx-auto">
         </div>
         <MenuHamburguer />
       </div>
@@ -103,35 +111,67 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
           />
         </div>
 
-        {/* Links de Navegação */}
-        <div className="flex flex-row gap-16 pl-24 justify-center">
-          <h2
-            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
-            onClick={() => navigate("/aluno/inicio")}
-          >
-            Painel
-          </h2>
-          <h2
-            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
-            onClick={() =>
-              navigate("/agendamentos/gerenciar/proximas-aulas")
-            }
-          >
-            Agendamentos
-          </h2>
-          <h2
-            className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
-            onClick={() =>
-              navigate("/agendamentos/gerenciar/calendario")
-            }
-          >
-            Calendário
-          </h2>
+        {/* Links de Navegação (variam conforme role) */}
+          <div className="flex justify-center gap-16">
+          {isTeacher ? (
+            <>
+              <h2
+                className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+                onClick={() => navigate("/professor/inicio")}
+              >
+                Início
+              </h2>
+              <h2
+                className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+                onClick={() => navigate("/professor/tabela-aula")}
+              >
+                Aulas
+              </h2>
+              <h2
+                className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+                onClick={() => navigate("/professor/historico-aulas")}
+              >
+                Histórico
+              </h2>
+              <h2
+                className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+                onClick={() => navigate("/professor/metricas-aula")}
+              >
+                Métricas
+              </h2>
+            </>
+          ) : (
+            <>
+              <h2
+                className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+                onClick={() => navigate("/aluno/inicio")}
+              >
+                Painel
+              </h2>
+              <h2
+                className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+                onClick={() =>
+                  navigate("/agendamentos/gerenciar/proximas-aulas")
+                }
+              >
+                Agendamentos
+              </h2>
+              <h2
+                className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+                onClick={() =>
+                  navigate("/agendamentos/gerenciar/calendario")
+                }
+              >
+                Calendário
+              </h2>
+            </>
+          )}
         </div>
 
         {/* Botão e Avatar */}
-        <div className="flex items-center gap-10">
-          <ScheduleButton />
+          <div className="flex items-center gap-10 flex-shrink-0">
+          {/* Mostrar ScheduleButton somente para alunos */}
+          {!isTeacher && <ScheduleButton />}
           <UserAvatar
             name={loading ? "" : name}
             hasNotification={true}
@@ -176,7 +216,7 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
             {/* Editar Perfil */}
             <li
               className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition"
-              onClick={() => navigate("/aluno/completar-cadastro")}
+              onClick={() => navigate(isTeacher ? "/professor/completar-cadastro" : "/aluno/completar-cadastro")}
             >
               <div className="flex items-center gap-2">
                 <UserIcon className="h-5 w-5 text-gray-700" />
