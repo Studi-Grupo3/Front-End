@@ -7,7 +7,7 @@ export default function ProximasAulas() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    teacherService.getProximasAulas()
+    teacherService.getPendingLessons()
       .then(setAulas)
       .catch(() => setAulas([]))
       .finally(() => setLoading(false));
@@ -28,18 +28,18 @@ export default function ProximasAulas() {
             {aula.status}
           </span>
 
-          <h3 className="text-base font-semibold text-gray-900">{aula.titulo}</h3>
-          <p className="text-sm text-gray-500 mb-3">Aluno: {aula.aluno}</p>
+          <h3 className="text-base font-semibold text-gray-900">{aula.disciplina || aula.titulo}</h3>
+          <p className="text-sm text-gray-500 mb-3">Aluno: {aula.studentName || aula.aluno}</p>
 
           <div className="flex items-start text-sm text-gray-700 space-y-1 flex-col mb-4">
             <div className="flex items-center gap-2">
-              <CalendarDays size={16} /> {aula.data}
+              <CalendarDays size={16} /> {aula.date ? aula.date.split('-').reverse().join('/') : '---'}
             </div>
             <div className="flex items-center gap-2">
-              <Clock size={16} /> {aula.hora}
+              <Clock size={16} /> {aula.time ? aula.time.slice(0, 5) : '---'}
             </div>
             <div className="flex items-center gap-2">
-              <MapPin size={16} /> {aula.local}
+              <MapPin size={16} /> {aula.location || aula.local}
             </div>
           </div>
 

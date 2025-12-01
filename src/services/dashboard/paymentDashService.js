@@ -33,7 +33,7 @@ export const paymentDashService = {
   },
 
   async toggleStatus(id) {
-    const response = await api.post(`/dashboard/payments/${id}/toggle`);
+    const response = await api.post(`/api/dashboard/payments/${id}/toggle`);
     return response.data;
   }
 };

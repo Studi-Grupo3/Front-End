@@ -1,5 +1,5 @@
 import { api } from '../provider/api';
-import { translatePaymentStatus, translateSubject } from '../../utils/tradutionUtils';
+import { translatePaymentStatus, translateSubject, translateTeacherStatus } from '../../utils/tradutionUtils';
 
 export const teacherDashService = {
   async fetchDashboard() {
@@ -20,6 +20,32 @@ export const teacherDashService = {
 
   async getCharts() {
     const data = await this.fetchDashboard();
+
+    const subjectCounts = {};
+    const teachers = data.teacherTableValues || [];
+
+    teachers.forEach(teacher => {
+      let subjects = [];
+      let rawSubject = teacher.subjects || teacher.subject;
+
+      if (Array.isArray(rawSubject)) {
+        subjects = rawSubject;
+      } else if (typeof rawSubject === 'string') {
+        subjects = rawSubject.split(',').map(s => s.trim());
+      }
+
+      subjects.forEach(sub => {
+        const translated = translateSubject(sub);
+        subjectCounts[translated] = (subjectCounts[translated] || 0) + 1;
+      });
+    });
+
+    const totalSubjects = Object.values(subjectCounts).reduce((a, b) => a + b, 0);
+    const subjectChartData = Object.entries(subjectCounts).map(([label, count]) => ({
+      label,
+      value: totalSubjects > 0 ? (count / totalSubjects) * 100 : 0
+    }));
+
     return [
       {
         type: 'bar',
@@ -32,23 +58,31 @@ export const teacherDashService = {
       {
         type: 'pie',
         title: 'Distribuição por Disciplina',
-        data: (data.subsjectChartValues || []).map(d => ({
-          label: translateSubject(d.label),
-          value: d.percentage
-        }))
+        data: subjectChartData
       }
     ];
   },
 
   async getPayments() {
     const data = await this.fetchDashboard();
-    return (data.teacherTableValues || []).map(item => ({
-      name: item.name,
-      subject: translateSubject(item.subject),
-      hours: item.hoursWorked,
-      value: item.hourlyRate,
-      status: translatePaymentStatus(item.status),
-      actions: '…'
-    }));
+    return (data.teacherTableValues || []).map(item => {
+      let rawSubject = item.subjects || item.subject;
+      let firstSubject = '';
+
+      if (Array.isArray(rawSubject)) {
+        firstSubject = rawSubject.length > 0 ? rawSubject[0] : '';
+      } else if (typeof rawSubject === 'string') {
+        firstSubject = rawSubject.split(',')[0];
+      }
+
+      return {
+        name: item.name,
+        subject: translateSubject(firstSubject.trim()),
+        hours: item.hoursWorked,
+        value: item.hourlyRate,
+        status: translateTeacherStatus(item.status),
+        actions: '…'
+      };
+    });
   }
 };

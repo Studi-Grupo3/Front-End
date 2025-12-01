@@ -66,6 +66,33 @@ export const teacherService = {
     return api.get(url, { headers: authHeader() }).then(res => res.data);
   },
 
+  getPendingLessons: async () => {
+    try {
+      const [upcoming, history] = await Promise.all([
+        teacherService.getProximasAulas(),
+        teacherService.getLessonsHistory()
+      ]);
+
+      const allLessons = [...(upcoming || []), ...(history || [])];
+
+      // Remove duplicatas por ID
+      const uniqueLessons = Array.from(new Map(allLessons.map(item => [item.id, item])).values());
+
+      // Filtra apenas as agendadas (SCHEDULED)
+      const pending = uniqueLessons.filter(l => l.status === 'SCHEDULED');
+
+      // Ordena por data e hora
+      return pending.sort((a, b) => {
+        const dateA = new Date(`${a.date}T${a.time}`);
+        const dateB = new Date(`${b.date}T${b.time}`);
+        return dateA - dateB;
+      });
+    } catch (error) {
+      console.error("Erro ao buscar aulas pendentes:", error);
+      throw error;
+    }
+  },
+
   getMateriaisAlunos: () => {
     const url = buildTeacherUrl("materiais-alunos");
     return api.get(url, { headers: authHeader() }).then(res => res.data);

@@ -40,9 +40,22 @@ export function GerenciamentoProfessores() {
 
   async function load() {
     setLoading(true);
-    const data = await teacherManagerService.list();
-    setProfessores(data);
-    setLoading(false);
+    try {
+      const data = await teacherManagerService.list();
+      if (Array.isArray(data)) {
+        setProfessores(data);
+      } else if (data && Array.isArray(data.content)) {
+        setProfessores(data.content);
+      } else {
+        setProfessores([]);
+        console.error("Formato de dados inesperado:", data);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar professores:", error);
+      setProfessores([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const generatePassword = () => {
@@ -70,7 +83,8 @@ export function GerenciamentoProfessores() {
     setName(row.name);
     setEmail(row.email);
     setCpf(row.cpf || '');
-    setSubject(row.subject);
+    const firstSubject = (row.subjects && row.subjects.length > 0) ? row.subjects[0] : (row.subject || '');
+    setSubject(firstSubject);
     setPassword('');
     setCopySuccess(false);
     setShowForm(true);
@@ -106,8 +120,11 @@ export function GerenciamentoProfessores() {
     { label: 'E-mail', accessor: 'email' },
     {
       label: 'Disciplina',
-      accessor: 'subject',
-      render: row => translateSubject(row.subject)
+      accessor: 'subjects',
+      render: row => {
+        const subj = (row.subjects && row.subjects.length > 0) ? row.subjects[0] : (row.subject || '');
+        return translateSubject(subj);
+      }
     },
     {
       label: 'Ações',

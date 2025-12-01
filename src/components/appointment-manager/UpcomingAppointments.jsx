@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { appointmentService } from "../../services/appointmentService";
+import { authService } from "../../services/authService";
 import { AppointmentCard } from "./AppointmentCard";
 import { AppointmentModal } from "./AppointmentModal";
 import { SkeletonAppointmentCard } from "../../components/common/SkeletonAppointmentCard";
@@ -10,15 +11,16 @@ import {
 
 export const UpcomingAppointments = ({ filter, setActiveTab }) => {
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
   const fetchAppointments = useCallback(() => {
     setLoading(true);
+    const studentId = authService.getUserId();
     appointmentService
-      .list()
+      .getByStudentId(studentId)
       .then(data => {
         setAppointments(data);
         setError(null);

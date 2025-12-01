@@ -4,6 +4,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../../styles/calendar-css.css";
 import { appointmentService } from "../../services/appointmentService";
+import { authService } from "../../services/authService";
 import { translateSubject, translateProfessorTitle } from "../../utils/tradutionUtils";
 import { statusStyles } from "./StatusBadge";
 import { DayAppointmentsModal } from "../../components/ui/DayAppointmentsModal";
@@ -43,7 +44,8 @@ export const CalendarView = ({ filter, setActiveTab }) => {
 
   useEffect(() => {
     setLoading(true);
-    appointmentService.list()
+    const studentId = authService.getUserId();
+    appointmentService.getByStudentId(studentId)
       .then(data => setRawAulas(mapAppointments(data)))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
@@ -54,12 +56,12 @@ export const CalendarView = ({ filter, setActiveTab }) => {
       switch (filter) {
         case "UPCOMING": return ["SCHEDULED", "CANCELLED"].includes(app.status);
         case "CONFIRMED": return app.status === "SCHEDULED";
-        case "PENDING":   return app.status === "PENDING";
+        case "PENDING": return app.status === "PENDING";
         case "CANCELLED": return app.status === "CANCELLED";
         case "COMPLETED": return app.status === "COMPLETED";
-        case "ONLINE":    return app.online;
-        case "OFFLINE":   return !app.online;
-        default:           return true;
+        case "ONLINE": return app.online;
+        case "OFFLINE": return !app.online;
+        default: return true;
       }
     });
     setCalendarAulas(filteredForCalendar);
@@ -194,7 +196,8 @@ export const CalendarView = ({ filter, setActiveTab }) => {
           onClose={() => setDayModalOpen(false)}
           appointments={dayApps}
           onUpdate={() => {
-            appointmentService.list()
+            const studentId = authService.getUserId();
+            appointmentService.getByStudentId(studentId)
               .then(data => setRawAulas(mapAppointments(data)))
               .catch(err => console.error(err));
           }}
@@ -206,7 +209,8 @@ export const CalendarView = ({ filter, setActiveTab }) => {
             onClose={() => setAppModalOpen(false)}
             appointment={selectedApp}
             onUpdate={() => {
-              appointmentService.list()
+              const studentId = authService.getUserId();
+              appointmentService.getByStudentId(studentId)
                 .then(data => setRawAulas(mapAppointments(data)))
                 .catch(err => console.error(err));
             }}
