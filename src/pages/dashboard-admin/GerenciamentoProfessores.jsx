@@ -14,6 +14,7 @@ import {
   subjectNamesPt,
   translateSubject
 } from '../../utils/tradutionUtils';
+import { SubjectBadge } from '../../components/dashboard-admin/SubjectBadge';
 
 export function GerenciamentoProfessores() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -121,10 +122,7 @@ export function GerenciamentoProfessores() {
     {
       label: 'Disciplina',
       accessor: 'subjects',
-      render: row => {
-        const subj = (row.subjects && row.subjects.length > 0) ? row.subjects[0] : (row.subject || '');
-        return translateSubject(subj);
-      }
+      render: row => <SubjectBadge subjects={row.subjects || row.subject} />
     },
     {
       label: 'Ações',

@@ -9,6 +9,7 @@ import { HeaderSection } from '../../components/dashboard-admin/HeaderSection';
 
 import { DollarSign, BarChart, CheckCircle } from 'lucide-react';
 import { overviewDashService } from '../../services/dashboard/overviewDashService';
+import { SubjectBadge } from '../../components/dashboard-admin/SubjectBadge';
 
 export function VisaoGeral() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,41 +49,41 @@ export function VisaoGeral() {
         <main className="p-6 space-y-8">
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-             title={stats.totalRevenue.toLocaleString('pt-BR', {
-               style: 'currency',
-               currency: 'BRL',
-               minimumFractionDigits: 2,
-               maximumFractionDigits: 2
-             })}
+              title={stats.totalRevenue.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
               subtitle="Receita Total"
               // percentage="+12% este mês"
               percentageColor="text-green-500"
-              icon={<DollarSign className="text-blue-500 w-5 h-5" />}
+              icon={<DollarSign className="text-[#3970B7] w-5 h-5" />}
             />
             <StatCard
               title={stats.totalTeachers}
               subtitle="Total de Professores"
               // percentage="+5% este mês"
               percentageColor="text-green-500"
-              icon={<BarChart className="text-blue-500 w-5 h-5" />}
+              icon={<BarChart className="text-[#3970B7] w-5 h-5" />}
             />
             <StatCard
-               title={stats.pendingAmount.toLocaleString('pt-BR', {
-                 style: 'currency',
-                 currency: 'BRL',
-                 minimumFractionDigits: 2,
-                 maximumFractionDigits: 2
-               })}
-               subtitle="Pagamentos Pendentes"
-               percentageColor="text-red-500"
-               icon={<DollarSign className="text-blue-500 w-5 h-5" />}
-             />
+              title={stats.pendingAmount.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
+              subtitle="Pagamentos Pendentes"
+              percentageColor="text-red-500"
+              icon={<DollarSign className="text-[#3970B7] w-5 h-5" />}
+            />
             <StatCard
               title={stats.totalAppointments}
               subtitle="Agendamentos"
               // percentage="+3% este mês"
               percentageColor="text-green-500"
-              icon={<CheckCircle className="text-blue-500 w-5 h-5" />}
+              icon={<CheckCircle className="text-[#3970B7] w-5 h-5" />}
             />
           </section>
 
@@ -93,7 +94,7 @@ export function VisaoGeral() {
             data={payments}
             columns={[
               { label: 'Professor', accessor: 'teacherName' },
-              { label: 'Disciplina', accessor: 'subject' },
+              { label: 'Disciplina', accessor: 'subject', render: row => <SubjectBadge subjects={row.subject} /> },
               { label: 'Valor / Hora', accessor: 'hourlyRate' },
               { label: 'Horas Trabalhadas', accessor: 'duration' },
               { label: 'Valor Total', accessor: 'totalValue' },

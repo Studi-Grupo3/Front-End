@@ -6,8 +6,9 @@ import { MobileHeader } from '../../components/dashboard-admin/mobile/MobileHead
 import { StatCard } from '../../components/dashboard-admin/StatCard';
 import { ChartSection } from '../../components/dashboard-admin/ChartSection';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
-import { Users, CheckCircle, BookOpen, Star } from 'lucide-react';
+import { Users, CheckCircle, BookOpen, CalendarClock } from 'lucide-react';
 import { teacherDashService } from '../../services/dashboard/teacherDashService';
+import { SubjectBadge } from '../../components/dashboard-admin/SubjectBadge';
 
 export function Professores() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,13 +49,13 @@ export function Professores() {
         <HeaderSection title="Professores" />
         <main className="p-6 space-y-8">
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard title={stats.totalTeachers} subtitle="Total de Professores" icon={<Users className="w-5 h-5 text-blue-500" />} />
-            <StatCard title={stats.activeTeachers} subtitle="Professores Ativos" icon={<CheckCircle className="w-5 h-5 text-emerald-500" />} />
-            <StatCard title={stats.totalHoursWorked} subtitle="Total Horas de Aula no Mês" icon={<BookOpen className="w-5 h-5 text-purple-500" />} />
+            <StatCard title={stats.totalTeachers} subtitle="Total de Professores" icon={<Users className="w-5 h-5 text-[#3970B7]" />} />
+            <StatCard title={stats.activeTeachers} subtitle="Professores Ativos" icon={<CheckCircle className="w-5 h-5 text-[#3970B7]" />} />
+            <StatCard title={stats.totalHoursWorked} subtitle="Total Horas de Aula no Mês" icon={<BookOpen className="w-5 h-5 text-[#3970B7]" />} />
             <StatCard
               title={Number(stats.averageMonthlyHours).toFixed(0)}
               subtitle="Média de Horas Mensais"
-              icon={<Star className="w-5 h-5 text-yellow-500" />}
+              icon={<CalendarClock className="w-5 h-5 text-[#3970B7]" />}
             />
           </section>
           <ChartSection charts={charts} />
@@ -63,7 +64,7 @@ export function Professores() {
             data={payments}
             columns={[
               { label: 'Professor', accessor: 'name' },
-              { label: 'Disciplina', accessor: 'subject' },
+              { label: 'Disciplina', accessor: 'subject', render: row => <SubjectBadge subjects={row.subject} /> },
               { label: 'Horas Trabalhadas', accessor: 'hours' },
               { label: 'Valor/Hora', accessor: 'value' },
               { label: 'Status', accessor: 'status' },
