@@ -1,8 +1,10 @@
 import React from 'react';
 import { translateSubject, translateAppointmentStatus } from '../utils/tradutionUtils';
+import { formatPhoneNumber } from '../utils/phoneUtils';
 
 const LinhaAula = ({
   studentName,
+  studentPhone,
   subject,
   disciplina,
   date,
@@ -14,7 +16,7 @@ const LinhaAula = ({
 }) => {
   const [year, month, day] = date?.split('-') || [];
   const dataFormatada = day && month && year ? `${day}/${month}/${year}` : '---';
-  const horario = time ? time.slice(0,5) : '---';
+  const horario = time ? time.slice(0, 5) : '---';
 
   const rawSubject = subject ?? disciplina ?? '';
   const disciplinaTraduzida = rawSubject ? translateSubject(rawSubject) : '---';
@@ -34,6 +36,7 @@ const LinhaAula = ({
   return (
     <tr>
       <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{studentName}</td>
+      <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{formatPhoneNumber(studentPhone) || '---'}</td>
       <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{disciplinaTraduzida}</td>
       <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{dataFormatada}</td>
       <td className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>{horario}</td>

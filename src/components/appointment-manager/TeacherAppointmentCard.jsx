@@ -4,8 +4,10 @@ import {
     Clock,
     MapPin,
     User,
+    Phone,
 } from "lucide-react";
 import { StatusBadge, statusStyles } from "./StatusBadge";
+import { formatPhoneNumber } from "../../utils/phoneUtils";
 
 export const TeacherAppointmentCard = ({
     subject,
@@ -18,6 +20,7 @@ export const TeacherAppointmentCard = ({
     online,
     onDetailsClick = () => { },
     studentImageUrl = "",
+    studentPhone = null,
 }) => {
     const locationDisplay = online ? "Online" : location;
     const borderColor = statusStyles[status]?.rawColor || "#22c55e";
@@ -71,6 +74,12 @@ export const TeacherAppointmentCard = ({
                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--azul-custom)]" />
                     <span className="text-xs sm:text-sm">{locationDisplay}</span>
                 </div>
+                {studentPhone && (
+                    <div className="flex items-center">
+                        <Phone className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--azul-custom)]" />
+                        <span className="text-xs sm:text-sm">{formatPhoneNumber(studentPhone)}</span>
+                    </div>
+                )}
             </div>
 
             <button

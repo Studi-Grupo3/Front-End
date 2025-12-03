@@ -35,6 +35,7 @@ const TabelaAulas = ({ aulas: aulasProp = null, loading: loadingProp = false }) 
           <thead>
             <tr className="text-gray-500" style={{ borderBottom: '1px solid #E2E8F0' }}>
               <th className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>Aluno</th>
+              <th className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>Telefone</th>
               <th className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>Disciplina</th>
               <th className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>Data</th>
               <th className="px-4 py-2 border" style={{ borderColor: '#E2E8F0' }}>Horário</th>
@@ -45,11 +46,11 @@ const TabelaAulas = ({ aulas: aulasProp = null, loading: loadingProp = false }) 
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="text-center py-8">Carregando...</td>
+                <td colSpan={7} className="text-center py-8">Carregando...</td>
               </tr>
             ) : paginatedAulas.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-8">Nenhuma aula encontrada.</td>
+                <td colSpan={7} className="text-center py-8">Nenhuma aula encontrada.</td>
               </tr>
             ) : (
               paginatedAulas.map((aula, index) => (

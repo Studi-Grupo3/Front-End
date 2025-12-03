@@ -105,7 +105,8 @@ export default function TeacherClassesPage() {
                     key={l.id}
                     subject={translateSubject(l.disciplina)}
                     studentName={l.studentName}
-                    studentImageUrl={null} // No image for student in this response
+                    studentPhone={l.studentPhone}
+                    studentImageUrl={null}
                     date={displayDate}
                     time={displayTime}
                     duration={`${l.lessonDuration}min`}
@@ -115,7 +116,7 @@ export default function TeacherClassesPage() {
                     onDetailsClick={() => {
                       const adaptedLesson = {
                         ...l,
-                        professorName: l.studentName, // For modal compatibility if it expects this
+                        professorName: l.studentName,
                         professorTitle: "Aluno",
                         subject: l.disciplina,
                         dateTime: `${l.date}T${l.time}`,

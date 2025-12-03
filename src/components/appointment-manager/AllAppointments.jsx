@@ -103,6 +103,7 @@ export const AllAppointments = ({ filter = "ALL" }) => {
             professorName={app.professorName}
             professorTitle={app.displayProfTitle}
             professorImageUrl={app.professorImageUrl}
+            professorPhone={app.professorPhone}
             date={app.displayDate}
             time={app.displayTime}
             duration={`${app.duration}min`}
