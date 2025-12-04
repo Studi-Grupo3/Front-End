@@ -1,97 +1,70 @@
+// src/pages/HomePage.jsx
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
 import NavbarHome from "../components/NavbarHome";
 import Home from "../components/Home";
 import Historia from "../components/Historia";
 import Planos from "../components/Planos";
-import FaleConosco from "../components/FaleConosco";
-import Footer from "../components/Footer";
 import Servicos from "../components/Servicos";
 import ProfessorsSectionHome from "../components/ProfessorsSectionHome";
-
-const HomeSection = () => {
-    return (
-        <div id="home">
-            <Home />
-        </div>
-    );
-};
-
-const HistoriaSection = () => {
-    return (
-        <div>
-            <Historia />
-        </div>
-    );
-};
-
-const PlanosSection = () => {
-    return (
-        <div id="planos">
-            <Planos />
-        </div>
-    );
-};
-
-const ServicosSection = () => {
-    return (
-        <div id="servicos">
-            <Servicos />
-        </div>
-    );
-};
-
-const ProfessorSection = () => {
-    return (
-        <div id="professores">
-            <ProfessorsSectionHome />
-        </div>
-        
-    );
-};
-
-const FaleConoscoSection = () => {
-    return (
-        <div id="contato">
-            <FaleConosco />
-        </div>
-    );
-};
-
-const FooterSection = () => {
-    return (
-        <div id="footer">
-            <Footer />
-        </div>
-    );
-};
-
+import FaleConosco from "../components/FaleConosco";
+import Footer from "../components/Footer";
 
 export default function HomePage() {
-    return (
-        <>
-            <NavbarHome />
-            
+  const location = useLocation();
 
-            <div className="bg-[#3A6FD8] text-white font-quicksand">
-                <HomeSection />
-            </div>
+  useEffect(() => {
+    const target = location.state?.scrollTo;
+    if (!target) return;
 
-            <div className="bg-[#ffffff] text-black font-Quicksand">
-                <HistoriaSection />
-                <ServicosSection />
-                <PlanosSection />
-            </div>
+    setTimeout(() => {
+      const el = document.getElementById(target);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 120);
+  }, [location]);
 
-            <div className="bg-[#3A6FD8] text-white font-quicksand">
-                <ProfessorSection />
-            </div>
+  return (
+    <>
+      <NavbarHome />
 
-            <div className="bg-[#ffffff] text-black font-quicksand">
-                <FaleConoscoSection />
-            </div>
+      <div className="bg-[#3A6FD8] text-white font-quicksand">
+        <div id="home">
+          <Home />
+        </div>
+      </div>
 
-            <div className="bg-[#3A6FD8] text-white font-quicksand">
-                <FooterSection />
-            </div>
-        </>
-    );
+      <div className="bg-white text-black font-quicksand">
+        <div id="historia">
+          <Historia />
+        </div>
+
+        <div id="servicos">
+          <Servicos />
+        </div>
+
+        <div id="planos">
+          <Planos />
+        </div>
+      </div>
+
+      <div className="bg-[#3A6FD8] text-white font-quicksand">
+        <div id="professores">
+          <ProfessorsSectionHome />
+        </div>
+      </div>
+
+      <div className="bg-white text-black font-quicksand">
+        <div id="contato">
+          <FaleConosco />
+        </div>
+      </div>
+
+      <div className="bg-[#3A6FD8] text-white font-quicksand">
+        <Footer />
+      </div>
+    </>
+  );
 }

@@ -4,18 +4,18 @@ import {
   Mail 
 } from "lucide-react";
 import logo2 from "../assets/logo2.png";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   return (
     <footer className="bg-[#3970B7] border-t-2 border-yellow-300 text-white py-8 px-4 md:px-0">
       <div className="max-w-7xl mx-auto grid grid-cols-1 gap-y-8 md:grid-cols-4 md:gap-x-8">
         
-        {/* Coluna 1: Logo + redes sociais */}
+        {/* Coluna 1: Logo */}
         <div className="flex flex-col items-center text-center md:items-start md:text-left">
-          
-          {/* Aqui: contêiner full-width, que centraliza no mobile e alinha à esquerda no md */}
           <div className="w-full flex justify-end md:justify-start mb-4 px-7">
-            {/* Logo com altura h-32 (128px) */}
             <img src={logo2} alt="Logo" className="h-32 w-auto" />
           </div>
         </div>
@@ -41,15 +41,16 @@ const Footer = () => {
                 Professores
               </a>
             </li>
-            <li>
-              <a href="#cadastre-se" className="hover:text-yellow-300">
-                Cadastre-se
-              </a>
+            <li
+              className="hover:text-yellow-300 cursor-pointer"
+              onClick={() => navigate("/cadastrar")}
+            >
+              Cadastre-se
             </li>
           </ul>
         </div>
 
-        {/* Coluna 3: Áreas de Ensino */}
+        {/* Coluna 3: Áreas */}
         <div className="flex flex-col items-center text-center md:items-start md:text-left">
           <h4 className="text-lg font-bold mb-2 border-b border-yellow-300 inline-block">
             Áreas De Ensino
