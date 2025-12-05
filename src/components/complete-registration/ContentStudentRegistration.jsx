@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ActionButtons from "./ActionButtons";
 import { mascararCpf, mascararDataNascimento, mascararCelular } from "../../utils/formUtils";
 import { showAlert } from "../ShowAlert";
+import { studentService } from "../../services/studentService";
 
 export default function ContentStudentRegistration({ current, formData, onChange, onSave, onProgressChange }) {
   const [previewUrl, setPreviewUrl] = useState("");
@@ -32,9 +33,45 @@ export default function ContentStudentRegistration({ current, formData, onChange
       });
       return;
     }
+
+    // preview immediately
     const base64 = await fileToBase64(file);
     setPreviewUrl(base64);
-    localStorage.setItem("fotoPerfilAluno", base64);
+
+    // Try to upload to backend (persist on server). If it fails, fallback to localStorage-only.
+    try {
+      const studentId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+      if (studentId) {
+        await studentService.uploadFoto(studentId, file);
+
+        // try fetching canonical photo from backend
+        try {
+          const blob = await studentService.getProfilePhoto(studentId);
+          if (blob) {
+            const dataUrl = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+            try { localStorage.setItem("fotoPerfilAluno", dataUrl); } catch (err) { /* ignore */ }
+            try { localStorage.setItem("fotoPerfilProfessor", dataUrl); } catch (err) { /* ignore */ }
+            window.dispatchEvent(new CustomEvent('profile-photo-updated', { detail: { url: dataUrl } }));
+            showAlert({ title: "Foto atualizada!", text: `Sua foto foi enviada ao servidor com sucesso.`, icon: "success" });
+            return;
+          }
+        } catch (err) {
+          // ignore fetching error and fallback to local
+        }
+      }
+    } catch (err) {
+      // upload failed - we'll fallback to localStorage below
+    }
+
+    // Fallback: persist locally and notify
+    try { localStorage.setItem("fotoPerfilAluno", base64); } catch (err) { /* ignore */ }
+    try { localStorage.setItem("fotoPerfilProfessor", base64); } catch (err) { /* ignore */ }
+    window.dispatchEvent(new CustomEvent('profile-photo-updated', { detail: { url: base64 } }));
     showAlert({
       title: "Foto atualizada!",
       text: `Sua foto foi selecionada com sucesso!\nArquivo: ${file.name}\nTamanho: ${(file.size / 1024).toFixed(2)} KB`,

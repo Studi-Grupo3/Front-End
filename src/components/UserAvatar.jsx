@@ -8,8 +8,10 @@ const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, on
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
-    // Initialize from localStorage if available
-    const stored = localStorage.getItem("fotoPerfilProfessor");
+    // Initialize from localStorage if available (check both teacher and student keys)
+    const storedProfessor = localStorage.getItem("fotoPerfilProfessor");
+    const storedAluno = localStorage.getItem("fotoPerfilAluno");
+    const stored = storedProfessor || storedAluno;
     if (stored) setAvatarUrl(stored);
 
     // If nothing stored, try fetching from backend (authenticated)
@@ -47,7 +49,7 @@ const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, on
     const handler = (e) => {
       if (e && e.detail && e.detail.url) setAvatarUrl(e.detail.url);
       else {
-        const cur = localStorage.getItem("fotoPerfilProfessor");
+        const cur = localStorage.getItem("fotoPerfilProfessor") || localStorage.getItem("fotoPerfilAluno");
         setAvatarUrl(cur);
       }
     };
