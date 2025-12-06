@@ -9,7 +9,7 @@ const TeacherChartClassesPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    teacherService.getProximasAulas()
+    teacherService.getPendingLessons()
       .then(data => setAulas(data))
       .catch(error => {
         console.error('Erro ao carregar próximas aulas:', error);

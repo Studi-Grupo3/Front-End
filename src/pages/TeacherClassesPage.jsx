@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import NavbarPanel from "../components/NavbarPanel";
 import InfoCard from "../components/InfoCard";
-import { DollarSign, Users, Clock, Download } from "lucide-react";
+import { DollarSign, Users, Clock } from "lucide-react";
 import { teacherService } from "../services/teacherService";
 import { translateSubject, translateWeekday, translateMonth } from "../utils/tradutionUtils";
+import { TeacherAppointmentCard } from "../components/appointment-manager/TeacherAppointmentCard";
+import { AppointmentModal } from "../components/appointment-manager/AppointmentModal";
 
 export default function TeacherClassesPage() {
   const [stats, setStats] = useState(null);
@@ -13,14 +15,11 @@ export default function TeacherClassesPage() {
   const [loadingLessons, setLoadingLessons] = useState(true);
   const [errorLessons, setErrorLessons] = useState(null);
 
-  useEffect(() => {
-    // estatísticas
-    teacherService.getStats()
-      .then(setStats)
-      .catch(() => setStats(null))
-      .finally(() => setLoadingStats(false));
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
-    // próximas aulas via endpoint
+  const fetchLessons = () => {
+    setLoadingLessons(true);
     teacherService.getProximasAulas()
       .then(data => {
         setLessons(data);
@@ -30,6 +29,16 @@ export default function TeacherClassesPage() {
         setErrorLessons("Não foi possível carregar as próximas aulas.");
       })
       .finally(() => setLoadingLessons(false));
+  };
+
+  useEffect(() => {
+    // estatísticas
+    teacherService.getStats()
+      .then(setStats)
+      .catch(() => setStats(null))
+      .finally(() => setLoadingStats(false));
+
+    fetchLessons();
   }, []);
 
   return (
@@ -71,53 +80,66 @@ export default function TeacherClassesPage() {
           {loadingLessons && <p>Carregando aulas...</p>}
           {errorLessons && <p className="text-red-600">{errorLessons}</p>}
 
-          {!loadingLessons && !errorLessons && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {!loadingLessons && !errorLessons && lessons.length === 0 && (
+            <div className="p-6 text-center text-gray-500">
+              Nenhuma aula agendada encontrada.
+            </div>
+          )}
+
+          {!loadingLessons && !errorLessons && lessons.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {lessons.map(l => {
                 // data e hora separados no DTO
                 const [year, month, day] = l.date.split("-");
+                // l.time might be "HH:MM:SS" or "HH:MM"
                 const [hour, minute] = l.time.split(":");
                 const dt = new Date(l.date + "T" + l.time);
-                const weekday = translateWeekday(dt.toLocaleDateString("en-US", { weekday: "long" }));
-                const monthPt = translateMonth(dt.toLocaleDateString("en-US", { month: "long" }));
-                const displayDate = `${weekday}, ${day} de ${monthPt}`;
+
+                const displayDate = dt.toLocaleDateString("pt-BR", {
+                  weekday: "long", day: "numeric", month: "long"
+                });
                 const displayTime = `${hour}:${minute}`;
 
                 return (
-                  <div
+                  <TeacherAppointmentCard
                     key={l.id}
-                    className="p-6 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition border-t-4 border-[#FECB0A]"
-                  >
-                    <h4 className="text-xl font-semibold text-[#3970B7] mb-2">
-                      {translateSubject(l.disciplina)}
-                    </h4>
-                    <p className="text-sm text-gray-600 mb-1">
-                      Aluno: {l.studentName}
-                    </p>
-                    <p className="text-sm text-gray-600 mb-1">
-                      {displayDate} às {displayTime}
-                    </p>
-                    <p className="text-sm text-gray-600 mb-1">
-                      Duração: <span className="font-medium text-[#3970B7]">{l.lessonDuration} min</span>
-                    </p>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Local: <span className="font-medium text-[#3970B7]">{l.location}</span>
-                    </p>
-                    <a
-                      href={l.materialUrl || "#"}
-                      download
-                      className="inline-flex items-center px-4 py-2 bg-[#3970B7] text-white rounded-lg hover:bg-opacity-90 transition"
-                    >
-                      <Download className="w-5 h-5 mr-2" />
-                      Material
-                    </a>
-                  </div>
+                    subject={translateSubject(l.disciplina)}
+                    studentName={l.studentName}
+                    studentPhone={l.studentPhone}
+                    studentImageUrl={null}
+                    date={displayDate}
+                    time={displayTime}
+                    duration={`${l.lessonDuration}min`}
+                    location={l.location}
+                    status={l.status}
+                    online={l.location === "Online"}
+                    onDetailsClick={() => {
+                      const adaptedLesson = {
+                        ...l,
+                        professorName: l.studentName,
+                        professorTitle: "Aluno",
+                        subject: l.disciplina,
+                        dateTime: `${l.date}T${l.time}`,
+                        duration: l.lessonDuration,
+                      };
+                      setSelectedLesson(adaptedLesson);
+                      setOpenModal(true);
+                    }}
+                  />
                 );
               })}
             </div>
           )}
         </section>
       </div>
+
+      <AppointmentModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        appointment={selectedLesson}
+        onUpdate={fetchLessons}
+        isTeacherView={true}
+      />
     </div>
   );
 }

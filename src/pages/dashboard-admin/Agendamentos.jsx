@@ -7,7 +7,7 @@ import { MobileHeader } from '../../components/dashboard-admin/mobile/MobileHead
 import { StatCard } from '../../components/dashboard-admin/StatCard';
 import { ChartSection } from '../../components/dashboard-admin/ChartSection';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
-import { CalendarCheck2, Clock3, Timer, AlertTriangle } from 'lucide-react';
+import { CalendarCheck2, Clock3, Timer, Hourglass } from 'lucide-react';
 import { appointmentDashService } from '../../services/dashboard/appointmentDashService';
 
 export function Agendamentos() {
@@ -18,7 +18,7 @@ export function Agendamentos() {
     activeStudents: 0,
     averageDuration: 0
   });
-  const [charts, setCharts] = useState([]); 
+  const [charts, setCharts] = useState([]);
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
@@ -57,22 +57,22 @@ export function Agendamentos() {
             <StatCard
               title={stats.totalAppointments}
               subtitle="Total de Agendamentos"
-              icon={<CalendarCheck2 className="w-5 h-5 text-emerald-500" />}
+              icon={<CalendarCheck2 className="w-5 h-5 text-[#3970B7]" />}
             />
             <StatCard
               title={stats.confirmedCount}
               subtitle="Agendamentos Confirmados"
-              icon={<Clock3 className="w-5 h-5 text-blue-500" />}
+              icon={<Clock3 className="w-5 h-5 text-[#3970B7]" />}
             />
             <StatCard
               title={stats.activeStudents}
               subtitle="Alunos Ativos"
-              icon={<Timer className="w-5 h-5 text-yellow-500" />}
+              icon={<Timer className="w-5 h-5 text-[#3970B7]" />}
             />
             <StatCard
               title={`${stats.averageDuration.toFixed(0)} min`}
               subtitle="Duração Média das Aulas"
-              icon={<AlertTriangle className="w-5 h-5 text-red-500" />}
+              icon={<Hourglass className="w-5 h-5 text-[#3970B7]" />}
             />
           </section>
 

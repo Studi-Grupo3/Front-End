@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { appointmentService } from "../../services/appointmentService";
-import { AppointmentCard }    from "./AppointmentCard";
-import { AppointmentModal }   from "./AppointmentModal";
+import { authService } from "../../services/authService";
+import { AppointmentCard } from "./AppointmentCard";
+import { AppointmentModal } from "./AppointmentModal";
 import { SkeletonAppointmentCard } from "../../components/common/SkeletonAppointmentCard";
 import {
   translateSubject,
@@ -10,15 +11,16 @@ import {
 
 export const AllAppointments = ({ filter = "ALL" }) => {
   const [appointments, setAppointments] = useState([]);
-  const [loading,      setLoading]      = useState(true);
-  const [error,        setError]        = useState(null);
-  const [selected,     setSelected]     = useState(null);
-  const [openModal,    setOpenModal]    = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const fetchAppointments = useCallback(() => {
     setLoading(true);
+    const studentId = authService.getUserId();
     appointmentService
-      .list()
+      .getByStudentId(studentId)
       .then(data => {
         setAppointments(data);
         setError(null);
@@ -79,15 +81,15 @@ export const AllAppointments = ({ filter = "ALL" }) => {
   // 5) aplica filtro e render normal
   const visible = items.filter(app => {
     switch (filter) {
-      case "ALL":       return true;
-      case "UPCOMING":  return ["SCHEDULED", "CANCELLED"].includes(app.status);
+      case "ALL": return true;
+      case "UPCOMING": return ["SCHEDULED", "CANCELLED"].includes(app.status);
       case "CONFIRMED": return app.status === "SCHEDULED";
-      case "PENDING":   return app.status === "PENDING";
+      case "PENDING": return app.status === "PENDING";
       case "CANCELLED": return app.status === "CANCELLED";
       case "COMPLETED": return app.status === "COMPLETED";
-      case "ONLINE":    return app.online;
-      case "OFFLINE":   return !app.online;
-      default:          return true;
+      case "ONLINE": return app.online;
+      case "OFFLINE": return !app.online;
+      default: return true;
     }
   });
 
@@ -101,6 +103,7 @@ export const AllAppointments = ({ filter = "ALL" }) => {
             professorName={app.professorName}
             professorTitle={app.displayProfTitle}
             professorImageUrl={app.professorImageUrl}
+            professorPhone={app.professorPhone}
             date={app.displayDate}
             time={app.displayTime}
             duration={`${app.duration}min`}

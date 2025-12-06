@@ -6,7 +6,8 @@ export function TableSection({ title, columns, data, action }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredData = data.filter(row =>
+  const safeData = Array.isArray(data) ? data : [];
+  const filteredData = safeData.filter(row =>
     columns.some(col => {
       if (col.accessor) {
         return String(row[col.accessor] || '')

@@ -10,10 +10,11 @@ import { ToggleSwitch } from '../../components/ui/ToggleSwitch';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { CreditCard, Banknote, Wallet, TrendingUp } from 'lucide-react';
 import { paymentDashService } from '../../services/dashboard/paymentDashService';
+import { SubjectBadge } from '../../components/dashboard-admin/SubjectBadge';
 
 function formatCurrency(value) {
-  if (!value) return '';  // deixa título do card em branco enquanto carrega
-  return value.toLocaleString('pt-BR', {
+  const numValue = value ?? 0;
+  return numValue.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
     minimumFractionDigits: 2
@@ -22,17 +23,16 @@ function formatCurrency(value) {
 
 export function Pagamentos() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // stats inicial vazio para manter layout estático
   const [stats, setStats] = useState({
-    totalAmount: '',
-    pendingAmount: '',
-    realizedAmount: '',
-    averageAmountPerTeacher: ''
+    totalAmount: 0,
+    pendingAmount: 0,
+    realizedAmount: 0,
+    averageAmountPerTeacher: 0
   });
   const [payments, setPayments] = useState([]);
   const [onlyPending, setOnlyPending] = useState(false);
-  const [month, setMonth] = useState( new Date().getMonth() + 1 );
-  const [year, setYear] = useState( new Date().getFullYear() );
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
   const [modalData, setModalData] = useState({ isOpen: false });
 
   useEffect(() => {
@@ -59,18 +59,26 @@ export function Pagamentos() {
       message: `Deseja marcar "${item.name}" como ${item.status === 'Pago' ? 'pendente' : 'pago'}?`
     });
   };
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const { item } = modalData;
     setModalData(d => ({ ...d, isOpen: false }));
-    paymentDashService.toggleStatus(item.id).then(() => {
-      // re-fetch
-      return paymentDashService.getRecent(month, year);
-    }).then(data => {
-      setPayments(data);
-    });
+
+    try {
+      await paymentDashService.toggleStatus(item.id, month, year);
+      // Recarrega tanto os stats quanto os pagamentos
+      const [statsData, paymentsData] = await Promise.all([
+        paymentDashService.getStats(month, year),
+        paymentDashService.getRecent(month, year)
+      ]);
+      setStats(statsData);
+      setPayments(paymentsData);
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+    }
   };
 
   const filtered = payments
+    .filter(p => p.hours > 0)
     .filter(p => !onlyPending || p.status === 'Pendente')
     .map(item => ({
       ...item,
@@ -91,22 +99,22 @@ export function Pagamentos() {
             <StatCard
               title={formatCurrency(stats.totalAmount)}
               subtitle="Total a Pagar"
-              icon={<CreditCard />}
+              icon={<CreditCard className="text-[#3970B7] w-5 h-5" />}
             />
             <StatCard
               title={formatCurrency(stats.pendingAmount)}
               subtitle="Pagamentos Pendentes"
-              icon={<Wallet />}
+              icon={<Wallet className="text-[#3970B7] w-5 h-5" />}
             />
             <StatCard
               title={formatCurrency(stats.realizedAmount)}
               subtitle="Pagamentos Realizados"
-              icon={<Banknote />}
+              icon={<Banknote className="text-[#3970B7] w-5 h-5" />}
             />
             <StatCard
               title={formatCurrency(stats.averageAmountPerTeacher)}
               subtitle="Média por Professor"
-              icon={<TrendingUp />}
+              icon={<TrendingUp className="text-[#3970B7] w-5 h-5" />}
             />
           </section>
 
@@ -127,7 +135,7 @@ export function Pagamentos() {
               onChange={e => setYear(Number(e.target.value))}
               className="px-4 py-2 border rounded"
             >
-              {[year, year - 1, year - 2].map(y => (
+              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(y => (
                 <option key={y} value={y}>{y}</option>
               ))}
             </select>
@@ -137,27 +145,34 @@ export function Pagamentos() {
             </label>
           </div>
 
-          <TableSection
-            title="Pagamentos Recentes"
-            data={filtered}
-            columns={[
-              { label: 'Professor', accessor: 'name' },
-              { label: 'Disciplina', accessor: 'subject' },
-              { label: 'Valor / Hora', accessor: 'valuePerHourFormatted' },
-              { label: 'Horas Trabalhadas', accessor: 'hours' },
-              { label: 'Valor total', accessor: 'totalFormatted' },
-              { label: 'Status', accessor: 'status' },
-              {
-                label: 'Pago',
-                render: item => (
-                  <ToggleSwitch
-                    checked={item.status === 'Pago'}
-                    onChange={() => openConfirmation(item)}
-                  />
-                )
-              }
-            ]}
-          />
+          {filtered.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+              <p className="text-gray-500 text-lg">Nenhum professor precisa ser pago neste período.</p>
+              <p className="text-gray-400 text-sm mt-2">Não há professores com horas trabalhadas no mês/ano selecionado.</p>
+            </div>
+          ) : (
+            <TableSection
+              title="Gerenciar pagamentos"
+              data={filtered}
+              columns={[
+                { label: 'Professor', accessor: 'name' },
+                { label: 'Disciplina', accessor: 'subject', render: row => <SubjectBadge subjects={row.subject} /> },
+                { label: 'Valor / Hora', accessor: 'valuePerHourFormatted' },
+                { label: 'Horas Trabalhadas', accessor: 'hours' },
+                { label: 'Valor total', accessor: 'totalFormatted' },
+                { label: 'Status', accessor: 'status' },
+                {
+                  label: 'Pago',
+                  render: item => (
+                    <ToggleSwitch
+                      checked={item.status === 'Pago'}
+                      onChange={() => openConfirmation(item)}
+                    />
+                  )
+                }
+              ]}
+            />
+          )}
 
           <ConfirmationModal
             isOpen={modalData.isOpen}

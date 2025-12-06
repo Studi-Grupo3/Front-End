@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { X, Calendar, Clock, MapPin, FileText, DollarSign } from "lucide-react";
+import { X, Calendar, Clock, MapPin, FileText, DollarSign, Phone } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
 import { appointmentService } from "../../services/appointmentService";
@@ -9,6 +9,7 @@ import {
   translateWeekday,
   translateMonth
 } from "../../utils/tradutionUtils";
+import { formatPhoneNumber } from "../../utils/phoneUtils";
 
 export const AppointmentModal = ({
   isOpen,
@@ -143,9 +144,15 @@ Caso tenha qualquer dúvida sobre o que registrar, consulte o professor correspo
               <MapPin className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
               <span>{appointment.online ? "Online" : appointment.location}</span>
             </div>
+            {(appointment.professorPhone || appointment.studentPhone) && (
+              <div className="flex items-center text-gray-600">
+                <Phone className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
+                <span>{formatPhoneNumber(appointment.professorPhone || appointment.studentPhone)}</span>
+              </div>
+            )}
             <div className="flex items-center text-gray-600">
               <DollarSign className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
-              <span>Valor da aula: R$ {appointment.totalValue.toFixed(2)}</span>
+              <span>Valor da aula: R$ {appointment.totalValue ? appointment.totalValue.toFixed(2) : "0.00"}</span>
             </div>
           </div>
 

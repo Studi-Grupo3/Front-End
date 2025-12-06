@@ -76,12 +76,21 @@ export function translateSubject(subjectEn = '') {
 
 
 export function translateProfessorTitle(titleEn) {
-  const parts = titleEn.split(/ de /i);
-  if (parts.length !== 2) {
-    return titleEn;
-  }
-  
-  const [prefix, subjEn] = parts;
-  const subjPt = translateSubject(subjEn);
-  return `${prefix} de ${subjPt}`;
+    const parts = titleEn.split(/ de /i);
+    if (parts.length !== 2) {
+        return titleEn;
+    }
+
+    const [prefix, subjEn] = parts;
+    const subjPt = translateSubject(subjEn);
+    return `${prefix} de ${subjPt}`;
+}
+
+export const teacherStatusPt = {
+    ACTIVE: 'Ativo',
+    INACTIVE: 'Inativo',
+};
+
+export function translateTeacherStatus(statusEn) {
+    return teacherStatusPt[statusEn.toUpperCase()] || statusEn;
 }

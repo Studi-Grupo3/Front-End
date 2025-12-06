@@ -32,8 +32,10 @@ export const paymentDashService = {
     }));
   },
 
-  async toggleStatus(id) {
-    const response = await api.post(`/dashboard/payments/${id}/toggle`);
+  async toggleStatus(id, month, year) {
+    const response = await api.post('/dashboard/payments/toggle-status', null, {
+      params: { teacherId: id, month, year }
+    });
     return response.data;
   }
 };
