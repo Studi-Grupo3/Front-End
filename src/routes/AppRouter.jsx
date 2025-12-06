@@ -50,6 +50,7 @@ export const AppRouter = () => {
         <Route path="/professor/metricas-aula" element={<TeacherGraph />} />
         <Route path="/professor/solicitacoes" element={<TeacherRequests />} />
         <Route path="/professor/aulas" element={<TeacherClassesPage />} />
+        <Route path="/aluno/pagamento" element={<Payment />} />
 
 
         {/* ROTAS PROTEGIDAS */}
@@ -67,7 +68,6 @@ export const AppRouter = () => {
           <Route path="/aluno/modelo-aula" element={<ClassModelSelection />} />
           <Route path="/aluno/escolher-professor" element={<ChooseProfessor />} />
           <Route path="/aluno/agendar-aula" element={<Scheduling />} />
-          <Route path="/aluno/pagamento" element={<Payment />} />
           <Route path="/aluno/concluido/:appointmentId"element={<ConfirmedPayment />}/>
           <Route path="/aluno/agendamento/criar" element={<MultiStepFlowContainer />} />
 

@@ -121,6 +121,12 @@ export default function CompleteStudentRegistrationPage() {
         ...formData,
         dateBirth: formatDateToBackend(formData.dateBirth),
       };
+      // If the email field was cleared by the user (empty string), do not send it
+      // to avoid overwriting the existing email with an empty value which breaks login.
+      if (!dataToSend.email || (typeof dataToSend.email === 'string' && dataToSend.email.trim() === '')) {
+        delete dataToSend.email;
+        showAlert({ title: "Aviso", text: "O campo de email está vazio — o email existente não será alterado.", icon: "info" });
+      }
       await studentService.update(studentId, dataToSend);
       showAlert({
         title: "Perfil atualizado com sucesso",

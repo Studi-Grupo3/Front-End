@@ -28,7 +28,6 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
         initialization: {
           amount: 100.0,
           preferenceId,
-
         },
         customization: {
           visual: { style: { theme: "default" } },
@@ -56,29 +55,29 @@ export const useInitializeBrick = ({ publicKey, preferenceId, createPayment, onP
                 throw new Error("❌ ERRO: Token do cartão não foi gerado!");
               }
 
+              // Build payer object mapping from Brick to backend shape
+              const payer = {
+                email: formData.payer?.email || (formData.payer && formData.payer.email) || undefined,
+                firstName: formData.payer?.first_name || formData.payer?.firstName || "Cliente",
+                identification: formData.payer?.identification || { type: "CPF", number: "12345678909" },
+                address: {
+                  streetName: formData.payer?.address?.street_name || formData.payer?.address?.streetName || (payerAddress && payerAddress.streetName) || "Rua Exemplo",
+                  streetNumber: formData.payer?.address?.street_number || formData.payer?.address?.streetNumber || (payerAddress && payerAddress.streetNumber) || "0",
+                  zipCode: formData.payer?.address?.zip_code || formData.payer?.address?.zipCode || (payerAddress && payerAddress.zipCode) || "00000000",
+                }
+              };
+
               const payload = {
-                transaction_amount: formData.transaction_amount,
-                description: "Compra via Brick",
-                installments: formData.installments,
-                payment_method_id: formData.payment_method_id,
-                payer: {
-                  email: formData.payer?.email,
-                  first_name: formData.payer?.first_name || "Cliente",
-                  identification: formData.payer?.identification || { type: "CPF", number: "12345678909" },
-                  address: payerAddress || {
-                    zip_code: "01001000",
-                    street_name: "Av. Paulista",
-                    street_number: "123",
-                    neighborhood: "Bela Vista",
-                    city: "São Paulo",
-                    federal_unit: "SP"
-                  }
-                },
+                transactionAmount: formData.transaction_amount || formData.transactionAmount,
+                description: formData.description || "Compra via Brick",
+                installments: formData.installments || formData.installments_count || 1,
+                paymentMethodId: formData.payment_method_id || formData.paymentMethodId,
+                payer,
               };
 
               // 📌 Apenas cartão precisa de token
               if (!isBoleto && !isPix) {
-                payload.token = formData.token;
+                payload.token = formData.token || formData.card?.token || formData.token_id;
               }
 
               console.log("📤 Enviando pagamento ao backend...", payload);
