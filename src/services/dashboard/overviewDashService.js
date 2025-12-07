@@ -43,27 +43,27 @@ export const overviewDashService = {
   },
 
   async getRecentPaymentsTable() {
-  const data = await this.fetchOverview();
-  const formatter = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  });
+    const data = await this.fetchOverview();
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
 
-  return data.recentPayments.map(item => {
-    const hourlyRate = item.hourlyRate; 
-    const duration = item.durationClass;
+    return data.recentPayments.map(item => {
+      const hourlyRate = item.hourlyRate;
+      const duration = item.durationClass;
 
-    const totalValue = hourlyRate * duration;
-    return {
-      teacherName: item.teacher,         
-      subject: translateSubject(item.subject),               
-      hourlyRate: formatter.format(hourlyRate),
-      duration,                         
-      totalValue: formatter.format(totalValue),
-      paymentStatus: translatePaymentStatus(item.status),
-      actions: ''
-    };
-  });
-}
+      const totalValue = hourlyRate * duration;
+      return {
+        teacherName: item.teacher,
+        subject: item.subject,
+        hourlyRate: formatter.format(hourlyRate),
+        duration,
+        totalValue: formatter.format(totalValue),
+        paymentStatus: translatePaymentStatus(item.status),
+        actions: ''
+      };
+    });
+  }
 
 };

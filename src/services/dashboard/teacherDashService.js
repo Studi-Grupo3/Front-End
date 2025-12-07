@@ -69,15 +69,9 @@ export const teacherDashService = {
       let rawSubject = item.subjects || item.subject;
       let firstSubject = '';
 
-      if (Array.isArray(rawSubject)) {
-        firstSubject = rawSubject.length > 0 ? rawSubject[0] : '';
-      } else if (typeof rawSubject === 'string') {
-        firstSubject = rawSubject.split(',')[0];
-      }
-
       return {
         name: item.name,
-        subject: translateSubject(firstSubject.trim()),
+        subject: rawSubject,
         hours: item.hoursWorked,
         value: item.hourlyRate,
         status: translateTeacherStatus(item.status),
