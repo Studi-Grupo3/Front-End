@@ -99,8 +99,7 @@ export function GerenciamentoProfessores() {
   }
 
   async function save() {
-    const cleanedCpf = cpf.replace(/[^\d]/g, '');
-    const payload = { name, email, cpf: cleanedCpf, subject, password };
+    const payload = { name, email, cpf, subject, password };
     if (editingId !== null) {
       await teacherManagerService.update(editingId, payload);
     } else {

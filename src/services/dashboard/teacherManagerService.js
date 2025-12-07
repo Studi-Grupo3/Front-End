@@ -3,7 +3,7 @@ import { api } from '../provider/api';
 export const teacherManagerService = {
 
   async list() {
-    const resp = await api.get('/teachers');
+    const resp = await api.get('/teachers', { params: { size: 100 } });
     return resp.data;
   },
 
