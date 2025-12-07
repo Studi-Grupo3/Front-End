@@ -51,10 +51,39 @@ export const UpcomingAppointments = ({ filter, setActiveTab }) => {
     );
   }
 
+  // Configuração da fonte das imagens dos professores
+  const IMAGE_SOURCE_CONFIG = {
+    useMock: true,
+    // Backend deve retornar URL completa se não for mock
+  };
+
   const items = appointments.map(appt => {
     const dt = new Date(appt.dateTime);
+
+    // Lógica de Imagem do Professor
+    let finalProfessorImage = null;
+
+    if (appt.professorImageUrl) {
+      finalProfessorImage = appt.professorImageUrl;
+    }
+
+    if (!finalProfessorImage && IMAGE_SOURCE_CONFIG.useMock) {
+      const profName = appt.professorName || "";
+      // Remove "Prof. " if present to cleaner slug, or just use full name
+      const cleanName = profName.replace(/^Prof\.\s+/i, "");
+
+      const profSlug = cleanName.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, '-');
+
+      if (profSlug) {
+        finalProfessorImage = `/images/professors/${profSlug}.png`;
+      }
+    }
+
     return {
       ...appt,
+      professorImageUrl: finalProfessorImage, // Override with calculated image
       displayDate: dt.toLocaleDateString("pt-BR", {
         weekday: "long", day: "numeric", month: "long"
       }),

@@ -5,15 +5,19 @@ export function SubjectBadge({ subjects }) {
     // Handle stringified arrays like "[CHEMISTRY, PHYSICS, BIOL"
     let normalizedSubjects = subjects;
 
-    if (typeof subjects === 'string' && subjects.startsWith('[')) {
-        // It's a stringified array, try to parse it
-        try {
-            // Clean up the string and parse
-            const cleaned = subjects.replace(/^\[|\]$/g, '').trim();
-            normalizedSubjects = cleaned.split(',').map(s => s.trim()).filter(s => s);
-        } catch (e) {
-            console.error('Error parsing subjects:', e);
-            normalizedSubjects = [subjects];
+    if (typeof subjects === 'string') {
+        if (subjects.startsWith('[')) {
+            // It's a stringified array, try to parse it
+            try {
+                const cleaned = subjects.replace(/^\[|\]$/g, '').trim();
+                normalizedSubjects = cleaned.split(',').map(s => s.trim()).filter(s => s);
+            } catch (e) {
+                console.error('Error parsing subjects:', e);
+                normalizedSubjects = [subjects];
+            }
+        } else if (subjects.includes(',')) {
+            // It's a simple comma-separated string
+            normalizedSubjects = subjects.split(',').map(s => s.trim()).filter(s => s);
         }
     }
 

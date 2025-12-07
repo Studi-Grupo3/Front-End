@@ -15,6 +15,7 @@ import {
   translateSubject
 } from '../../utils/tradutionUtils';
 import { SubjectBadge } from '../../components/dashboard-admin/SubjectBadge';
+import { mascararCpf } from '../../utils/formUtils';
 
 export function GerenciamentoProfessores() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -98,8 +99,7 @@ export function GerenciamentoProfessores() {
   }
 
   async function save() {
-    const cleanedCpf = cpf.replace(/[^\d]/g, '');
-    const payload = { name, email, cpf: cleanedCpf, subject, password };
+    const payload = { name, email, cpf, subject, password };
     if (editingId !== null) {
       await teacherManagerService.update(editingId, payload);
     } else {
@@ -188,7 +188,7 @@ export function GerenciamentoProfessores() {
               label="CPF"
               type="text"
               value={cpf}
-              onChange={e => setCpf(e.target.value)}
+              onChange={e => setCpf(mascararCpf(e.target.value))}
             />
 
             <label className="block">

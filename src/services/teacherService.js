@@ -73,7 +73,7 @@ export const teacherService = {
         teacherService.getLessonsHistory()
       ]);
 
-      const allLessons = [...(upcoming || []), ...(history || [])];
+      const allLessons = [...(history || []), ...(upcoming || [])];
 
       // Remove duplicatas por ID
       const uniqueLessons = Array.from(new Map(allLessons.map(item => [item.id, item])).values());

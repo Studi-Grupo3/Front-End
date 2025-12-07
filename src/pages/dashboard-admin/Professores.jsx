@@ -6,7 +6,7 @@ import { MobileHeader } from '../../components/dashboard-admin/mobile/MobileHead
 import { StatCard } from '../../components/dashboard-admin/StatCard';
 import { ChartSection } from '../../components/dashboard-admin/ChartSection';
 import { TableSection } from '../../components/dashboard-admin/TableSection';
-import { Users, CheckCircle, BookOpen, CalendarClock } from 'lucide-react';
+import { Users, CheckCircle, BookOpen, CalendarClock, DollarSign } from 'lucide-react';
 import { teacherDashService } from '../../services/dashboard/teacherDashService';
 import { SubjectBadge } from '../../components/dashboard-admin/SubjectBadge';
 
@@ -50,7 +50,11 @@ export function Professores() {
         <main className="p-6 space-y-8">
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard title={stats.totalTeachers} subtitle="Total de Professores" icon={<Users className="w-5 h-5 text-[#3970B7]" />} />
-            <StatCard title={stats.activeTeachers} subtitle="Professores Ativos" icon={<CheckCircle className="w-5 h-5 text-[#3970B7]" />} />
+            <StatCard
+              title={stats.averageHourlyRate.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              subtitle="Valor Hora Médio"
+              icon={<DollarSign className="w-5 h-5 text-[#3970B7]" />}
+            />
             <StatCard title={stats.totalHoursWorked} subtitle="Total Horas de Aula no Mês" icon={<BookOpen className="w-5 h-5 text-[#3970B7]" />} />
             <StatCard
               title={Number(stats.averageMonthlyHours).toFixed(0)}

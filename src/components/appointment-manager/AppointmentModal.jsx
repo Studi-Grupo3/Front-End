@@ -15,7 +15,8 @@ export const AppointmentModal = ({
   isOpen,
   onClose,
   appointment,
-  onUpdate
+  onUpdate,
+  isTeacherView = false
 }) => {
   const modalRef = useRef();
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
@@ -150,10 +151,12 @@ Caso tenha qualquer dúvida sobre o que registrar, consulte o professor correspo
                 <span>{formatPhoneNumber(appointment.professorPhone || appointment.studentPhone)}</span>
               </div>
             )}
-            <div className="flex items-center text-gray-600">
-              <DollarSign className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
-              <span>Valor da aula: R$ {appointment.totalValue ? appointment.totalValue.toFixed(2) : "0.00"}</span>
-            </div>
+            {!isTeacherView && (
+              <div className="flex items-center text-gray-600">
+                <DollarSign className="w-5 h-5 mr-2 text-[var(--azul-custom)]" />
+                <span>Valor da aula: R$ {appointment.totalValue ? appointment.totalValue.toFixed(2) : "0.00"}</span>
+              </div>
+            )}
           </div>
 
           {/* Material de apoio */}
