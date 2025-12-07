@@ -15,6 +15,7 @@ import {
   translateSubject
 } from '../../utils/tradutionUtils';
 import { SubjectBadge } from '../../components/dashboard-admin/SubjectBadge';
+import { mascararCpf } from '../../utils/formUtils';
 
 export function GerenciamentoProfessores() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -188,7 +189,7 @@ export function GerenciamentoProfessores() {
               label="CPF"
               type="text"
               value={cpf}
-              onChange={e => setCpf(e.target.value)}
+              onChange={e => setCpf(mascararCpf(e.target.value))}
             />
 
             <label className="block">
