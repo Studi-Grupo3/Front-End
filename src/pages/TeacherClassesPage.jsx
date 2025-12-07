@@ -11,6 +11,10 @@ export default function TeacherClassesPage() {
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
 
+  const IMAGE_SOURCE_CONFIG = {
+    useMock: true,
+  };
+
   const [lessons, setLessons] = useState([]);
   const [loadingLessons, setLoadingLessons] = useState(true);
   const [errorLessons, setErrorLessons] = useState(null);
@@ -22,10 +26,12 @@ export default function TeacherClassesPage() {
     setLoadingLessons(true);
     teacherService.getProximasAulas()
       .then(data => {
-        setLessons(data);
+        const safeData = Array.isArray(data) ? data : [];
+        setLessons(safeData);
         setErrorLessons(null);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Erro fetchLessons:", err);
         setErrorLessons("Não foi possível carregar as próximas aulas.");
       })
       .finally(() => setLoadingLessons(false));
@@ -89,9 +95,8 @@ export default function TeacherClassesPage() {
           {!loadingLessons && !errorLessons && lessons.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {lessons.map(l => {
-                // data e hora separados no DTO
+                if (!l.date || !l.time) return null;
                 const [year, month, day] = l.date.split("-");
-                // l.time might be "HH:MM:SS" or "HH:MM"
                 const [hour, minute] = l.time.split(":");
                 const dt = new Date(l.date + "T" + l.time);
 
@@ -100,13 +105,30 @@ export default function TeacherClassesPage() {
                 });
                 const displayTime = `${hour}:${minute}`;
 
+                let finalStudentImage = null;
+
+                if (l.studentImageUrl) {
+                  finalStudentImage = l.studentImageUrl;
+                }
+
+                if (!finalStudentImage && IMAGE_SOURCE_CONFIG.useMock) {
+                  const studentSlug = l.studentName
+                    ? l.studentName.toLowerCase()
+                      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                      .replace(/\s+/g, '-')
+                    : "";
+                  if (studentSlug) {
+                    finalStudentImage = `/images/students/${studentSlug}.png`;
+                  }
+                }
+
                 return (
                   <TeacherAppointmentCard
                     key={l.id}
                     subject={translateSubject(l.disciplina)}
                     studentName={l.studentName}
                     studentPhone={l.studentPhone}
-                    studentImageUrl={null}
+                    studentImageUrl={finalStudentImage}
                     date={displayDate}
                     time={displayTime}
                     duration={`${l.lessonDuration}min`}
@@ -118,6 +140,7 @@ export default function TeacherClassesPage() {
                         ...l,
                         professorName: l.studentName,
                         professorTitle: "Aluno",
+                        professorImageUrl: finalStudentImage,
                         subject: l.disciplina,
                         dateTime: `${l.date}T${l.time}`,
                         duration: l.lessonDuration,

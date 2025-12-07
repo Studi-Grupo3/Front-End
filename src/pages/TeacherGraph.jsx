@@ -3,15 +3,7 @@ import InfoCard from "../components/InfoCard";
 import { GraphCard } from "../components/dashboard-admin/GraphCard";
 import NavbarPanel from "../components/NavbarPanel";
 import { teacherService } from "../services/teacherService";
-
-// mapeia seu enum Subject para label amigável
-const mapSubjectToLabel = {
-  MATH:       "Matemática",
-  ENGLISH:    "Inglês",
-  CHEMISTRY:  "Química",
-  PHILOSOPHY: "Filosofia",
-  // ... demais subjects
-};
+import { translateSubject } from "../utils/tradutionUtils";
 
 // mapeia weekday (1=Domingo…7=Sábado) para label
 const mapWeekdayToLabel = {
@@ -25,15 +17,15 @@ const mapWeekdayToLabel = {
 };
 
 export default function TeacherGraph() {
-  const [metrics, setMetrics]         = useState([]);
-  const [chartsTop, setChartsTop]     = useState([]);
+  const [metrics, setMetrics] = useState([]);
+  const [chartsTop, setChartsTop] = useState([]);
   const [chartsBottom, setChartsBottom] = useState([]);
 
   useEffect(() => {
     teacherService.getDashboard()
       .then(data => {
-        const totalMinutes = data.totalHours; 
-        const hours   = Math.floor(totalMinutes / 60);
+        const totalMinutes = data.totalHours;
+        const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
         const formattedHours = `${hours}h ${minutes}m`;
 
@@ -63,7 +55,7 @@ export default function TeacherGraph() {
             title: "Distribuição por Disciplinas",
             type: "bar",
             data: data.lessonsByDiscipline.map(d => ({
-              label: mapSubjectToLabel[d.subject] || d.subject,
+              label: translateSubject(d.subject),
               value: d.count
             })),
             color: "rgba(59, 130, 246, 0.5)"
