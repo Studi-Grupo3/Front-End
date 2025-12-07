@@ -6,12 +6,14 @@ export const usePayments = () => {
   const [error, setError] = useState(null);
 
   const createPayment = async (paymentData) => {
-    const isBoleto = paymentData.payment_method_id === "bolbradesco";
-    const isPix = paymentData.payment_method_id === "pix";
+    const isBoleto = paymentData.paymentMethodId === "bolbradesco";
+    const isPix = paymentData.paymentMethodId === "pix";
 
     // 📌 Apenas cartão de crédito precisa do token
     if (!isBoleto && !isPix && !paymentData.token) {
-      console.error("❌ Erro: Token do cartão ausente! O pagamento não será enviado.");
+      console.error(
+        "❌ Erro: Token do cartão ausente! O pagamento não será enviado."
+      );
       return;
     }
 
@@ -19,7 +21,7 @@ export const usePayments = () => {
     setError(null);
 
     try {
-      return await paymentService.create(paymentData);
+      return await paymentService.createPayment(paymentData);
     } catch (err) {
       setError(err);
       throw err;
