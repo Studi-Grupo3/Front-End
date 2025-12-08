@@ -155,7 +155,11 @@ const RegisterPage = () => {
             <LoadingButton
               isLoading={loading}
               type="submit"
-              className="rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer w-75 md:w-80 h-10 text-sm mt-2"
+              className="
+                rounded-lg bg-[#FECB0A] text-black font-semibold cursor-pointer 
+                w-75 md:w-80 h-10 text-sm mt-2 transition-all duration-300
+                hover:-translate-y-1 hover:shadow-xl
+              "
             >
               Cadastrar
             </LoadingButton>

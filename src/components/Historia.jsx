@@ -1,13 +1,26 @@
+import { useEffect, useState } from "react";
 import SaibaMaisButton from "./SaibaMaisButton";
 import imagemHistoria from "../assets/fotoHistoria.png";
 
 const Historia = () => {
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setAnimate(true), 50);
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <div
       id="historia"
-      className="flex flex-col md:flex-row items-center justify-center py-12 md:h-[95vh] relative z-10 bg-[#f8f8f8]"
+      className={`
+        flex flex-col md:flex-row items-center justify-center
+        py-12 md:h-[95vh] relative z-10 bg-[#f8f8f8]
+        transition-all duration-[1200ms] ease-out
+        ${animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+      `}
     >
-      {/* Coluna da imagem (manter à esquerda e aumentar levemente) */}
+      {/* Coluna da imagem */}
       <div className="md:w-1/2 flex justify-start items-center mb-8">
         <img
           src={imagemHistoria}
@@ -16,15 +29,17 @@ const Historia = () => {
         />
       </div>
 
-      {/* Coluna do texto (trazer um pouco mais para a esquerda) */}
+      {/* Coluna do texto */}
       <div className="w-full md:w-1/2 flex justify-center md:justify-center items-center md:items-start px-6 md:px-0 text-left">
         <div className="flex flex-col items-center md:items-start space-y-4 max-w-lg text-sm sm:text-base">
           <p className="text-[#3970B7] font-bold text-xs uppercase border-b-[2px] border-[#FECB0A] pb-1">
             Sobre nós
           </p>
+
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#3970B7]">
             Conheça Nossa História
           </h2>
+
           <p className="text-gray-600 font-[Quicksand] leading-relaxed">
             A Studi nasceu com o propósito de oferecer um suporte acadêmico
             personalizado para alunos que precisam de acompanhamento mais
@@ -38,6 +53,7 @@ const Historia = () => {
             próprio ritmo, com professores capacitados e métodos de ensino
             adaptados às suas necessidades.
           </p>
+
           <p className="text-start text-base md:text-lg font-semibold italic text-gray-700 mt-4">
             Transformando vidas pela educação desde 2018
           </p>
