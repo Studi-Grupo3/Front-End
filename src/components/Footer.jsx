@@ -1,18 +1,60 @@
-import { 
-  MapPin, 
-  Phone, 
-  Mail 
+// src/components/Footer.jsx
+import {
+  MapPin,
+  Phone,
+  Mail
 } from "lucide-react";
 import logo2 from "../assets/logo2.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { smoothScrollTo } from "../utils/smoothScroll";
+import { useEffect, useRef, useState } from "react";
 
 const Footer = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToSection = (id) => {
+    if (location.pathname === "/") {
+      const el = document.getElementById(id);
+      if (el) {
+        const pos = el.getBoundingClientRect().top + window.scrollY - 80;
+        smoothScrollTo(pos, 900);
+        return;
+      }
+    }
+
+    navigate("/", { state: { scrollTo: id } });
+  };
 
   return (
-    <footer className="bg-[#3970B7] border-t-2 border-yellow-300 text-white py-8 px-4 md:px-0">
+    <footer
+      ref={ref}
+      className={`
+        bg-[#3970B7] border-t-2 border-yellow-300 text-white py-8 px-4 md:px-0
+        transition-all duration-[1200ms] ease-out
+        ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+      `}
+    >
       <div className="max-w-7xl mx-auto grid grid-cols-1 gap-y-8 md:grid-cols-4 md:gap-x-8">
-        
+
         {/* Coluna 1: Logo */}
         <div className="flex flex-col items-center text-center md:items-start md:text-left">
           <div className="w-full flex justify-end md:justify-start mb-4 px-7">
@@ -27,19 +69,28 @@ const Footer = () => {
           </h4>
           <ul className="space-y-2 mt-3">
             <li>
-              <a href="#historia" className="hover:text-yellow-300">
+              <button
+                onClick={() => scrollToSection("historia")}
+                className="hover:text-yellow-300 cursor-pointer"
+              >
                 Sobre Nós
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#planos" className="hover:text-yellow-300">
+              <button
+                onClick={() => scrollToSection("planos")}
+                className="hover:text-yellow-300 cursor-pointer"
+              >
                 Planos
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#professores" className="hover:text-yellow-300">
+              <button
+                onClick={() => scrollToSection("professores")}
+                className="hover:text-yellow-300 cursor-pointer"
+              >
                 Professores
-              </a>
+              </button>
             </li>
             <li
               className="hover:text-yellow-300 cursor-pointer"
@@ -69,20 +120,24 @@ const Footer = () => {
             Contato
           </h4>
           <ul className="space-y-3 mt-3">
-            <li className="flex flex-col items-center sm:flex-row sm:items-center gap-1 sm:gap-2 hover:text-yellow-300 cursor-pointer">
-              <MapPin size={20} />
-              <span className="text-sm">
-                6391 Elgin St. Celina, Delaware 10299
-              </span>
+
+            <li className="flex flex-col items-center sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <a
+                href="https://wa.me/5511983458739"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-yellow-300 cursor-pointer"
+              >
+                <Phone size={20} />
+                <span className="text-sm">(11) 98345-8739</span>
+              </a>
             </li>
-            <li className="flex flex-col items-center sm:flex-row sm:items-center gap-1 sm:gap-2 hover:text-yellow-300 cursor-pointer">
-              <Phone size={20} />
-              <span className="text-sm">(303) 555-0105</span>
-            </li>
+
             <li className="flex flex-col items-center sm:flex-row sm:items-center gap-1 sm:gap-2 hover:text-yellow-300 cursor-pointer">
               <Mail size={20} />
-              <span className="text-sm">michael.mitc@example.com</span>
+              <span className="text-sm">mamasantolin@gmail.com</span>
             </li>
+
           </ul>
         </div>
 

@@ -1,10 +1,22 @@
 // src/components/Planos.jsx
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import imagemFundamental from "../assets/imagemFundamental.png";
 import imagemInfantil from "../assets/imagemInfantil.png";
 import imagemMedio from "../assets/imagemMedio.png";
 
 const Planos = () => {
+  const navigate = useNavigate();
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  const handleSaibaMais = () => {
+    const isLogged = !!sessionStorage.getItem("token");
+    if (!isLogged) return navigate("/cadastrar");
+    navigate("/aluno/inicio");
+  };
+
   const cards = [
     {
       title: "Ensino Infantil",
@@ -23,8 +35,27 @@ const Planos = () => {
     },
   ];
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setVisible(entries[0].isIntersecting);
+      },
+      { threshold: 0.2 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="bg-[#f8f8f8] py-16 px-6">
+    <section
+      ref={ref}
+      className={`
+        bg-[#f8f8f8] py-16 px-6
+        transition-all duration-[1200ms] ease-out
+        ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+      `}
+    >
       <div className="max-w-3xl mx-auto text-center mb-12">
         <p className="inline-block text-[#3970B7] text-lg relative font-semibold mb-2">
           Planos
@@ -44,11 +75,14 @@ const Planos = () => {
         {cards.map((card, idx) => (
           <div
             key={idx}
-            className="
+            style={{ transitionDelay: `${idx * 150}ms` }}
+            className={`
               flex mx-auto flex-col bg-[#3970B7] rounded-2xl border-2
-              border-gray-300 shadow-2xl overflow-hidden hover:scale-105
-              transition-transform w-[85%]
-            "
+              border-gray-300 shadow-2xl overflow-hidden
+              transition-all duration-[900ms] ease-out
+              ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+              hover:scale-105 w-[85%]
+            `}
           >
             <div className="px-10 pt-5 pb-6 flex-1 flex flex-col justify-center">
               <div className="w-2/3 h-36 overflow-hidden rounded-lg mb-4 mx-auto">
@@ -63,9 +97,12 @@ const Planos = () => {
                 {card.text}
               </p>
 
-              <a href="#" className="mt-auto inline-block text-[#FECB0A] font-bold hover:underline text-center">
+              <button
+                onClick={handleSaibaMais}
+                className="mt-auto inline-block text-[#FECB0A] font-bold hover:underline text-center cursor-pointer"
+              >
                 Saiba Mais &gt;
-              </a>
+              </button>
             </div>
 
             <div className="h-2 bg-[#FECB0A]" />
