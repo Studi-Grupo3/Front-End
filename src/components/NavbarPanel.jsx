@@ -117,7 +117,7 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
             <>
               <h2
                 className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
-                onClick={() => navigate("/professor/inicio")}
+                onClick={() => navigate("/professor/aulas")}
               >
                 Início
               </h2>
