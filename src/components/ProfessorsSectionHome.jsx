@@ -33,11 +33,11 @@ export default function ProfessorsSectionHome() {
     const isLogged = !!sessionStorage.getItem("token");
 
     if (!isLogged) {
-      navigate("/cadastrar"); // se não estiver logado
+      navigate("/cadastrar"); 
       return;
     }
 
-    navigate("/aluno/agendar-aula"); // se estiver logado
+    navigate("/aluno/agendar-aula");
   };
 
   // LOAD
@@ -133,10 +133,10 @@ export default function ProfessorsSectionHome() {
                       {prof.resumeTeacher || "Professor ainda não adicionou um resumo."}
                     </p>
 
-                    {/* BOTÃO — AGORA FUNCIONA */}
+                    
                     <div className="mt-auto pt-4">
                       <button
-                        onClick={handleAgendar} // 👈 AQUI A MÁGICA
+                        onClick={handleAgendar}
                         className="
                           w-full flex items-center justify-center gap-2 py-2 
                           bg-[#3970B7] text-white font-bold rounded-lg 
