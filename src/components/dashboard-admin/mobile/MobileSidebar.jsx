@@ -20,6 +20,8 @@ export function MobileSidebar({ isOpen, onClose }) {
     try {
       await mobileAuthService.logout();
       sessionStorage.clear();
+      localStorage.removeItem('fotoPerfilProfessor');
+      localStorage.removeItem('fotoPerfilAluno');
       navigate("/");
       window.location.reload();
     } catch (error) {

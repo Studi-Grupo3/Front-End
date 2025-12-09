@@ -11,7 +11,7 @@ export const studentService = {
     const formData = new FormData();
     // backend expects part name 'file' according to ProfilePhotoController
     formData.append('file', file);
-    return api.put('/profile-photos', formData, {
+    return api.post('/profile-photos', formData, {
       params: { id: Number(id), role: 'student' },
       headers: { 'Content-Type': 'multipart/form-data' }
     }).then(res => res.data);

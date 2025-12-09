@@ -19,6 +19,8 @@ export function Sidebar() {
     try {
       await authService.logout();
       sessionStorage.clear();
+      localStorage.removeItem('fotoPerfilProfessor');
+      localStorage.removeItem('fotoPerfilAluno');
       navigate("/");
       window.location.reload();
     } catch (error) {

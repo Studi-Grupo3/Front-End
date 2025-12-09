@@ -17,9 +17,38 @@ export default function ContentTeacherRegistration({ current, formData, onChange
     const [previewUrl, setPreviewUrl] = useState("");
 
     useEffect(() => {
-        const fotoSalva = localStorage.getItem("fotoPerfilProfessor");
-        if (fotoSalva) setPreviewUrl(fotoSalva);
-    }, []);
+        const userId = professorId || localStorage.getItem("userId") || sessionStorage.getItem("userId");
+        if (!userId) return;
+
+        const userKey = `fotoPerfil_${userId}`;
+        const cached = localStorage.getItem(userKey);
+        
+        // If we already have a cached photo, use it immediately (user just uploaded)
+        if (cached) {
+            setPreviewUrl(cached);
+            return; // Don't fetch from backend, keep the uploaded photo visible
+        }
+
+        // Only fetch from backend if no cached photo exists
+        const fetchPhoto = async () => {
+            try {
+                const blob = await teacherService.getProfilePhoto(userId);
+                if (blob) {
+                    const dataUrl = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                    setPreviewUrl(dataUrl);
+                    try { localStorage.setItem(userKey, dataUrl); } catch (e) { /* ignore */ }
+                }
+            } catch (err) {
+                // No photo on backend - expected for new users, show placeholder
+            }
+        };
+        fetchPhoto();
+    }, [professorId]);
 
     // Função para converter arquivo em base64
     const fileToBase64 = (file) => {
@@ -37,7 +66,11 @@ export default function ContentTeacherRegistration({ current, formData, onChange
         if (!file) return;
         const base64 = await fileToBase64(file);
         setPreviewUrl(base64);
-        localStorage.setItem("fotoPerfilProfessor", base64);
+        const userId = professorId || localStorage.getItem("userId") || sessionStorage.getItem("userId");
+        if (userId) {
+            const userKey = `fotoPerfil_${userId}`;
+            localStorage.setItem(userKey, base64);
+        }
         showAlert({
             title: "Foto atualizada!",
             text: `Sua foto foi selecionada com sucesso!\nArquivo: ${file.name}\nTamanho: ${(file.size / 1024).toFixed(2)} KB`,
@@ -49,18 +82,27 @@ export default function ContentTeacherRegistration({ current, formData, onChange
         const file = e.target.files[0];
         if (!file) return;
 
+        console.log("Iniciando upload de foto:", {
+            professorId,
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type
+        });
+
         try {
             const resp = await teacherService.uploadFoto(professorId, file);
+            console.log("Upload bem-sucedido! Resposta do backend:", resp);
 
             // If backend returns a URL for the saved photo, use it. Fallback to base64 preview.
             const photoUrl = resp && (resp.photoUrl || resp.url || resp.data || resp.path);
+            const userKey = `fotoPerfil_${professorId}`;
             if (photoUrl) {
                 setPreviewUrl(photoUrl);
-                try { localStorage.setItem("fotoPerfilProfessor", photoUrl); } catch (err) { /* ignore */ }
+                try { localStorage.setItem(userKey, photoUrl); } catch (err) { /* ignore */ }
             } else {
                 const base64 = await fileToBase64(file);
                 setPreviewUrl(base64);
-                try { localStorage.setItem("fotoPerfilProfessor", base64); } catch (err) { /* ignore */ }
+                try { localStorage.setItem(userKey, base64); } catch (err) { /* ignore */ }
             }
 
             showAlert({
@@ -80,7 +122,8 @@ export default function ContentTeacherRegistration({ current, formData, onChange
                         reader.readAsDataURL(blob);
                     });
                     setPreviewUrl(dataUrl);
-                    try { localStorage.setItem("fotoPerfilProfessor", dataUrl); } catch (err) { /* ignore */ }
+                    const userKey = `fotoPerfil_${professorId}`;
+                    try { localStorage.setItem(userKey, dataUrl); } catch (err) { /* ignore */ }
                     window.dispatchEvent(new CustomEvent('profile-photo-updated', { detail: { url: dataUrl } }));
                 } else {
                     const newUrl = photoUrl || (await fileToBase64(file));
@@ -94,16 +137,33 @@ export default function ContentTeacherRegistration({ current, formData, onChange
                 } catch (_) { /* ignore */ }
             }
         } catch (err) {
-            console.error("Erro ao enviar foto do professor", err);
+            console.error("Erro ao enviar foto do professor:", err);
+            
+            // Extract detailed error from backend
+            const errorMessage = err?.response?.data?.message 
+                || err?.response?.data?.error 
+                || err?.message 
+                || "Erro desconhecido";
+            const errorDetails = err?.response?.data?.trace || "";
+            
+            console.error("Detalhes do erro:", {
+                status: err?.response?.status,
+                message: errorMessage,
+                trace: errorDetails,
+                fullError: err
+            });
+            
             showAlert({
-                title: "Erro no upload",
-                text: "Não foi possível enviar a foto para o servidor. Salvando localmente como fallback.",
+                title: "Erro no upload para o servidor",
+                text: `Não foi possível salvar a foto no banco de dados.\n\nErro: ${errorMessage}\n\nA foto será salva localmente como fallback.`,
                 icon: "error"
             });
+            
             // fallback to local behavior
             const base64 = await fileToBase64(file);
             setPreviewUrl(base64);
-            try { localStorage.setItem("fotoPerfilProfessor", base64); } catch (e) { /* ignore */ }
+            const userKey = `fotoPerfil_${professorId}`;
+            try { localStorage.setItem(userKey, base64); } catch (e) { /* ignore */ }
         }
     };
 

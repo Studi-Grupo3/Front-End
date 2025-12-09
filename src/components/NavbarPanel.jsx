@@ -80,7 +80,10 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
       await authService.logout();
       console.log("Logout realizado com sucesso.");
 
+      // Clear session and localStorage photo data to prevent cross-user contamination
       sessionStorage.clear();
+      localStorage.removeItem('fotoPerfilProfessor');
+      localStorage.removeItem('fotoPerfilAluno');
       navigate("/");
       window.location.reload();
     } catch (error) {

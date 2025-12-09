@@ -10,8 +10,37 @@ export default function ContentStudentRegistration({ current, formData, onChange
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const fotoSalva = localStorage.getItem("fotoPerfilAluno");
-    if (fotoSalva) setPreviewUrl(fotoSalva);
+    const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
+    if (!userId) return;
+
+    const userKey = `fotoPerfil_${userId}`;
+    const cached = localStorage.getItem(userKey);
+    
+    // If we already have a cached photo, use it immediately (user just uploaded)
+    if (cached) {
+      setPreviewUrl(cached);
+      return; // Don't fetch from backend, keep the uploaded photo visible
+    }
+
+    // Only fetch from backend if no cached photo exists
+    const fetchPhoto = async () => {
+      try {
+        const blob = await studentService.getProfilePhoto(userId);
+        if (blob) {
+          const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          setPreviewUrl(dataUrl);
+          try { localStorage.setItem(userKey, dataUrl); } catch (e) { /* ignore */ }
+        }
+      } catch (err) {
+        // No photo on backend - expected for new users, show placeholder
+      }
+    };
+    fetchPhoto();
   }, []);
 
   const fileToBase64 = (file) =>
@@ -34,15 +63,28 @@ export default function ContentStudentRegistration({ current, formData, onChange
       return;
     }
 
+    const studentId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+    if (!studentId) {
+      showAlert({ title: "Erro", text: "ID do aluno não encontrado. Faça login novamente.", icon: "error" });
+      return;
+    }
+
     // preview immediately
     const base64 = await fileToBase64(file);
     setPreviewUrl(base64);
 
     // Try to upload to backend (persist on server). If it fails, fallback to localStorage-only.
     try {
-      const studentId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
       if (studentId) {
-        await studentService.uploadFoto(studentId, file);
+        console.log("Iniciando upload de foto do aluno:", {
+          studentId,
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type
+        });
+        
+        const resp = await studentService.uploadFoto(studentId, file);
+        console.log("Upload bem-sucedido! Resposta do backend:", resp);
 
         // try fetching canonical photo from backend
         try {
@@ -54,8 +96,8 @@ export default function ContentStudentRegistration({ current, formData, onChange
               reader.onerror = reject;
               reader.readAsDataURL(blob);
             });
-            try { localStorage.setItem("fotoPerfilAluno", dataUrl); } catch (err) { /* ignore */ }
-            try { localStorage.setItem("fotoPerfilProfessor", dataUrl); } catch (err) { /* ignore */ }
+            const userKey = `fotoPerfil_${studentId}`;
+            try { localStorage.setItem(userKey, dataUrl); } catch (err) { /* ignore */ }
             window.dispatchEvent(new CustomEvent('profile-photo-updated', { detail: { url: dataUrl } }));
             showAlert({ title: "Foto atualizada!", text: `Sua foto foi enviada ao servidor com sucesso.`, icon: "success" });
             return;
@@ -65,12 +107,29 @@ export default function ContentStudentRegistration({ current, formData, onChange
         }
       }
     } catch (err) {
-      // upload failed - we'll fallback to localStorage below
+      console.error("Erro ao enviar foto do aluno:", err);
+      
+      const errorMessage = err?.response?.data?.message 
+          || err?.response?.data?.error 
+          || err?.message 
+          || "Erro desconhecido";
+      
+      console.error("Detalhes do erro:", {
+        status: err?.response?.status,
+        message: errorMessage,
+        fullError: err
+      });
+      
+      showAlert({
+        title: "Aviso",
+        text: `Não foi possível salvar no servidor: ${errorMessage}.\nA foto será salva localmente.`,
+        icon: "warning"
+      });
     }
 
     // Fallback: persist locally and notify
-    try { localStorage.setItem("fotoPerfilAluno", base64); } catch (err) { /* ignore */ }
-    try { localStorage.setItem("fotoPerfilProfessor", base64); } catch (err) { /* ignore */ }
+    const userKey = `fotoPerfil_${studentId}`;
+    try { localStorage.setItem(userKey, base64); } catch (err) { /* ignore */ }
     window.dispatchEvent(new CustomEvent('profile-photo-updated', { detail: { url: base64 } }));
     showAlert({
       title: "Foto atualizada!",

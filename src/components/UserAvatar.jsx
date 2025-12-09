@@ -8,19 +8,18 @@ const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, on
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
-    // Initialize from localStorage if available (check both teacher and student keys)
-    const storedProfessor = localStorage.getItem("fotoPerfilProfessor");
-    const storedAluno = localStorage.getItem("fotoPerfilAluno");
-    const stored = storedProfessor || storedAluno;
-    if (stored) setAvatarUrl(stored);
+    const userId = sessionStorage.getItem('userId');
+    const userRole = (sessionStorage.getItem('userRole') || '').toLowerCase();
+    
+    if (!userId) {
+      setAvatarUrl(null);
+      return;
+    }
 
-    // If nothing stored, try fetching from backend (authenticated)
-    const tryFetch = async () => {
-      if (stored) return;
-      const userId = sessionStorage.getItem('userId');
-      const userRole = (sessionStorage.getItem('userRole') || '').toLowerCase();
-      if (!userId) return;
+    const userKey = `fotoPerfil_${userId}`;
 
+    // Always fetch from backend to get latest photo (backend is source of truth)
+    const fetchFromBackend = async () => {
       try {
         let blob = null;
         if (userRole.includes('teach') || userRole.includes('prof')) {
@@ -37,20 +36,37 @@ const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, on
             reader.readAsDataURL(blob);
           });
           setAvatarUrl(dataUrl);
-          try { localStorage.setItem('fotoPerfilProfessor', dataUrl); } catch (e) { /* ignore */ }
+          // Cache in localStorage for offline/faster subsequent loads
+          try { localStorage.setItem(userKey, dataUrl); } catch (e) { /* ignore */ }
+        } else {
+          // No photo on backend, clear any stale cache
+          setAvatarUrl(null);
+          localStorage.removeItem(userKey);
         }
       } catch (err) {
-        // ignore fetch errors - keep initials
-        // console.debug('no profile photo available', err);
+        // Backend error or no photo - this is expected for users without photo
+        // Try localStorage as fallback, then show initials
+        const cached = localStorage.getItem(userKey);
+        if (cached) {
+          setAvatarUrl(cached);
+        } else {
+          setAvatarUrl(null);
+        }
+        // Don't log - UserDontHaveProfilePhoto is expected when user hasn't uploaded yet
       }
     };
-    tryFetch();
+    fetchFromBackend();
 
     const handler = (e) => {
-      if (e && e.detail && e.detail.url) setAvatarUrl(e.detail.url);
-      else {
-        const cur = localStorage.getItem("fotoPerfilProfessor") || localStorage.getItem("fotoPerfilAluno");
-        setAvatarUrl(cur);
+      if (e && e.detail && e.detail.url) {
+        setAvatarUrl(e.detail.url);
+      } else {
+        const userId = sessionStorage.getItem('userId');
+        if (userId) {
+          const userKey = `fotoPerfil_${userId}`;
+          const cur = localStorage.getItem(userKey);
+          setAvatarUrl(cur);
+        }
       }
     };
 
