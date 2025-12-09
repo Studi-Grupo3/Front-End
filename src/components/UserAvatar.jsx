@@ -4,22 +4,68 @@ import { useEffect, useState } from "react";
 import { teacherService } from "../services/teacherService";
 import { studentService } from "../services/studentService";
 
+const MOCK_PROFILES = {
+  // Teachers
+  "Prof. Carlos Lima": "/images/professors/carlos-lima.png",
+  "Prof. Beatriz Costa": "/images/professors/beatriz-costa.png",
+  "Prof. Fernanda Alvez": "/images/professors/fernanda-alvez.png",
+  "Prof. Rodrigo Santos": "/images/professors/rodrigo-santos.png",
+  "Prof. Marina Oliveira": "/images/professors/marina-oliveira.png",
+  "Prof. Gustavo Pereira": "/images/professors/gustavo-pereira.png",
+  "Prof. Helena Moura": "/images/professors/helena-moura.png",
+  "Prof. João Neto": "/images/professors/joao-neto.png",
+  "Prof. Carla Mendes": "/images/professors/carla-mendes.png",
+  "Prof. Marcos Vinicius": "/images/professors/marcos-vinicius.png",
+  // Students
+  "Matheus Alves": "/images/students/matheus-alves.png",
+  "Ana Beatriz Silva": "/images/students/ana-beatriz-silva.png",
+  "Lucas Ferreira": "/images/students/lucas-ferreira.png",
+  "Mariana Costa": "/images/students/mariana-costa.png",
+  "Gabriel Rocha": "/images/students/gabriel-rocha.png",
+  "Isabela Martins": "/images/students/isabela-martins.png",
+  "Rafael Gomes": "/images/students/rafael-gomes.png",
+  "Larissa Pereira": "/images/students/larissa-pereira.png",
+  "Pedro Albuquerque": "/images/students/pedro-albuquerque.png",
+  "Beatriz Ramos": "/images/students/beatriz-ramos.png"
+};
+
 const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, onClick }) => {
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
-    // Initialize from localStorage if available (check both teacher and student keys)
-    const storedProfessor = localStorage.getItem("fotoPerfilProfessor");
-    const storedAluno = localStorage.getItem("fotoPerfilAluno");
-    const stored = storedProfessor || storedAluno;
-    if (stored) setAvatarUrl(stored);
+    // Helper to get consistent storage key
+    const getStorageKey = (uid) => `profile_photo_${uid}`;
 
-    // If nothing stored, try fetching from backend (authenticated)
+    const userId = sessionStorage.getItem('userId');
+    const userRole = (sessionStorage.getItem('userRole') || '').toLowerCase();
+
+    // 1. Tente carregar do localStorage (específico do usuário)
+    let initialAvatar = null;
+    if (userId) {
+      const stored = localStorage.getItem(getStorageKey(userId));
+      if (stored) {
+        initialAvatar = stored;
+      }
+    }
+
+    // 2. Se não tiver no storage, usa o Mock se existir
+    if (!initialAvatar && name && MOCK_PROFILES[name]) {
+      initialAvatar = MOCK_PROFILES[name];
+    }
+
+    // Configura estado inicial
+    setAvatarUrl(initialAvatar);
+
+    // 3. Busca atualizada do servidor (se não tiver no storage, ou para garantir)
+    // Se já tiver no storage, evitamos a chamada network para performance? 
+    // O usuário pediu "persistir", então se tá no storage confiamos.
+    // Mas se for Mock (initialAvatar == path do mock), TENTAMOS buscar do server para ver se o usuário fez upload de override.
+
+    const isMock = initialAvatar && initialAvatar.startsWith('/');
+    const shouldFetch = userId && (!initialAvatar || isMock);
+
     const tryFetch = async () => {
-      if (stored) return;
-      const userId = sessionStorage.getItem('userId');
-      const userRole = (sessionStorage.getItem('userRole') || '').toLowerCase();
-      if (!userId) return;
+      if (!shouldFetch) return;
 
       try {
         let blob = null;
@@ -36,27 +82,32 @@ const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, on
             reader.onerror = reject;
             reader.readAsDataURL(blob);
           });
+
           setAvatarUrl(dataUrl);
-          try { localStorage.setItem('fotoPerfilProfessor', dataUrl); } catch (e) { /* ignore */ }
+          // Salva no storage com chave única do usuário
+          try { localStorage.setItem(getStorageKey(userId), dataUrl); } catch (e) { /* ignore */ }
         }
       } catch (err) {
-        // ignore fetch errors - keep initials
-        // console.debug('no profile photo available', err);
+        // Se der erro (ex: 404 sem foto), mantemos o que está no estado (Mock ou null)
+        // console.debug('no profile photo or error', err);
       }
     };
+
     tryFetch();
 
     const handler = (e) => {
-      if (e && e.detail && e.detail.url) setAvatarUrl(e.detail.url);
-      else {
-        const cur = localStorage.getItem("fotoPerfilProfessor") || localStorage.getItem("fotoPerfilAluno");
-        setAvatarUrl(cur);
+      if (e && e.detail && e.detail.url) {
+        setAvatarUrl(e.detail.url);
+        // Atualiza storage também ao receber evento
+        if (userId) {
+          try { localStorage.setItem(getStorageKey(userId), e.detail.url); } catch (e) { }
+        }
       }
     };
 
     window.addEventListener('profile-photo-updated', handler);
     return () => window.removeEventListener('profile-photo-updated', handler);
-  }, []);
+  }, [name]);
 
   // Função para pegar as iniciais do nome
   function getInitials(name) {
@@ -89,15 +140,13 @@ const UserAvatar = ({ name = "", hasNotification = false, isComplete = false, on
         <>
           {/* Bolinha com animação ping */}
           <span
-            className={`absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ${
-              isComplete ? "bg-green-500" : "bg-yellow-400"
-            } animate-ping`}
+            className={`absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ${isComplete ? "bg-green-500" : "bg-yellow-400"
+              } animate-ping`}
           ></span>
           {/* Bolinha sólida por cima */}
           <span
-            className={`absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ${
-              isComplete ? "bg-green-500" : "bg-yellow-400"
-            }`}
+            className={`absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ${isComplete ? "bg-green-500" : "bg-yellow-400"
+              }`}
           ></span>
         </>
       )}

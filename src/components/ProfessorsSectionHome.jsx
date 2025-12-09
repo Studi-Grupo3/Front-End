@@ -1,21 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { teacherService } from "../services/teacherService";
+import { SubjectBadge } from "./dashboard-admin/SubjectBadge";
 
 import botaoAnterior from "../assets/botaoAnterior.png";
 import botaoProximo from "../assets/botaoProximo.png";
 
-const subjectTranslations = {
-  PORTUGUESE: "Português",
-  MATHEMATICS: "Matemática",
-  GEOGRAPHY: "Geografia",
-  HISTORY: "História",
-  SCIENCE: "Ciências",
-  CHEMISTRY: "Química",
-  PHYSICS: "Física",
-};
-
 export default function ProfessorsSectionHome() {
-  const [professors, setProfessors] = useState([]);
+  const [allProfessors, setAllProfessors] = useState([]); // Armazena todos os professores buscados
+  const [visibleProfessors, setVisibleProfessors] = useState([]); // Armazena os professores da página atual
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -23,25 +15,38 @@ export default function ProfessorsSectionHome() {
   const [visible, setVisible] = useState(false);
 
   const isMobile = useMemo(() => window.matchMedia("(max-width: 768px)").matches, []);
+  // Ajuste do pageSize para mostrar 3 cards no desktop
   const pageSize = isMobile ? 1 : 3;
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const resp = await teacherService.listPublic(page, pageSize);
+        // Busca até 100 professores de uma vez para paginação em memória
+        const resp = await teacherService.listPublic(0, 100);
         if (!alive) return;
+
         const data = Array.isArray(resp) ? resp : resp.content || [];
-        setProfessors(data);
-        setTotalPages(resp.totalPages ?? 1);
+        setAllProfessors(data);
+
+        // Calcula o total de páginas com base no array completo
+        setTotalPages(Math.ceil(data.length / pageSize) || 1);
+
       } catch (e) {
         console.error("Erro ao carregar professores:", e);
-        setProfessors([]);
+        setAllProfessors([]);
         setTotalPages(1);
       }
     })();
     return () => { alive = false; };
-  }, [page, pageSize]);
+  }, [pageSize]); // Recarrega se mudar o pageSize (mobile/desktop)
+
+  // Atualiza os professores visíveis quando a página ou a lista completa muda
+  useEffect(() => {
+    const start = page * pageSize;
+    const end = start + pageSize;
+    setVisibleProfessors(allProfessors.slice(start, end));
+  }, [page, allProfessors, pageSize]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -95,19 +100,26 @@ export default function ProfessorsSectionHome() {
           {/* Cards */}
           <div className="overflow-hidden w-full">
             <div className="w-full flex justify-center gap-6">
-              {professors.length > 0 ? (
-                professors.map((prof, idx) => (
+              {visibleProfessors.length > 0 ? (
+                visibleProfessors.map((prof, idx) => (
                   <div
                     key={prof.id}
                     style={{ transitionDelay: `${idx * 150}ms` }}
                     className={`
                       bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col 
-                      overflow-hidden max-w-[420px] w-full
+                      overflow-hidden w-[320px] flex-shrink-0
                       transition-all duration-[900ms] ease-out
                       ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
                     `}
                   >
-                    {prof.profileImage ? (
+                    {prof.profileImageUrl ? (
+                      <img
+                        src={prof.profileImageUrl.replace('/public/', '/')}
+                        alt={prof.name}
+                        className="w-full h-52 object-cover"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    ) : prof.profileImage ? (
                       <img
                         src={`data:${prof.profileImageContentType};base64,${prof.profileImage}`}
                         alt={prof.name}
@@ -123,18 +135,11 @@ export default function ProfessorsSectionHome() {
                       <h2 className="text-lg font-bold text-gray-800">
                         {prof.name}
                       </h2>
-                      <p className="text-gray-500 text-sm flex items-center mt-1">
-                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                        São Paulo (online)
-                      </p>
-                      <p className="text-[#3970B7] font-semibold mt-2 flex items-center">
-                        <span className="mr-2">🎓</span>
-                        Professor(a) de{" "}
-                        {prof.subjects?.length
-                          ? subjectTranslations[prof.subjects[0]] ||
-                          "Matéria não informada"
-                          : "Matéria não informada"}
-                      </p>
+
+                      <div className="text-[#3970B7] font-semibold mt-2 flex items-center gap-2">
+                        <span className="mr-1">🎓</span>
+                        <SubjectBadge subjects={prof.subjects} />
+                      </div>
 
                       <p className="text-gray-600 text-sm mt-2">
                         {prof.resumeTeacher || "Professor ainda não adicionou um resumo."}

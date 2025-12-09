@@ -23,53 +23,54 @@ export default function ProfessorCarouselChoose({ data, onUpdate, onNext }) {
 
   const primary = '#3970B7';
 
-useEffect(() => {
-  setLoading(true);
-  teacherService.list()
-    .then((professorsData) => {
-      // professorsData pode ser Page<T> ({ content, totalPages, ... }) ou array
-      const list = Array.isArray(professorsData)
-        ? professorsData
-        : (Array.isArray(professorsData?.content) ? professorsData.content : []);
+  useEffect(() => {
+    setLoading(true);
+    // Busca até 100 professores para garantir que o filtro cliente funcione
+    teacherService.listPublic(0, 100)
+      .then((professorsData) => {
+        // professorsData pode ser Page<T> ({ content, totalPages, ... }) ou array
+        const list = Array.isArray(professorsData)
+          ? professorsData
+          : (Array.isArray(professorsData?.content) ? professorsData.content : []);
 
-      const allowedSubjects = [
-        "PORTUGUESE",
-        "MATHEMATICS",
-        "HISTORY",
-        "GEOGRAPHY",
-        "SCIENCE",
-        "PHYSICS",
-        "CHEMISTRY",
-      ];
+        const allowedSubjects = [
+          "PORTUGUESE",
+          "MATHEMATICS",
+          "HISTORY",
+          "GEOGRAPHY",
+          "SCIENCE",
+          "PHYSICS",
+          "CHEMISTRY",
+        ];
 
-      const enriched = list.map((prof) => {
-        const subjectsArray = Array.isArray(prof.subjects) ? prof.subjects : [];
-        const translatedSubjects = subjectsArray
-          .filter((s) => allowedSubjects.includes(s))
-          .map((s) => subjectMap[s]);
+        const enriched = list.map((prof) => {
+          const subjectsArray = Array.isArray(prof.subjects) ? prof.subjects : [];
+          const translatedSubjects = subjectsArray
+            .filter((s) => allowedSubjects.includes(s))
+            .map((s) => subjectMap[s]);
 
-        return {
-          ...prof,
-          location: "São Paulo (online)",
-          subjectsTranslated: translatedSubjects,
-          description:
-            prof.resumeTeacher ||
-            `Professor experiente em ${translatedSubjects.length ? translatedSubjects.join(", ") : "sua área"}`,
-        };
-      });
+          return {
+            ...prof,
+            location: "São Paulo (online)",
+            subjectsTranslated: translatedSubjects,
+            description:
+              prof.resumeTeacher ||
+              `Professor experiente em ${translatedSubjects.length ? translatedSubjects.join(", ") : "sua área"}`,
+          };
+        });
 
-      const unique = enriched.filter(
-        (prof, index, self) => index === self.findIndex((p) => p.id === prof.id)
-      );
+        const unique = enriched.filter(
+          (prof, index, self) => index === self.findIndex((p) => p.id === prof.id)
+        );
 
-      setProfessors(unique);
-    })
-    .catch((err) => {
-      console.error("Erro ao carregar professores:", err);
-      setError("Erro ao buscar professores");
-    })
-    .finally(() => setLoading(false));
-}, [data?.subject]);
+        setProfessors(unique);
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar professores:", err);
+        setError("Erro ao buscar professores");
+      })
+      .finally(() => setLoading(false));
+  }, []); // Executa apenas uma vez na montagem
 
   const filtered = useMemo(() => {
     if (!data.subject) return professors;
@@ -80,6 +81,7 @@ useEffect(() => {
     );
   }, [data.subject, professors]);
 
+  // Reset slide when subject changes
   useEffect(() => setCurrentSlide(0), [filtered]);
 
   const nextSlide = () =>
@@ -126,10 +128,24 @@ useEffect(() => {
 
       {isMobile ? (
         <div className="relative bg-white rounded-lg shadow">
-          {/* Espaço cinza no lugar da foto */}
-          <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-t-lg">
-            <span className="text-gray-500 text-sm">Sem foto</span>
-          </div>
+          {filtered[currentSlide].profileImageUrl ? (
+            <img
+              src={filtered[currentSlide].profileImageUrl.replace('/public/', '/')}
+              alt={filtered[currentSlide].name}
+              className="w-full h-40 object-cover rounded-t-lg"
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          ) : filtered[currentSlide].profileImage ? (
+            <img
+              src={`data:${filtered[currentSlide].profileImageContentType};base64,${filtered[currentSlide].profileImage}`}
+              alt={filtered[currentSlide].name}
+              className="w-full h-40 object-cover rounded-t-lg"
+            />
+          ) : (
+            <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-t-lg">
+              <span className="text-gray-500 text-sm">Sem foto</span>
+            </div>
+          )}
           {filtered.length > 1 && (
             <>
               <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2">
@@ -144,9 +160,8 @@ useEffect(() => {
             <h2 className="text-lg font-bold" style={{ color: primary }}>
               {filtered[currentSlide].name}
             </h2>
-            <p className="text-gray-500 text-sm mt-1">{filtered[currentSlide].location}</p>
             <p className="font-semibold mt-2" style={{ color: primary }}>
-              {filtered[currentSlide].subjectsTranslated?.join(", ")}
+              {data.subject}
             </p>
             <p className="text-gray-600 text-sm mt-2">{filtered[currentSlide].description}</p>
             <button
@@ -174,15 +189,28 @@ useEffect(() => {
                   style={{ borderColor: '#e5e7eb' }}
                   onClick={() => choose(prof)}
                 >
-                  {/* Espaço cinza no lugar da foto */}
-                  <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-t-lg">
-                    <span className="text-gray-500 text-sm">Sem foto</span>
-                  </div>
+                  {prof.profileImageUrl ? (
+                    <img
+                      src={prof.profileImageUrl.replace('/public/', '/')}
+                      alt={prof.name}
+                      className="w-full h-40 object-cover rounded-t-lg"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : prof.profileImage ? (
+                    <img
+                      src={`data:${prof.profileImageContentType};base64,${prof.profileImage}`}
+                      alt={prof.name}
+                      className="w-full h-40 object-cover rounded-t-lg"
+                    />
+                  ) : (
+                    <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-t-lg">
+                      <span className="text-gray-500 text-sm">Sem foto</span>
+                    </div>
+                  )}
                   <div className="p-4 flex flex-col">
                     <h2 className="font-bold">{prof.name}</h2>
-                    <p className="text-gray-500 text-sm mt-1">{prof.location}</p>
                     <p className="font-semibold mt-2" style={{ color: primary }}>
-                      {prof.subjectsTranslated?.join(", ")}
+                      {data.subject}
                     </p>
                     <p className="text-gray-600 text-sm mt-2">{prof.description}</p>
                     <button
