@@ -1,17 +1,7 @@
-import { api } from "./provider/api";
+import { api } from './provider/api';
 
-const isMock = import.meta.env.VITE_PAYMENT_MOCK === "true";
-
-const create = (amount, payerEmail) => {
-  if (isMock) return createPreferenceMock(amount, payerEmail);
-
-  return api
-    .post("/payments/preference", { amount, payer_email: payerEmail })
-    .then((res) => res.data);
-};
-
-// Export both the original name used here and the alias expected by hooks
 export const preferenceService = {
-  create,
-  createPreference: create,
+  create: (amount, payerEmail) => {
+    return api.post('/preferences', { amount, payer_email: payerEmail }).then(res => res.data);
+  },
 };

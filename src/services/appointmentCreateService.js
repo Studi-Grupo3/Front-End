@@ -1,6 +1,7 @@
 // services/appointmentCreateService.js
 import { api } from '../services/provider/api';
 import { toISOStringDateTime, parseDurationToMinutes } from '../utils/date';
+import { subjectNamesPt } from '../utils/tradutionUtils';
 
 function getStudentIdFromSession() {
   const idStr = sessionStorage.getItem('userId');
@@ -58,15 +59,19 @@ export const appointmentCreateService = {
     }
 
     // Outros campos
-    if (data.phase)      payload.phase     = data.phase;
-    if (data.subject)    payload.subject   = data.subject;
+    if (data.phase) payload.phase = data.phase;
+    if (data.subject) {
+      // Tenta encontrar a chave (ENUM) pelo valor (Português)
+      const subjectEnum = Object.keys(subjectNamesPt).find(key => subjectNamesPt[key] === data.subject);
+      payload.subject = subjectEnum || data.subject;
+    }
     if (Array.isArray(data.materials))
-                         payload.materials = data.materials.map(m => m.name);
-    if (data.personal)   payload.personalData = data.personal;
+      payload.materials = data.materials.map(m => m.name);
+    if (data.personal) payload.personalData = data.personal;
 
     // Flatten payment fields: sempre enviar como PAID
     payload.paymentStatus = 'PAID';
-    payload.totalValue    = data.pagamento?.totalValue ?? 0;
+    payload.totalValue = data.pagamento?.totalValue ?? 0;
 
     // Estado do agendamento (enum do backend)
     payload.status = 'SCHEDULED';

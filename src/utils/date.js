@@ -9,6 +9,9 @@ export function toISOStringDateTime(date, timeStr) {
     h,
     m
   );
+  // Ajuste manual de fuso (-3h) se necessário, conforme solicitado
+  // Se o backend espera UTC mas considera o valor literal, subtraímos 3h para compensar
+  dt.setHours(dt.getHours() - 3);
   return dt.toISOString();
 }
 

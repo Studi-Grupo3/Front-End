@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import NavbarPanel from "../components/NavbarPanel";
 import { useNavigate, useParams } from "react-router-dom";
 import { appointmentService } from "../services/appointmentService";
-import { translateSubject  } from "../utils/tradutionUtils";
+import { translateSubject } from "../utils/tradutionUtils";
 import { ScheduleButton } from "../components/appointment-manager/ScheduleButton"; // importação adicionada
 
 const ConfirmedPayment = () => {
@@ -49,13 +49,15 @@ const ConfirmedPayment = () => {
     );
   }
 
-  const { location, lessonDuration, dateTime, teacher } = appointment;
-  const subject     = teacher?.subject     || '';
-  const teacherName = teacher?.name        || '';
+  const { location, duration, dateTime, subject, professorName } = appointment;
 
   const dateObj = new Date(dateTime);
   const dateFormatted = dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   const timeFormatted = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+  const hours = Math.floor((duration || 0) / 60);
+  const minutes = (duration || 0) % 60;
+  const durationFormatted = `${hours}h ${minutes.toString().padStart(2, '0')}min`;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -77,8 +79,8 @@ const ConfirmedPayment = () => {
             <dl className="divide-y divide-gray-200 text-sm text-left">
               <InfoRow label="Matéria" value={translateSubject(subject)} striped />
               <InfoRow label="Local" value={location} />
-              <InfoRow label="Duração" value={`${Math.floor(lessonDuration/60)}h${lessonDuration%60}min`} striped />
-              <InfoRow label="Professor" value={teacherName || 'A ser definido'} />
+              <InfoRow label="Duração" value={durationFormatted} striped />
+              <InfoRow label="Professor" value={professorName || 'A ser definido'} />
               <InfoRow label="Data" value={dateFormatted} striped />
               <InfoRow label="Horário" value={timeFormatted} />
             </dl>

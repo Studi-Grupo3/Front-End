@@ -5,22 +5,12 @@ import { useValidatePaymentProps } from "../hooks/payments/useValidateProps";
 import { useScriptLoader } from "../hooks/payments/useScriptLoader";
 import { useInitializeBrick } from "../hooks/payments/useInitializeBrick";
 
-const PaymentBrick = ({
-  publicKey,
-  preferenceId,
-  onPaymentSuccess,
-  onPaymentError,
-}) => {
+const PaymentBrick = ({ publicKey, preferenceId, onPaymentSuccess, onPaymentError, payerAddress }) => {
   const { createPayment, loading, error } = usePayments();
 
-  useValidatePaymentProps({
-    publicKey,
-    preferenceId,
-    onPaymentSuccess,
-    onPaymentError,
-  });
+  useValidatePaymentProps({ publicKey, preferenceId, onPaymentSuccess, onPaymentError });
 
-  const isScriptLoaded = useScriptLoader("https://sdk.mercadopago.com/js/v2");
+  const isScriptLoaded = useScriptLoader("https://sdk.mercadopago.com/js/v2", "MercadoPago");
 
   const { initializeBrick } = useInitializeBrick({
     publicKey,
@@ -28,6 +18,7 @@ const PaymentBrick = ({
     createPayment,
     onPaymentSuccess,
     onPaymentError,
+    payerAddress,
   });
 
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -41,13 +32,7 @@ const PaymentBrick = ({
 
   return (
     <div id="paymentSection">
-      <div
-        id="paymentBrick_container"
-        style={{ width: "100%", maxWidth: "600px", height: "100%" }}
-      />
-      {loading && <p>Processando pagamento...</p>}
-      {error && <p style={{ color: "red" }}>Erro: {error.message}</p>}
-      {!isScriptLoaded && <p>Carregando recursos de pagamento...</p>}
+      <div id="paymentBrick_container" style={{ width: "100%", maxWidth: "600px", height: "100%" }} />
     </div>
   );
 };
@@ -57,6 +42,7 @@ PaymentBrick.propTypes = {
   preferenceId: PropTypes.string.isRequired,
   onPaymentSuccess: PropTypes.func.isRequired,
   onPaymentError: PropTypes.func.isRequired,
+  payerAddress: PropTypes.object,
 };
 
 export default PaymentBrick;
