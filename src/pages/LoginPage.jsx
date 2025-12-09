@@ -33,7 +33,7 @@ const LoginPage = () => {
         if (response.role === 'STUDENT') {
           navigate('/aluno/inicio');
         } else if (response.role === 'TEACHER') {
-          navigate('/professor/inicio');
+          navigate('/professor/aulas');
         } else if (response.role === 'ADMIN') {
           navigate('/dashboard');
         } else {
