@@ -6,6 +6,7 @@ export const useInitializeBrick = ({
   createPayment,
   onPaymentSuccess,
   onPaymentError,
+  payerAddress,
 }) => {
   const brickInstance = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -17,6 +18,7 @@ export const useInitializeBrick = ({
     }
 
     const container = document.getElementById("paymentBrick_container");
+    console.log("📦 Container encontrado:", !!container);
 
     if (
       brickInstance.current ||
@@ -27,11 +29,12 @@ export const useInitializeBrick = ({
       return;
     }
 
+    console.log("🚀 Iniciando setup do Brick...");
     const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
     const bricksBuilder = mp.bricks();
 
     try {
-      console.log("🛠️ Inicializando Brick...");
+      console.log("🛠️ Criando Brick com preferenceId:", preferenceId);
       brickInstance.current = await bricksBuilder.create(
         "payment",
         "paymentBrick_container",
@@ -39,11 +42,6 @@ export const useInitializeBrick = ({
           initialization: {
             amount: 100.0,
             preferenceId,
-            payer: {
-              firstName: "Cliente",
-              lastName: "Teste",
-              email: "cliente@email.com",
-            },
           },
           customization: {
             visual: { style: { theme: "default" } },
@@ -71,53 +69,32 @@ export const useInitializeBrick = ({
                   throw new Error("❌ ERRO: Token do cartão não foi gerado!");
                 }
 
-                // Map Brick formData to the backend DTO shape (PaymentRequestDTO)
-                const payer = {
-                  email:
-                    formData.payer?.email ||
-                    (formData.payer && formData.payer.email),
-                  firstName:
-                    formData.payer?.first_name ||
-                    formData.payer?.firstName ||
-                    "Cliente",
-                  identification: formData.payer?.identification ||
-                    formData.payer?.identification || {
+                const payload = {
+                  transaction_amount: formData.transaction_amount,
+                  description: "Compra via Brick",
+                  installments: formData.installments,
+                  payment_method_id: formData.payment_method_id,
+                  payer: {
+                    email: formData.payer?.email,
+                    first_name: formData.payer?.first_name || "Cliente",
+                    identification: formData.payer?.identification || {
                       type: "CPF",
                       number: "12345678909",
                     },
-                  // Map address fields (backend requires address: streetName, streetNumber, zipCode)
-                  address: {
-                    streetName:
-                      formData.payer?.address?.street_name ||
-                      formData.payer?.address?.streetName ||
-                      "Rua Exemplo",
-                    streetNumber:
-                      formData.payer?.address?.street_number ||
-                      formData.payer?.address?.streetNumber ||
-                      "0",
-                    zipCode:
-                      formData.payer?.address?.zip_code ||
-                      formData.payer?.address?.zipCode ||
-                      "00000000",
+                    address: payerAddress || {
+                      zip_code: "01001000",
+                      street_name: "Av. Paulista",
+                      street_number: "123",
+                      neighborhood: "Bela Vista",
+                      city: "São Paulo",
+                      federal_unit: "SP",
+                    },
                   },
-                };
-
-                const payload = {
-                  transactionAmount:
-                    formData.transaction_amount || formData.transactionAmount,
-                  description: formData.description || "Compra via Brick",
-                  installments:
-                    formData.installments || formData.installments_count || 1,
-                  paymentMethodId:
-                    formData.payment_method_id || formData.paymentMethodId,
-                  payer,
                 };
 
                 // 📌 Apenas cartão precisa de token
                 if (!isBoleto && !isPix) {
-                  // cartão precisa de token
-                  payload.token =
-                    formData.token || formData.card?.token || formData.token_id;
+                  payload.token = formData.token;
                 }
 
                 console.log("📤 Enviando pagamento ao backend...", payload);
@@ -146,6 +123,7 @@ export const useInitializeBrick = ({
     onPaymentSuccess,
     onPaymentError,
     isInitialized,
+    payerAddress,
   ]);
 
   return { initializeBrick };

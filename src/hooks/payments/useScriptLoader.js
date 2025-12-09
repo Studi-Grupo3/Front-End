@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 
-export const useScriptLoader = (src) => {
+export const useScriptLoader = (src, globalProp) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (document.querySelector(`script[src="${src}"]`)) {
-      setLoaded(true);
-      return;
+    const existingScript = document.querySelector(`script[src="${src}"]`);
+
+    if (existingScript) {
+      if (!globalProp || window[globalProp]) {
+        setLoaded(true);
+        return;
+      }
+
+      const onScriptLoad = () => setLoaded(true);
+      existingScript.addEventListener("load", onScriptLoad);
+      return () => existingScript.removeEventListener("load", onScriptLoad);
     }
 
     const script = document.createElement("script");
@@ -15,12 +23,8 @@ export const useScriptLoader = (src) => {
     script.onload = () => setLoaded(true);
     document.body.appendChild(script);
 
-    return () => {
-      if (script.parentNode) {
-        document.body.removeChild(script);
-      }
-    };
-  }, [src]);
+    return () => {};
+  }, [src, globalProp]);
 
   return loaded;
 };

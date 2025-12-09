@@ -1,314 +1,430 @@
-  import { useState } from "react";
-  import NavbarPanel from "../components/NavbarPanel";
-  import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { BookOpen, Clock, Calendar, CreditCard } from "lucide-react";
+import { appointmentCreateService } from "../services/appointmentCreateService";
+import { parseDurationToMinutes } from "../utils/date";
+import { useNavigate } from "react-router-dom";
+import PaymentBrick from "../components/PaymentBrick";
+import { usePreferenceId } from "../hooks/payments/usePreferenceId";
 
-  export default function Pagamento() {
-    const [step, setStep] = useState("dados");
-    const [paymentMethod, setPaymentMethod] = useState("credito");
-    const [cep, setCep] = useState("");
-    const [endereco, setEndereco] = useState({
-      rua: "",
-      bairro: "",
-      cidade: "",
-      estado: "",
-      numero: "",
-      complemento: "",
+const couponDiscounts = {
+  CUPOM20: 0.2,
+  CUPOM50: 0.5,
+  CUPOM75: 0.75,
+};
+
+export default function Pagamento({ data, onUpdate, onNext }) {
+  const [step, setStep] = useState("endereco");
+  const [paymentMethod, setPaymentMethod] = useState(
+    data.pagamento.method || "credito"
+  );
+  const [cep, setCep] = useState(data.endereco.cep || "");
+  const [endereco, setEndereco] = useState({ ...data.endereco });
+  const [loading, setLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState(data.pagamento.cupom || "");
+  const [discountPercent, setDiscountPercent] = useState(
+    data.pagamento.descontoPercent || 0
+  );
+  const [errorMsg, setErrorMsg] = useState("");
+  const [couponFeedback, setCouponFeedback] = useState({
+    type: "",
+    message: "",
+  });
+  const navigate = useNavigate();
+
+  // Cálculo local para exibir no resumo imediatamente
+  const lessonDurationLocal = parseDurationToMinutes(data.duration || "");
+  const totalValueLocal = lessonDurationLocal * 1; // tarifa por minuto
+
+  // Calcula o valor final com desconto
+  const discountAmount = data.pagamento.descontoAplicado
+    ? data.pagamento.desconto || 0
+    : 0;
+  const finalValue = Math.max(0, totalValueLocal - discountAmount);
+
+  // Integração Mercado Pago
+  const publicKey = import.meta.env.VITE_PUBLIC_KEY;
+  // TODO: Usar email real do usuário
+  // Passamos o valor final com desconto para a preferência
+  const {
+    preferenceId,
+    loading: loadingPreference,
+    error: errorPreference,
+  } = usePreferenceId(finalValue, "cliente@teste.com");
+
+  const payerAddress = {
+    zip_code: data.endereco.cep,
+    street_name: data.endereco.rua,
+    street_number: data.endereco.numero,
+    neighborhood: data.endereco.bairro,
+    city: data.endereco.cidade,
+    federal_unit: data.endereco.estado,
+  };
+
+  const dateStr = data.date
+    ? new Date(data.date).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : "";
+  const timeStr = data.time || "";
+
+  // Atualiza estado de endereço e notifica componente pai
+  const updateEndereco = (next) => {
+    setEndereco((prev) => {
+      const updated = typeof next === "function" ? next(prev) : next;
+      onUpdate({ endereco: { ...updated, cep } });
+      return updated;
     });
-    const navigate = useNavigate();
+  };
 
-    const handleCepChange = async (e) => {
-      const inputCep = e.target.value.replace(/\D/g, ""); // remove tudo que não for número
-      setCep(inputCep);
-
-      if (inputCep.length === 8) {
-        try {
-          const response = await fetch(`https://viacep.com.br/ws/${inputCep}/json/`);
-          const data = await response.json();
-          if (!data.erro) {
-            setEndereco((prev) => ({
-              ...prev,
-              rua: data.logradouro,
-              bairro: data.bairro,
-              cidade: data.localidade,
-              estado: data.uf,
-            }));
-          } else {
-            alert("CEP não encontrado.");
-          }
-        } catch (error) {
-          alert("Erro ao buscar CEP.");
+  const handleCepChange = async (e) => {
+    const onlyDigits = e.target.value.replace(/\D/g, "");
+    setCep(onlyDigits);
+    if (onlyDigits.length === 8) {
+      try {
+        const resp = await fetch(
+          `https://viacep.com.br/ws/${onlyDigits}/json/`
+        );
+        const json = await resp.json();
+        if (!json.erro) {
+          updateEndereco((prev) => ({
+            ...prev,
+            rua: json.logradouro,
+            bairro: json.bairro,
+            cidade: json.localidade,
+            estado: json.uf,
+          }));
+        } else {
+          alert("CEP não encontrado.");
         }
+      } catch {
+        alert("Erro ao buscar CEP.");
       }
-    };
+    } else {
+      // Apenas atualiza CEP manualmente
+      onUpdate({ endereco: { ...endereco, cep: onlyDigits } });
+    }
+  };
 
-    return (
-      <>
-        <div className="fixed top-0 left-0 w-full z-50">
-          <NavbarPanel />
+  // Atualiza campos de pagamento ou outros sections
+  const handleFieldChange = (field, value, section = "pagamento") => {
+    onUpdate({
+      [section]: { ...data[section], [field]: value },
+    });
+  };
+
+  const handleApplyCoupon = () => {
+    const code = data.pagamento.cupom?.trim().toUpperCase();
+
+    if (!code) {
+      setCouponFeedback({
+        type: "error",
+        message: "Digite um código de cupom.",
+      });
+      return;
+    }
+
+    if (couponDiscounts.hasOwnProperty(code)) {
+      const discountRate = couponDiscounts[code];
+      const discountValue = totalValueLocal * discountRate;
+
+      onUpdate({
+        pagamento: {
+          ...data.pagamento,
+          descontoAplicado: true,
+          desconto: discountValue,
+          descontoPercent: discountRate,
+        },
+      });
+      setCouponFeedback({
+        type: "success",
+        message: "Cupom aplicado com sucesso!",
+      });
+    } else {
+      // Cupom inválido
+      onUpdate({
+        pagamento: {
+          ...data.pagamento,
+          descontoAplicado: false,
+          desconto: 0,
+          descontoPercent: 0,
+        },
+      });
+      setCouponFeedback({ type: "error", message: "Coloque um cupom válido." });
+    }
+  };
+
+  const handleFinalize = async () => {
+    setErrorMsg("");
+    setLoading(true);
+    try {
+      const lessonDuration = parseDurationToMinutes(data.duration || "");
+      const ratePerMinute = 1;
+      const totalValue = lessonDuration * ratePerMinute;
+      // Recalcula ou usa o valor já no estado
+      const discountVal = data.pagamento.descontoAplicado
+        ? data.pagamento.desconto || 0
+        : 0;
+      const finalTotal = Math.max(0, totalValue - discountVal);
+
+      const created = await appointmentCreateService.create({
+        ...data,
+        pagamento: {
+          ...data.pagamento,
+          lessonDuration,
+          totalValue: finalTotal, // Envia o valor final com desconto
+          originalValue: totalValue, // Opcional: manter o valor original
+          method: paymentMethod,
+        },
+      });
+
+      navigate(`/aluno/concluido/${created.id}`);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Erro ao agendar. Tente novamente.");
+      setLoading(false);
+    }
+  };
+
+  const handlePaymentSuccess = (response) => {
+    console.log("✅ Pagamento concluído:", response);
+    handleFinalize();
+  };
+
+  const handlePaymentError = (error) => {
+    console.error("❌ Erro no pagamento:", error);
+    setErrorMsg("Erro ao processar pagamento via Mercado Pago.");
+  };
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-6 pt-4">
+      <div className="flex-1 bg-white rounded-md shadow p-4 space-y-4">
+        {/* Navegação de etapas */}
+        <div className="flex space-x-4 text-xs">
+          {["endereco", "pagamento"].map((item) => (
+            <button
+              key={item}
+              onClick={() => setStep(item)}
+              className={`px-3 py-1 ${
+                step === item
+                  ? "border-b-2 border-[#3970B7] text-[#3970B7] font-semibold"
+                  : "text-gray-500 cursor-pointer"
+              }`}
+            >
+              {item === "endereco" ? "Endereço" : "Pagamento"}
+            </button>
+          ))}
         </div>
 
-        <div className="min-h-screen bg-gray-50 flex flex-col overflow-hidden text-xs">
-          <div className="h-16" />
-
-          <div className="w-full max-w-6xl text-gray-500 text-sm mt-14 mx-auto">
-            <nav className="text-xs sm:text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-              <ol className="inline-flex flex-wrap items-center space-x-2">
-                <li><Link to="/aluno/formulario" className="hover:underline">Detalhes</Link></li>
-                <li>›</li>
-                <li><Link to="/aluno/modelo-aula" className="hover:underline">Modelo de Aula</Link></li>
-                <li>›</li>
-                <li><Link to="/aluno/escolher-professor" className="hover:underline">Professor</Link></li>
-                <li>›</li>
-                <li><Link to="/aluno/agendar-aula" className="hover:underline">Agendamento</Link></li>
-                <li>›</li>
-                <li className="text-blue-600 font-medium">Pagamento</li>
-              </ol>
-            </nav>
-          </div>
-
-          <div className="w-full text-center">
-            <h1 className="text-blue-600 text-2xl font-bold">Pagamento</h1>
-          </div>
-
-          <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 mt-8 overflow-hidden mx-auto flex-1">
-            <div className="flex-1 bg-white rounded-md shadow p-6 overflow-y-auto">
-              <h2 className="text-lg font-bold mb-6">Finalizar compra</h2>
-
-              <div className="flex flex-col sm:flex-row mb-6 border-b">
-                {["dados", "endereco", "pagamento"].map((item) => (
-                  <button
-                    key={item}
-                    className={`w-full sm:w-auto flex-1 p-2 text-center ${step === item
-                      ? "text-blue-600 font-semibold border-b-2 border-blue-600"
-                      : "text-gray-500"
-                      }`}
-                    onClick={() => setStep(item)}
-                  >
-                    {item === "dados" ? "Dados pessoais" : item === "endereco" ? "Endereço" : "Pagamento"}
-                  </button>
-                ))}
-              </div>
-
-              {step === "dados" && (
-                <form className="space-y-4">
-                  <div>
-                    <label className="text-gray-600 text-sm">Nome completo</label>
-                    <input type="text" placeholder="Digite seu nome completo" className="w-full p-2 border rounded-md mt-1 text-sm" />
-                  </div>
-                  <div>
-                    <label className="text-gray-600 text-sm">Email</label>
-                    <input type="email" placeholder="seu@email.com" className="w-full p-2 border rounded-md mt-1 text-sm" />
-                  </div>
-                  <div>
-                    <label className="text-gray-600 text-sm">CPF</label>
-                    <input type="text" placeholder="000.000.000-00" className="w-full p-2 border rounded-md mt-1 text-sm" />
-                  </div>
-                  <div>
-                    <label className="text-gray-600 text-sm">Telefone</label>
-                    <input type="text" placeholder="(00) 00000-0000" className="w-full p-2 border rounded-md mt-1 text-sm" />
-                  </div>
-
-                  <button
-                    type="button"
-                    className="bg-blue-600 text-white rounded-md w-full py-2 mt-4"
-                    onClick={() => setStep("endereco")}
-                  >
-                    Continuar
-                  </button>
-                </form>
-              )}
-
-              {step === "endereco" && (
-                <form className="space-y-4">
-                  <div>
-                    <label className="text-gray-600 text-sm">CEP</label>
-                    <input
-                      type="text"
-                      placeholder="00000-000"
-                      className="w-full p-2 border rounded-md mt-1 text-sm"
-                      value={cep.length > 5 ? `${cep.slice(0, 5)}-${cep.slice(5)}` : cep}
-                      onChange={handleCepChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-gray-600 text-sm">Rua</label>
-                    <input
-                      type="text"
-                      placeholder="Rua Exemplo"
-                      className="w-full p-2 border rounded-md mt-1 text-sm"
-                      value={endereco.rua}
-                      onChange={(e) => setEndereco({ ...endereco, rua: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-gray-600 text-sm">Número</label>
-                    <input
-                      type="text"
-                      placeholder="123"
-                      className="w-full p-2 border rounded-md mt-1 text-sm"
-                      value={endereco.numero}
-                      onChange={(e) => setEndereco({ ...endereco, numero: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-gray-600 text-sm">Complemento</label>
-                    <input
-                      type="text"
-                      placeholder="Apartamento, bloco, etc."
-                      className="w-full p-2 border rounded-md mt-1 text-sm"
-                      value={endereco.complemento}
-                      onChange={(e) => setEndereco({ ...endereco, complemento: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-gray-600 text-sm">Bairro</label>
-                    <input
-                      type="text"
-                      placeholder="Bairro Exemplo"
-                      className="w-full p-2 border rounded-md mt-1 text-sm"
-                      value={endereco.bairro}
-                      onChange={(e) => setEndereco({ ...endereco, bairro: e.target.value })}
-                    />
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="flex-1">
-                      <label className="text-gray-600 text-sm">Cidade</label>
-                      <input
-                        type="text"
-                        placeholder="Cidade"
-                        className="w-full p-2 border rounded-md mt-1 text-sm"
-                        value={endereco.cidade}
-                        onChange={(e) => setEndereco({ ...endereco, cidade: e.target.value })}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label className="text-gray-600 text-sm">Estado</label>
-                      <input
-                        type="text"
-                        placeholder="UF"
-                        className="w-full p-2 border rounded-md mt-1 text-sm"
-                        value={endereco.estado}
-                        onChange={(e) => setEndereco({ ...endereco, estado: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="bg-blue-600 text-white rounded-md w-full py-2 mt-4"
-                    onClick={() => setStep("pagamento")}
-                  >
-                    Continuar
-                  </button>
-                </form>
-              )}
-
-              {step === "pagamento" && (
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    {["credito", "debito"].map((method) => (
-                      <button
-                        key={method}
-                        type="button"
-                        className={`flex-1 p-2 border rounded-md text-sm ${paymentMethod === method ? "border-blue-600 text-blue-600 font-semibold" : "border-gray-300 text-gray-500"}`}
-                        onClick={() => setPaymentMethod(method)}
-                      >
-                        {method === "credito" ? "Cartão de Crédito" : "Cartão de Débito"}
-                      </button>
-                    ))}
-                  </div>
-
-                  {(paymentMethod === "credito" || paymentMethod === "debito") && (
-                    <form className="space-y-4 mt-4">
-                      <div>
-                        <label className="text-gray-600 text-sm">Número do Cartão</label>
-                        <input type="text" placeholder="0000 0000 0000 0000" className="w-full p-2 border rounded-md mt-1 text-sm" />
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1">
-                          <label className="text-gray-600 text-sm">Validade</label>
-                          <input type="text" placeholder="MM/AA" className="w-full p-2 border rounded-md mt-1 text-sm" />
-                        </div>
-                        <div className="flex-1">
-                          <label className="text-gray-600 text-sm">CVV</label>
-                          <input type="text" placeholder="123" className="w-full p-2 border rounded-md mt-1 text-sm" />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-gray-600 text-sm">Nome no Cartão</label>
-                        <input type="text" placeholder="Nome impresso no cartão" className="w-full p-2 border rounded-md mt-1 text-sm" />
-                      </div>
-
-                      <button
-                        type="button"
-                        className="bg-blue-600 text-white rounded-md w-full py-2 mt-4"
-                        onClick={() => navigate("/aluno/concluido")}
-                      >
-                        Finalizar Pagamento
-                      </button>
-                    </form>
-                  )}
-                </div>
-              )}
+        {/* Formulário de Endereço */}
+        {step === "endereco" && (
+          <form className="space-y-2">
+            <div>
+              <label className="text-xs text-gray-600">CEP</label>
+              <input
+                type="text"
+                value={
+                  cep.length > 5 ? `${cep.slice(0, 5)}-${cep.slice(5)}` : cep
+                }
+                onChange={handleCepChange}
+                className="w-full p-1 border rounded text-xs"
+              />
             </div>
-
-            <div className="w-full lg:w-96 bg-white rounded-md shadow p-6 overflow-y-auto">
-              <h2 className="text-lg font-bold mb-6 bg-yellow-100 p-2 rounded-md">Resumo do Pedido</h2>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="bg-blue-100 p-2 rounded-md">
-                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M5 4v16h14V4H5zm2 2h10v12H7V6z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold">Curso de Inglês</p>
-                    <p className="text-xs text-gray-500">Aula de 1h30min</p>
-                  </div>
-                  <p className="text-blue-600 text-sm font-semibold">R$ 99,90</p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="bg-yellow-100 p-2 rounded-md">
-                    <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M12 8v4l3 3" />
-                      <path d="M5 12a7 7 0 1114 0A7 7 0 015 12z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold">Plano Mensal - Ciências</p>
-                    <p className="text-xs text-gray-500">Plano de 4 semanas</p>
-                  </div>
-                  <p className="text-blue-600 text-sm font-semibold">R$ 99,90</p>
-                </div>
+            <div>
+              <label className="text-xs text-gray-600">Rua</label>
+              <input
+                type="text"
+                value={endereco.rua || ""}
+                onChange={(e) =>
+                  updateEndereco({ ...endereco, rua: e.target.value })
+                }
+                className="w-full p-1 border rounded text-xs"
+              />
+            </div>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label className="text-xs text-gray-600">Número</label>
+                <input
+                  type="text"
+                  value={endereco.numero || ""}
+                  onChange={(e) =>
+                    updateEndereco({ ...endereco, numero: e.target.value })
+                  }
+                  className="w-full p-1 border rounded text-xs"
+                />
               </div>
-
-              <div className="mt-6">
-                <p className="text-sm text-blue-600 font-semibold mb-2">Cupom de desconto</p>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input type="text" placeholder="Digite o código" className="flex-1 p-2 border rounded-md text-sm" />
-                  <button className="bg-white border border-blue-600 text-blue-600 rounded-md px-4 py-2 text-sm">Aplicar</button>
-                </div>
-              </div>
-
-              <div className="border-t mt-6 pt-4 space-y-2 text-sm">
-                <div className="flex justify-between text-gray-600">
-                  <span>Subtotal</span>
-                  <span className="font-semibold">R$ 199,80</span>
-                </div>
-                <div className="flex justify-between text-green-500">
-                  <span>Desconto</span>
-                  <span>R$ 0,00</span>
-                </div>
-                <div className="flex justify-between font-bold text-base mt-2">
-                  <span>Total</span>
-                  <span className="text-blue-600">R$ 199,80</span>
-                </div>
+              <div className="flex-1">
+                <label className="text-xs text-gray-600">Complemento</label>
+                <input
+                  type="text"
+                  value={endereco.complemento || ""}
+                  onChange={(e) =>
+                    updateEndereco({ ...endereco, complemento: e.target.value })
+                  }
+                  className="w-full p-1 border rounded text-xs"
+                />
               </div>
             </div>
+            <div>
+              <label className="text-xs text-gray-600">Bairro</label>
+              <input
+                type="text"
+                value={endereco.bairro || ""}
+                onChange={(e) =>
+                  updateEndereco({ ...endereco, bairro: e.target.value })
+                }
+                className="w-full p-1 border rounded text-xs"
+              />
+            </div>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label className="text-xs text-gray-600">Cidade</label>
+                <input
+                  type="text"
+                  value={endereco.cidade || ""}
+                  onChange={(e) =>
+                    updateEndereco({ ...endereco, cidade: e.target.value })
+                  }
+                  className="w-full p-1 border rounded text-xs"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs text-gray-600">Estado</label>
+                <input
+                  type="text"
+                  value={endereco.estado || ""}
+                  onChange={(e) =>
+                    updateEndereco({ ...endereco, estado: e.target.value })
+                  }
+                  className="w-full p-1 border rounded text-xs"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setStep("pagamento")}
+              className="w-full py-2 bg-[#3970B7] hover:bg-[#2e5a94] text-white rounded text-sm cursor-pointer"
+            >
+              Continuar
+            </button>
+          </form>
+        )}
+
+        {/* Formulário de Pagamento */}
+        {step === "pagamento" && (
+          <div className="space-y-3">
+            {preferenceId && (
+              <PaymentBrick
+                publicKey={publicKey}
+                preferenceId={preferenceId}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentError={handlePaymentError}
+                payerAddress={payerAddress}
+              />
+            )}
+
+            {errorMsg && <p className="text-red-500 text-xs">{errorMsg}</p>}
+          </div>
+        )}
+      </div>
+
+      {/* Resumo do Pedido */}
+      <aside className="flex-none lg:w-1/3 bg-white rounded-md shadow-md p-4 space-y-4 border-l-4 border-yellow-300 self-start">
+        <h2 className="flex items-center text-xl font-bold text-[#3970B7] space-x-2">
+          <CreditCard size={20} />
+          <span className="text-base">Resumo do Pedido</span>
+        </h2>
+
+        {/* Cupom de desconto */}
+        <div className="space-y-1 text-sm">
+          <label className="block font-medium text-gray-700">
+            Cupom de desconto
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Digite o código"
+              className="flex-1 p-1 border rounded text-sm"
+              value={data.pagamento.cupom || ""}
+              onChange={(e) => {
+                handleFieldChange("cupom", e.target.value);
+                setCouponFeedback({ type: "", message: "" }); // Limpa feedback ao digitar
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleApplyCoupon}
+              className="px-3 py-1 bg-[#3970B7] text-white rounded text-sm cursor-pointer"
+            >
+              Aplicar
+            </button>
+          </div>
+          {couponFeedback.message && (
+            <p
+              className={`text-xs mt-1 ${couponFeedback.type === "success" ? "text-green-600" : "text-red-500"}`}
+            >
+              {couponFeedback.message}
+            </p>
+          )}
+        </div>
+
+        {/* Detalhes da aula */}
+        <ul className="space-y-2 text-sm">
+          <li className="flex items-center space-x-2">
+            <BookOpen size={16} className="text-[#3970B7]" />
+            <span>{data.subject || "—"}</span>
+          </li>
+          <li className="flex items-center space-x-2">
+            <Clock size={16} className="text-[#3970B7]" />
+            <span>{data.duration || "—"}</span>
+          </li>
+          <li className="flex items-center space-x-2">
+            <Calendar size={16} className="text-[#3970B7]" />
+            <span>{dateStr || "—"}</span>
+          </li>
+          <li className="flex items-center space-x-2">
+            <Clock size={16} className="text-[#3970B7]" />
+            <span>{timeStr}</span>
+          </li>
+        </ul>
+
+        <div className="border-t border-gray-200" />
+
+        {/* Valores */}
+        <div className="space-y-1 text-sm">
+          <div className="flex justify-between">
+            <span>Subtotal</span>
+            <span>R$ {totalValueLocal.toFixed(2).replace(".", ",")}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Desconto</span>
+            <span className="text-green-600">
+              - R${" "}
+              {(data.pagamento.descontoAplicado
+                ? data.pagamento.desconto || 0
+                : 0
+              )
+                .toFixed(2)
+                .replace(".", ",")}
+            </span>
+          </div>
+          <div className="flex justify-between items-center pt-1 border-t border-gray-200">
+            <span className="font-medium">TOTAL</span>
+            <span className="text-2xl font-bold text-[#3970B7]">
+              R${" "}
+              {(
+                totalValueLocal -
+                (data.pagamento.descontoAplicado
+                  ? data.pagamento.desconto || 0
+                  : 0)
+              )
+                .toFixed(2)
+                .replace(".", ",")}
+            </span>
           </div>
         </div>
-      </>
-    );
-  }
+      </aside>
+    </div>
+  );
+}
