@@ -111,7 +111,7 @@ useEffect(() => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-center">
+      {/* <div className="flex justify-center">
         <button
           type="button"
           disabled={!enabled}
@@ -122,7 +122,7 @@ useEffect(() => {
         >
           Não quero escolher um professor
         </button>
-      </div>
+      </div> */}
 
       {isMobile ? (
         <div className="relative bg-white rounded-lg shadow">
