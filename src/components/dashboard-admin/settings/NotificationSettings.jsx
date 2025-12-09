@@ -1,12 +1,12 @@
-// src/components/dashboard-admin/settings/NotificationSettings.jsx
 import React, { useEffect, useState } from 'react';
 import { SaveButton } from './SaveButton';
 import { adminSettingsService } from '../../../services/dashboard/adminSettingsService';
+import { showAlert } from '../../ShowAlert';
 
 const labels = {
-  notifyPayments:     'Pagamentos Processados',
+  notifyPayments: 'Pagamentos Processados',
   notifyAppointments: 'Novos Agendamentos',
-  notifyCancellations:'Cancelamentos'
+  notifyCancellations: 'Cancelamentos'
 };
 
 export function NotificationSettings() {
@@ -22,13 +22,13 @@ export function NotificationSettings() {
     adminSettingsService.get()
       .then(data => {
         setNotif({
-          notifyPayments:     data.notifyPayments,
+          notifyPayments: data.notifyPayments,
           notifyAppointments: data.notifyAppointments,
-          notifyCancellations:data.notifyCancellations
+          notifyCancellations: data.notifyCancellations
         });
       })
       .catch(err => console.error('Erro ao carregar notificações:', err));
-      // sem finally: mesmo que demore, a UI já está visível com os switches em false
+    // sem finally: mesmo que demore, a UI já está visível com os switches em false
   }, []);
 
   const toggle = key =>
@@ -37,10 +37,18 @@ export function NotificationSettings() {
   const salvar = async () => {
     try {
       await adminSettingsService.patch(notif);
-      alert('Notificações salvas com sucesso!');
+      showAlert({
+        title: 'Sucesso',
+        text: 'Notificações salvas com sucesso!',
+        icon: 'success'
+      });
     } catch (err) {
       console.error('Erro ao salvar notificações:', err);
-      alert('Erro ao salvar configurações.');
+      showAlert({
+        title: 'Erro',
+        text: 'Erro ao salvar configurações.',
+        icon: 'error'
+      });
     }
   };
 

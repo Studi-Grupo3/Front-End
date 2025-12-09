@@ -1,7 +1,7 @@
-// src/components/dashboard-admin/settings/SecuritySettings.jsx
 import React, { useEffect, useState } from 'react';
 import { SaveButton } from './SaveButton';
 import { adminSettingsService } from '../../../services/dashboard/adminSettingsService';
+import { showAlert } from '../../ShowAlert';
 
 export function SecuritySettings() {
   // Mantém o layout sempre visível, mesmo antes dos dados chegarem
@@ -30,7 +30,11 @@ export function SecuritySettings() {
 
   const salvar = async () => {
     if (security.newPassword !== security.confirmPassword) {
-      return alert('Nova senha e confirmação não conferem.');
+      return showAlert({
+        title: 'Erro',
+        text: 'Nova senha e confirmação não conferem.',
+        icon: 'error'
+      });
     }
     try {
       // valida a senha atual
@@ -43,7 +47,13 @@ export function SecuritySettings() {
         newPassword: security.newPassword,
         confirmPassword: security.confirmPassword
       });
-      alert('Senha alterada com sucesso!');
+
+      showAlert({
+        title: 'Sucesso',
+        text: 'Senha alterada com sucesso!',
+        icon: 'success'
+      });
+
       // limpa apenas os campos de senha no estado
       setSecurity(prev => ({
         ...prev,
@@ -53,7 +63,11 @@ export function SecuritySettings() {
       }));
     } catch (err) {
       console.error('Erro ao atualizar segurança:', err);
-      alert(err.message || 'Falha ao alterar senha.');
+      showAlert({
+        title: 'Erro',
+        text: err.message || 'Falha ao alterar senha.',
+        icon: 'error'
+      });
     }
   };
 

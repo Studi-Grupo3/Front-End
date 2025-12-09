@@ -93,8 +93,8 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
     <nav className="h-[12vh] w-full bg-[#3970B7] border-b-4 border-b-[#FECB0A] text-white px-4 md:px-10 flex items-center justify-between text-sm relative">
       {/* Navegação Mobile */}
       <div className="md:hidden flex items-center justify-between w-full">
-          {/* Links de Navegação (variam conforme role) */}
-          <div className="flex justify-center gap-8 w-full max-w-4xl mx-auto">
+        {/* Links de Navegação (variam conforme role) */}
+        <div className="flex justify-center gap-8 w-full max-w-4xl mx-auto">
         </div>
         <MenuHamburguer />
       </div>
@@ -112,7 +112,7 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
         </div>
 
         {/* Links de Navegação (variam conforme role) */}
-          <div className="flex justify-center gap-16">
+        <div className="flex justify-center gap-16">
           {isTeacher ? (
             <>
               <h2
@@ -164,14 +164,20 @@ const NavbarPanel = ({ role, percentComplete = 0 }) => {
               >
                 Calendário
               </h2>
+              <h2
+                className="font-semibold text-base cursor-pointer hover:text-yellow-400 transition"
+                onClick={() => navigate("/aluno/agendamento/criar")}
+              >
+                Agendar Aula
+              </h2>
             </>
           )}
         </div>
 
         {/* Botão e Avatar */}
-          <div className="flex items-center gap-10 flex-shrink-0">
-          {/* Mostrar ScheduleButton somente para alunos */}
-          {!isTeacher && <ScheduleButton />}
+        <div className="flex items-center gap-10 flex-shrink-0">
+          {/* Mostrar ScheduleButton somente para alunos -> REMOVIDO conforme pedido */}
+          {/* {!isTeacher && <ScheduleButton />} */}
           <UserAvatar
             name={loading ? "" : name}
             hasNotification={true}

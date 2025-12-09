@@ -33,7 +33,7 @@ export default function CompleteTeacherRegistrationPage() {
             formData.academicFormation,
             formData.yearsExperience,
             formData.subject,
-            hasAvailability,
+            // hasAvailability, // Comentado: funcionalidade de disponibilidade desabilitada
         ];
         const filled = fields.filter(val => val && val.toString().trim() !== "").length;
         // Cada campo representa uma parte igual do total
@@ -42,33 +42,33 @@ export default function CompleteTeacherRegistrationPage() {
     }, [formData, hasAvailability]);
 
     useEffect(() => {
-    async function fetchTeacher() {
-        if (professorId) {
-            try {
-                const data = await teacherService.getById(professorId);
-                setFormData(prev => ({
-                    ...prev,
-                    id: data.id,
-                    name: data.name || "",
-                    email: data.email || "",
-                    cellphoneNumber: data.cellphoneNumber || "",
-                    dateBirth: data.dateBirth || "",
-                    resumeTeacher: data.resumeTeacher || "",
-                    academicFormation: data.academicFormation || "",
-                    yearsExperience: data.yearsExperience || "",
-                    subject: data.subject || "",
-                }));
-            } catch (err) {
-                showAlert({
-                    title: 'Erro!',
-                    text: 'Erro ao carregar dados do professor: ' + err.message,
-                    icon: 'error',
-                });
+        async function fetchTeacher() {
+            if (professorId) {
+                try {
+                    const data = await teacherService.getById(professorId);
+                    setFormData(prev => ({
+                        ...prev,
+                        id: data.id,
+                        name: data.name || "",
+                        email: data.email || "",
+                        cellphoneNumber: data.cellphoneNumber || "",
+                        dateBirth: data.dateBirth || "",
+                        resumeTeacher: data.resumeTeacher || "",
+                        academicFormation: data.academicFormation || "",
+                        yearsExperience: data.yearsExperience || "",
+                        subject: data.subject || "",
+                    }));
+                } catch (err) {
+                    showAlert({
+                        title: 'Erro!',
+                        text: 'Erro ao carregar dados do professor: ' + err.message,
+                        icon: 'error',
+                    });
+                }
             }
         }
-    }
-    fetchTeacher();
-}, [professorId]);
+        fetchTeacher();
+    }, [professorId]);
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -77,26 +77,26 @@ export default function CompleteTeacherRegistrationPage() {
     const handleUpdate = async () => {
         try {
             console.log("Dados enviados:", formData);
-            await teacherService.update( formData.id,formData);
+            await teacherService.update(formData.id, formData);
             showAlert({
-            title: 'Perfil atualizado com sucesso',
-            text: `Suas informações foram salvas com sucesso!`,
-            icon: 'success',
+                title: 'Perfil atualizado com sucesso',
+                text: `Suas informações foram salvas com sucesso!`,
+                icon: 'success',
             });
         } catch (err) {
             showAlert({
-            title: 'Erro!',
-            text: 'Erro ao atualizar perfil: ' + err.message,
-            icon: 'error',
+                title: 'Erro!',
+                text: 'Erro ao atualizar perfil: ' + err.message,
+                icon: 'error',
             });
         }
     };
-    
+
     const tabs = [
         { id: "Informacoes Pessoais", label: "Informações Pessoais", icon: User },
         { id: "Qualificacoes", label: "Qualificações", icon: GraduationCap },
         { id: "Foto e Documentos", label: "Foto e Documentos", icon: Image },
-        { id: "Disponibilidade", label: "Disponibilidade", icon: CalendarClock },
+        // { id: "Disponibilidade", label: "Disponibilidade", icon: CalendarClock },
         // { id: "Seguranca", label: "Segurança", icon: Lock },
     ];
 
@@ -104,7 +104,7 @@ export default function CompleteTeacherRegistrationPage() {
         <div className="flex flex-col h-screen min-h-screen">
 
             <NavbarPanel />
-            
+
             <div className="bg-gray-100 flex items-center justify-center flex-1 py-auto overflow-auto">
 
                 <div className="bg-white rounded-xl shadow p-6 max-w-4xl mx-auto w-full">
@@ -157,12 +157,12 @@ export default function CompleteTeacherRegistrationPage() {
                     </div>
 
                     <main>
-                        <ContentTeacherRegistration 
-                        current={active}
-                        formData={formData}
-                        onChange={handleChange}
-                        onSave={handleUpdate}
-                        onAvailabilityChange={setHasAvailability} />
+                        <ContentTeacherRegistration
+                            current={active}
+                            formData={formData}
+                            onChange={handleChange}
+                            onSave={handleUpdate}
+                            onAvailabilityChange={setHasAvailability} />
                     </main>
                 </div>
             </div>
